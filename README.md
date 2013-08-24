@@ -5,8 +5,8 @@ A general log tailer and parser tool written in Java, inspired by [Parsible](htt
 ## Main concepts
 
 * **Parser**: the parser parses a log line and returns with parameters (a map). There is a builtin configurable regexp parser.
-* **Flexible configuration**: the configuration is in JSON format for easier management. You can define your parsers and processors and bind them as you want.
 * **Processor**: the processor gets the parser's parameters and do anything with them, like send key/values to StatsD
+* **Flexible configuration**: the configuration is in JSON format for easier management. You can define your parsers and processors and bind them as you want.
 * **Real time**: the tool tails the log file nearly realtime (1 second batch reading mode)
 * **Whole file reading**: with a cli parameter you can read your logfile from the beginning
 * **Logrotate friendly**: works easily with logrotate or other log rotating tools
@@ -16,6 +16,9 @@ A general log tailer and parser tool written in Java, inspired by [Parsible](htt
 The project uses Gradle and it is embedded with a Gradle wrapper.
 
 ```bash
+# the first time duplicate the gradle properties and set your custom build config (like Archiva)
+cp gradle.properties.dist gradle.properties
+
 # run tests, if you want
 ./gradlew test
 
