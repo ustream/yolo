@@ -31,7 +31,7 @@ java -jar gradlebuild/libs/loggy-1.0.0.jar -help
  
 ## Sample configuration
 
-An example config file can be found in [example.json](src/main/config/example.json)
+An example config file can be found in [example.json](src/main/config/example.json).
 
 ## Command line parameters
 
@@ -50,5 +50,5 @@ usage: loggy
 ## Example usage
 
 ```bash
-java -jar gradlebuild/libs/loggy-1.0.0.jar -config /YOURPATH/src/main/config/test.json -file /YOURPATH/foo.log -debug -whole
+java -jar gradlebuild/libs/loggy-1.0.0.jar -config /YOURPATH/src/main/config/example.json -file /YOURPATH/foo.log -debug -whole
 ```
