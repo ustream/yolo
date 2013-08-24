@@ -1,5 +1,7 @@
 package com.ustream.loggy.module.parser;
 
+import com.ustream.loggy.config.ConfigGroup;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,13 +23,17 @@ public class RegexpParser implements IParser
     public void setUp(Map<String, Object> parameters, boolean debug)
     {
         String regex = (String) parameters.get("regex");
-        if (null == regex || regex.isEmpty())
-        {
-            throw new IllegalArgumentException("Regex parameter is missing or empty!");
-        }
         Pattern pattern = Pattern.compile(regex);
         matcher = pattern.matcher("");
         namedGroups = getNamedGroups(regex);
+    }
+
+    @Override
+    public ConfigGroup getModuleConfig()
+    {
+        ConfigGroup config = new ConfigGroup();
+        config.addConfigValue("regex", String.class);
+        return config;
     }
 
     @Override

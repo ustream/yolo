@@ -2,6 +2,7 @@ package com.ustream.loggy.module.processor;
 
 import com.timgroup.statsd.StatsDClient;
 import com.ustream.loggy.config.ConfigException;
+import com.ustream.loggy.config.ConfigGroup;
 import com.ustream.loggy.config.ConfigPattern;
 import com.ustream.loggy.config.ConfigUtils;
 
@@ -30,14 +31,18 @@ public class StatsDProcessor implements IProcessor
 
         String prefix = (String) parameters.get("prefix");
         String host = (String) parameters.get("host");
-
-        if (null == host || host.isEmpty())
-        {
-            throw new IllegalArgumentException("host parameter is missing or empty!");
-        }
-
         Integer port = ConfigUtils.getInteger(parameters, "port", 8192);
         statsDClient = statsDFactory.createClient(prefix != null ? prefix : "", host, port);
+    }
+
+    @Override
+    public ConfigGroup getModuleConfig()
+    {
+        ConfigGroup config = new ConfigGroup();
+        config.addConfigValue("prefix", String.class, false, "");
+        config.addConfigValue("host", String.class);
+        config.addConfigValue("port", Double.class, false, 8192D);
+        return config;
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.ustream.loggy.module.parser;
 
+import com.ustream.loggy.config.ConfigGroup;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +36,12 @@ public class PassThruParser implements IParser
     @Override
     public void setUp(Map<String, Object> parameters, boolean debug)
     {
+    }
+
+    @Override
+    public ConfigGroup getModuleConfig()
+    {
+        return null;
     }
 
 }

@@ -1,6 +1,7 @@
 package com.ustream.loggy.module.processor;
 
 import com.ustream.loggy.config.ConfigException;
+import com.ustream.loggy.config.ConfigGroup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,14 @@ public class CompositeProcessor implements IProcessor, ICompositeProcessor
     @Override
     public void setUp(Map<String, Object> parameters, boolean debug)
     {
+    }
+
+    @Override
+    public ConfigGroup getModuleConfig()
+    {
+        ConfigGroup config = new ConfigGroup();
+        config.addConfigValue("processors", List.class);
+        return config;
     }
 
     @Override

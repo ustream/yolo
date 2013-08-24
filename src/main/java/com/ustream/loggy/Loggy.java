@@ -1,6 +1,7 @@
 package com.ustream.loggy;
 
 import com.ustream.loggy.config.ConfigException;
+import com.ustream.loggy.config.ConfigGroup;
 import com.ustream.loggy.config.ConfigUtils;
 import com.ustream.loggy.handler.DataHandler;
 import com.ustream.loggy.handler.FileHandler;
@@ -24,7 +25,7 @@ public class Loggy
 
     private String filePath;
 
-    private Boolean debug;
+    private Boolean debug = false;
 
     private Boolean readWholeFile;
 
@@ -95,7 +96,15 @@ public class Loggy
         reopenFile = cli.hasOption("reopen");
     }
 
-    private void readConfig()
+    private ConfigGroup getMainConfig()
+    {
+        ConfigGroup config = new ConfigGroup();
+        config.addConfigValue("processors", Map.class);
+        config.addConfigValue("parsers", Map.class);
+        return config;
+    }
+
+    private void readConfig() throws ConfigException
     {
         try
         {
@@ -105,9 +114,11 @@ public class Loggy
         {
             exitWithError("Failed to open configuration file: " + e.getMessage(), false);
         }
+
+        getMainConfig().validate("[root]", config);
     }
 
-    private void initDataHandler()
+    private void initDataHandler() throws Exception
     {
         dataHandler = new DataHandler(new ModuleFactory(), debug);
 
@@ -127,11 +138,7 @@ public class Loggy
         }
         catch (ConfigException e)
         {
-            exitWithError("Configuration error: " + e.getMessage(), false);
-        }
-        catch (Exception e)
-        {
-            exitWithError("Error: " + e.getMessage(), false);
+            exitWithError(e.getMessage(), false);
         }
     }
 
@@ -144,13 +151,27 @@ public class Loggy
 
     private void run(String[] args)
     {
-        parseCliOptions(args);
+        try
+        {
+            parseCliOptions(args);
 
-        readConfig();
+            readConfig();
 
-        initDataHandler();
+            initDataHandler();
 
-        startFileHandler();
+            startFileHandler();
+        }
+        catch (Exception e)
+        {
+            if (!debug && !e.getMessage().isEmpty())
+            {
+                System.out.println(e.getMessage());
+            }
+            else
+            {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void printHelp()

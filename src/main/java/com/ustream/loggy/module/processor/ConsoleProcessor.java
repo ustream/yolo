@@ -1,6 +1,7 @@
 package com.ustream.loggy.module.processor;
 
 import com.ustream.loggy.config.ConfigException;
+import com.ustream.loggy.config.ConfigGroup;
 
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,12 @@ public class ConsoleProcessor implements IProcessor
     @Override
     public void setUp(Map<String, Object> parameters, boolean debug)
     {
+    }
+
+    @Override
+    public ConfigGroup getModuleConfig()
+    {
+        return null;
     }
 
 }

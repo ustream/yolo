@@ -1,5 +1,8 @@
 package com.ustream.loggy.module;
 
+import com.ustream.loggy.config.ConfigException;
+import com.ustream.loggy.config.ConfigGroup;
+
 import java.util.Map;
 
 /**
@@ -9,21 +12,25 @@ public class ModuleFactory
 {
 
     @SuppressWarnings("unchecked")
-    public <T extends IModule> T create(String className, Map<String, Object> config, boolean debug) throws ReflectiveOperationException
+    public <T extends IModule> T create(String name, String className, Map<String, Object> config, boolean debug) throws ConfigException
     {
-        if (null == className || className.isEmpty())
-        {
-            throw new ReflectiveOperationException("Class name is empty or missing!");
-        }
         try
         {
             T instance = (T) Class.forName(className).newInstance();
+
+            ConfigGroup moduleConfig = instance.getModuleConfig();
+            if (moduleConfig != null)
+            {
+                instance.getModuleConfig().validate(name, config);
+            }
+
             instance.setUp(config, debug);
+
             return instance;
         }
         catch (ReflectiveOperationException e)
         {
-            throw new ReflectiveOperationException("Failed to load class: " + className);
+            throw new ConfigException("failed to load class: " + className);
         }
     }
 
