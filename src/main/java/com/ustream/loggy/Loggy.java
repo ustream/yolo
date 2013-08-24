@@ -30,8 +30,6 @@ public class Loggy
 
     private Boolean reopenFile;
 
-    private FileHandler fileHandler;
-
     private DataHandler dataHandler;
 
     public Loggy()
@@ -139,7 +137,7 @@ public class Loggy
 
     private void startFileHandler()
     {
-        fileHandler = new FileHandler(dataHandler, filePath, readWholeFile, reopenFile, debug);
+        FileHandler fileHandler = new FileHandler(dataHandler, filePath, readWholeFile, reopenFile, debug);
 
         fileHandler.start();
     }

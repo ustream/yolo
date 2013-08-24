@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 public class ConfigPattern
 {
 
-    private static Pattern parametersPattern = Pattern.compile("#([a-zA-Z0-9_-]+)#");
+    private static final Pattern parametersPattern = Pattern.compile("#([a-zA-Z0-9_-]+)#");
 
     private final String pattern;
 
@@ -77,12 +77,8 @@ public class ConfigPattern
 
         ConfigPattern that = (ConfigPattern) o;
 
-        if (!pattern.equals(that.pattern))
-        {
-            return false;
-        }
+        return pattern.equals(that.pattern);
 
-        return true;
     }
 
     @Override

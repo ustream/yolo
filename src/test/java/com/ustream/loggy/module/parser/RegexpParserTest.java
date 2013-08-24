@@ -5,7 +5,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.PatternSyntaxException;
 
 /**

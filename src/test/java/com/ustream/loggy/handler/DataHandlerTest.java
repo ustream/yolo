@@ -23,8 +23,6 @@ public class DataHandlerTest
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    private ModuleFactory moduleFactory;
-
     private IParser parser1;
 
     private IParser parser2;
@@ -38,7 +36,7 @@ public class DataHandlerTest
     @Before
     public void setUp() throws Exception
     {
-        moduleFactory = mock(ModuleFactory.class);
+        ModuleFactory moduleFactory = mock(ModuleFactory.class);
         parser1 = mock(IParser.class);
         parser2 = mock(IParser.class);
         processor1 = mock(IProcessor.class);

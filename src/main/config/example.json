@@ -22,7 +22,7 @@
 		},
 		"passthru": {
 			"class": "com.ustream.loggy.module.parser.PassThruParser",
-			"processor": "console"
+			"processor": "noop"
 		}
 	},
 	"processors": {
@@ -33,6 +33,13 @@
   		},
   		"console": {
   			"class": "com.ustream.loggy.module.processor.ConsoleProcessor"
+  		},
+  		"composite": {
+  			"class": "com.ustream.loggy.module.processor.CompositeProcessor",
+  			"processors": ["statsd", "console"]
+  		},
+  		"noop": {
+  			"class": "com.ustream.loggy.module.processor.NoOpProcessor"
   		}
 	}
 }

@@ -20,7 +20,7 @@ public class RegexpParser implements IParser
     @Override
     public void setUp(Map<String, Object> parameters, boolean debug)
     {
-        String regex = (String)parameters.get("regex");
+        String regex = (String) parameters.get("regex");
         if (null == regex || regex.isEmpty())
         {
             throw new IllegalArgumentException("Regex parameter is missing or empty!");

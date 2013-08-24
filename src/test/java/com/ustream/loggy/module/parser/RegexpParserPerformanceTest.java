@@ -71,7 +71,7 @@ public class RegexpParserPerformanceTest
     {
         List<String> result = new ArrayList<String>();
 
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
 
         Random r = new Random();
 

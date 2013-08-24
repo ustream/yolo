@@ -8,6 +8,7 @@ import java.util.Map;
 public class ModuleFactory
 {
 
+    @SuppressWarnings("unchecked")
     public <T extends IModule> T create(String className, Map<String, Object> config, boolean debug) throws ReflectiveOperationException
     {
         if (null == className || className.isEmpty())

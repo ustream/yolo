@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -12,12 +13,14 @@ import java.util.Map;
 public class ConfigUtils
 {
 
+    @SuppressWarnings("unchecked")
     public static Map<String, Object> getConfigFromFile(String configPath) throws IOException
     {
         Gson gson = new Gson();
         return (Map<String, Object>) gson.fromJson(new FileReader(configPath), Map.class);
     }
 
+    @SuppressWarnings("unchecked")
     public static Map<String, Object> getObjectMap(Object data, String key)
     {
         if (!(data instanceof Map))
@@ -34,6 +37,7 @@ public class ConfigUtils
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static Map<String, Object> castObjectMap(Object data)
     {
         try
@@ -43,6 +47,19 @@ public class ConfigUtils
         catch (ClassCastException e)
         {
             throw new IllegalArgumentException("value should be a map");
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static List<String> castStringList(Object data)
+    {
+        try
+        {
+            return (List<String>) data;
+        }
+        catch (ClassCastException e)
+        {
+            throw new IllegalArgumentException("value should be a string array");
         }
     }
 

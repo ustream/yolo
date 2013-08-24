@@ -15,11 +15,11 @@ import java.util.Map;
 public class StatsDProcessor implements IProcessor
 {
 
+    private static final List<String> types = Arrays.asList("count", "gauge", "time");
+
     private StatsDFactory statsDFactory = new StatsDFactory();
 
     private StatsDClient statsDClient;
-
-    private List<String> types = Arrays.asList("count", "gauge", "time");
 
     private boolean debug;
 
@@ -75,7 +75,7 @@ public class StatsDProcessor implements IProcessor
         String key;
         if (keyObject instanceof String)
         {
-            key = (String)keyObject;
+            key = (String) keyObject;
         }
         else
         {
