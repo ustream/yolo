@@ -1,0 +1,39 @@
+{
+	"parsers": {
+		"regexp1": {
+			"class": "com.ustream.loggy.module.parser.RegexpParser",
+			"regex": "(?<exceptionName>[a-zA-Z]+)[eE]xception value (?<val>\\d+)",
+			"processor": "statsd",
+			"processorParams": {
+				"type": "gauge",
+				"key": "loggy.test.#exceptionName#",
+				"value": "val"
+			}
+		},
+		"regexp2": {
+			"class": "com.ustream.loggy.module.parser.RegexpParser",
+			"regex": "(?<errorName>[a-zA-Z]+)[eE]rror",
+			"processor": "statsd",
+			"processorParams": {
+				"type": "count",
+				"key": "loggy.error.#errorName#",
+				"value": 1
+			}
+		},
+		"passthru": {
+			"class": "com.ustream.loggy.module.parser.PassThruParser",
+			"processor": "console"
+		}
+	},
+	"processors": {
+		"statsd": {
+			"class": "com.ustream.loggy.module.processor.StatsDProcessor",
+			"host": "127.0.0.1",
+			"port": 8192
+  		},
+  		"console": {
+  			"class": "com.ustream.loggy.module.processor.ConsoleProcessor"
+  		}
+	}
+}
+

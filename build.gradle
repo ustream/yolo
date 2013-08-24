@@ -1,0 +1,19 @@
+defaultTasks 'clean'
+version='1.0.0'
+group='com.ustream.loggy'
+
+allprojects {
+    apply from: rootProject.file('gradle/common.gradle')
+    repositories {
+        mavenCentral()
+        maven { url project.'archiva.repo.internal' }
+        maven { url project.'archiva.repo.snapshot' }
+    }
+}
+
+apply from: 'gradle/deps.gradle'
+apply from: 'gradle/jar.gradle'
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.6'
+}

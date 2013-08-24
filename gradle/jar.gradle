@@ -1,0 +1,9 @@
+task buildJar(type: Jar, dependsOn: ':assemble') {
+    from files(project.sourceSets.main.output.classesDir)
+    from project.configurations.runtime.collect {
+        zipTree(it)
+    }
+    manifest {
+        from "manifest.mf"
+    }
+}

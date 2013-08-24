@@ -1,0 +1,11 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'idea'
+
+sourceCompatibility = '1.7'
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+buildDir = 'gradlebuild'
+
+sourceSets.main.java.srcDirs = files('src/main/java')
+sourceSets.test.java.srcDirs = files('src/test/java')
