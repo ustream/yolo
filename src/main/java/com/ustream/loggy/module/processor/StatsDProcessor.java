@@ -1,10 +1,7 @@
 package com.ustream.loggy.module.processor;
 
 import com.timgroup.statsd.StatsDClient;
-import com.ustream.loggy.config.ConfigException;
-import com.ustream.loggy.config.ConfigGroup;
-import com.ustream.loggy.config.ConfigPattern;
-import com.ustream.loggy.config.ConfigUtils;
+import com.ustream.loggy.config.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -52,6 +49,20 @@ public class StatsDProcessor implements IProcessor
     }
 
     @Override
+    public ConfigGroup getProcessorParamsConfig()
+    {
+        ConfigGroup config = new ConfigGroup();
+
+        ConfigValue typeConfig = new ConfigValue("type", String.class);
+        typeConfig.setAllowedValues(types);
+        config.addConfigValue(typeConfig);
+
+        config.addConfigValue("key", Object.class);
+        config.addConfigValue("value", Object.class);
+        return config;
+    }
+
+    @Override
     public String getModuleDescription()
     {
         return "sends metrics to statsd, it handles counter, gauge and timing values";
@@ -60,20 +71,14 @@ public class StatsDProcessor implements IProcessor
     @Override
     public void validateProcessorParams(List<String> parserParams, Map<String, Object> params) throws ConfigException
     {
-        String type = (String) params.get("type");
-        if (!types.contains(type))
-        {
-            throw new ConfigException("type is invalid, must be count, gauge or time");
-        }
-
         Object key = params.get("key");
-        if (null == key || "".equals(key) || !(key instanceof String || key instanceof ConfigPattern))
+        if (!(key instanceof String) && !(key instanceof ConfigPattern))
         {
-            throw new ConfigException("key parameter is missing from processor parameters");
+            throw new ConfigException("key parameter is invalid!");
         }
 
         Object value = params.get("value");
-        if (null == value || "".equals(value) || !(value instanceof String || value instanceof Double))
+        if (!(value instanceof String) && !(value instanceof Double))
         {
             throw new ConfigException("value parameter is missing from processor parameters");
         }

@@ -103,11 +103,14 @@ public class ModuleFactory
         System.out.println();
         for (String className : availableProcessors)
         {
-            IModule module = factory.create(className);
+            IProcessor module = factory.create(className);
             ConfigGroup config = module.getModuleConfig();
             String usage = config != null ? "\n" + config.getUsageString("      ") : "";
 
-            System.out.format("· %s - %s\n%s\n", className, module.getModuleDescription(), usage);
+            ConfigGroup processorParamsConfig = module.getProcessorParamsConfig();
+            String usage2 = processorParamsConfig != null ? "      processorParams in parser:\n" + processorParamsConfig.getUsageString("          ") : "";
+
+            System.out.format("· %s - %s\n%s%s\n", className, module.getModuleDescription(), usage, usage2);
         }
 
         System.out.println("Available parsers");
@@ -115,7 +118,7 @@ public class ModuleFactory
         System.out.println();
         for (String className : availableParsers)
         {
-            IModule module = factory.create(className);
+            IParser module = factory.create(className);
             ConfigGroup config = module.getModuleConfig();
             String usage = config != null ? "\n" + config.getUsageString("      ") : "";
 

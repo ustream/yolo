@@ -12,6 +12,11 @@ public class ConfigGroup
 
     private final List<ConfigValue> config = new ArrayList<ConfigValue>();
 
+    public void addConfigValue(ConfigValue configValue)
+    {
+        config.add(configValue);
+    }
+
     public <T> void addConfigValue(String name, Class<T> type)
     {
         addConfigValue(name, type, true, null);

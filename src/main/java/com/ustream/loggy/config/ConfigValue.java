@@ -1,6 +1,7 @@
 package com.ustream.loggy.config;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -17,12 +18,27 @@ public class ConfigValue<T>
 
     private final T defaultValue;
 
+    private List<T> allowedValues = null;
+
+    public ConfigValue(String name, Class<T> type)
+    {
+        this.name = name;
+        this.type = type;
+        required = true;
+        defaultValue = null;
+    }
+
     public ConfigValue(String name, Class<T> type, boolean required, T defaultValue)
     {
         this.name = name;
         this.type = type;
         this.required = required;
         this.defaultValue = defaultValue;
+    }
+
+    public void setAllowedValues(List<T> allowedValues)
+    {
+        this.allowedValues = allowedValues;
     }
 
     public String getName()
@@ -60,24 +76,27 @@ public class ConfigValue<T>
 
     public boolean validate(Object value)
     {
-        if (required)
+        if (required && isEmpty(value))
         {
-            return !isEmpty(value) && type.isInstance(value);
+            return false;
         }
-        else
+        else if (value == null)
         {
-            return value == null || type.isInstance(value);
+            return true;
         }
+
+        return type.isInstance(value) && (allowedValues == null || allowedValues.contains(value));
     }
 
     public String toString()
     {
         return String.format(
-            "%s [%s]%s%s",
+            "%s [%s]%s%s%s",
             name,
             type.getSimpleName(),
             required ? ", required" : "",
-            !required && !isEmpty(defaultValue) ? ", default: " + defaultValue : ""
+            !required && !isEmpty(defaultValue) ? ", default: " + defaultValue : "",
+            allowedValues != null ? ", allowed values: " + allowedValues : ""
         );
     }
 }

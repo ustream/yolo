@@ -1,6 +1,7 @@
 package com.ustream.loggy.handler;
 
 import com.ustream.loggy.config.ConfigException;
+import com.ustream.loggy.config.ConfigGroup;
 import com.ustream.loggy.config.ConfigPattern;
 import com.ustream.loggy.config.ConfigUtils;
 import com.ustream.loggy.module.ModuleFactory;
@@ -93,6 +94,12 @@ public class DataHandler implements ILineHandler
         if (params != null)
         {
             processorParams.put(name, ConfigPattern.processMap(params));
+
+            ConfigGroup processorParamsConfig = processors.get(processorName).getProcessorParamsConfig();
+            if (processorParamsConfig != null)
+            {
+                processorParamsConfig.parseValues(name + ".processorParams", params);
+            }
 
             processors.get(processorName).validateProcessorParams(parser.getOutputParameters(), params);
         }

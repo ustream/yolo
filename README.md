@@ -75,6 +75,10 @@ Available processors
       prefix [String]
       host [String], required
       port [Number], default: 8192
+      processorParams in parser:
+          type [String], required, allowed values: [count, gauge, time]
+          key [Object], required
+          value [Object], required
 
 Available parsers
 -----------------

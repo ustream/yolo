@@ -30,6 +30,12 @@ public class CompositeProcessor implements IProcessor, ICompositeProcessor
     }
 
     @Override
+    public ConfigGroup getProcessorParamsConfig()
+    {
+        return null;
+    }
+
+    @Override
     public void setUpModule(Map<String, Object> parameters, boolean debug)
     {
     }

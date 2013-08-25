@@ -24,6 +24,12 @@ public class ConsoleProcessor implements IProcessor
     }
 
     @Override
+    public ConfigGroup getProcessorParamsConfig()
+    {
+        return null;
+    }
+
+    @Override
     public void setUpModule(Map<String, Object> parameters, boolean debug)
     {
     }
