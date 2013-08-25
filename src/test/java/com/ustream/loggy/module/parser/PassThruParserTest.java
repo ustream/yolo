@@ -11,6 +11,7 @@ import java.util.Map;
 /**
  * @author bandesz <bandesz@ustream.tv>
  */
+@SuppressWarnings("unchecked")
 public class PassThruParserTest
 {
 

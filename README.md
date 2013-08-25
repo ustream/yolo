@@ -64,7 +64,7 @@ Available processors
 
 · com.ustream.loggy.module.processor.CompositeProcessor - runs multiple processors
 
-      processors[java.util.List]+
+      processors [List], required
 
 · com.ustream.loggy.module.processor.ConsoleProcessor - writes parameters to console, use it for debug purposes
 
@@ -72,10 +72,9 @@ Available processors
 
 · com.ustream.loggy.module.processor.StatsDProcessor - sends metrics to statsd, it handles counter, gauge and timing values
 
-      prefix[java.lang.String] (default: )
-      host[java.lang.String]+
-      port[java.lang.Double] (default: 8192.0)
-
+      prefix [String]
+      host [String], required
+      port [Number], default: 8192
 
 Available parsers
 -----------------
@@ -84,6 +83,6 @@ Available parsers
 
 · com.ustream.loggy.module.parser.RegexpParser - parses line via regular expression and returns with matches
 
-      regex[java.lang.String]+
+      regex [String], required
 
 ```

@@ -123,7 +123,7 @@ public class Loggy
             exitWithError("Failed to open configuration file: " + e.getMessage(), false);
         }
 
-        getMainConfig().validate("[root]", config);
+        getMainConfig().parseValues("[root]", config);
     }
 
     private void initDataHandler() throws Exception

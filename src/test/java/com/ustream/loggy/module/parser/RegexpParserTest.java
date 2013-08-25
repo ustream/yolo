@@ -107,7 +107,7 @@ public class RegexpParserTest
     {
         thrown.expect(PatternSyntaxException.class);
 
-        IParser parser = createParser("(abcd");
+        createParser("(abcd");
     }
 
     @Test

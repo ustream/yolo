@@ -17,6 +17,7 @@ import static org.mockito.Mockito.*;
 /**
  * @author bandesz <bandesz@ustream.tv>
  */
+@SuppressWarnings("unchecked")
 public class DataHandlerTest
 {
 

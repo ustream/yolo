@@ -67,7 +67,7 @@ public class ModuleFactory
         ConfigGroup moduleConfig = module.getModuleConfig();
         if (moduleConfig != null)
         {
-            module.getModuleConfig().validate(name, rawConfig);
+            module.getModuleConfig().parseValues(name, rawConfig);
         }
 
         module.setUpModule(rawConfig, debug);
@@ -75,7 +75,7 @@ public class ModuleFactory
 
     public IProcessor createProcessor(String name, Map<String, Object> rawConfig, boolean debug) throws ConfigException
     {
-        processorModuleConfig.validate(name, rawConfig);
+        processorModuleConfig.parseValues(name, rawConfig);
 
         IProcessor processor = create((String) rawConfig.get("class"));
 
@@ -86,7 +86,7 @@ public class ModuleFactory
 
     public IParser createParser(String name, Map<String, Object> rawConfig, boolean debug) throws ConfigException
     {
-        parserModuleConfig.validate(name, rawConfig);
+        parserModuleConfig.parseValues(name, rawConfig);
 
         IParser parser = create((String) rawConfig.get("class"));
 
@@ -109,7 +109,6 @@ public class ModuleFactory
 
             System.out.format("· %s - %s\n%s\n", className, module.getModuleDescription(), usage);
         }
-        System.out.println();
 
         System.out.println("Available parsers");
         System.out.println("-----------------");
@@ -122,7 +121,6 @@ public class ModuleFactory
 
             System.out.format("· %s - %s\n%s\n", className, module.getModuleDescription(), usage);
         }
-        System.out.println("");
     }
 
 }

@@ -31,7 +31,13 @@ public class StatsDProcessor implements IProcessor
 
         String prefix = (String) parameters.get("prefix");
         String host = (String) parameters.get("host");
-        Integer port = ConfigUtils.getInteger(parameters, "port", 8192);
+        Integer port = ConfigUtils.getInteger(parameters, "port");
+
+        if (debug)
+        {
+            System.out.format("Initializing StatsD connection: %s:%d\n", host, port);
+        }
+
         statsDClient = statsDFactory.createClient(prefix != null ? prefix : "", host, port);
     }
 
@@ -41,7 +47,7 @@ public class StatsDProcessor implements IProcessor
         ConfigGroup config = new ConfigGroup();
         config.addConfigValue("prefix", String.class, false, "");
         config.addConfigValue("host", String.class);
-        config.addConfigValue("port", Double.class, false, 8192D);
+        config.addConfigValue("port", Number.class, false, 8192);
         return config;
     }
 

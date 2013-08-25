@@ -9,13 +9,13 @@ import java.util.Map;
 public class ConfigValue<T>
 {
 
-    private String name;
+    private final String name;
 
-    private Class type;
+    private final Class type;
 
-    private boolean required = true;
+    private final boolean required;
 
-    private T defaultValue = null;
+    private final T defaultValue;
 
     public ConfigValue(String name, Class<T> type, boolean required, T defaultValue)
     {
@@ -30,41 +30,54 @@ public class ConfigValue<T>
         return name;
     }
 
+    public T getDefaultValue()
+    {
+        return defaultValue;
+    }
+
+    public boolean isEmpty(Object value)
+    {
+        if (value == null)
+        {
+            return true;
+        }
+        if (value instanceof String && "".equals(value))
+        {
+            return true;
+        }
+        if (value instanceof Collection && ((Collection) value).isEmpty())
+        {
+            return true;
+        }
+
+        if (value instanceof Map && ((Map) value).isEmpty())
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     public boolean validate(Object value)
     {
         if (required)
         {
-            if (value == null)
-            {
-                return false;
-            }
-            if (value instanceof String && "".equals(value))
-            {
-                return false;
-            }
-            if (value instanceof Collection && ((Collection) value).isEmpty())
-            {
-                return false;
-            }
-
-            if (value instanceof Map && ((Map) value).isEmpty())
-            {
-                return false;
-            }
-            return true;
+            return !isEmpty(value) && type.isInstance(value);
         }
-
-        return value == null || type.isInstance(value);
+        else
+        {
+            return value == null || type.isInstance(value);
+        }
     }
 
     public String toString()
     {
         return String.format(
-            "%s[%s]%s%s",
+            "%s [%s]%s%s",
             name,
-            type.getName(),
-            required ? "+" : "",
-            !required && defaultValue != null ? " (default: " + defaultValue + ")" : ""
+            type.getSimpleName(),
+            required ? ", required" : "",
+            !required && !isEmpty(defaultValue) ? ", default: " + defaultValue : ""
         );
     }
 }

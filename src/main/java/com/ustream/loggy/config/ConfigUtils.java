@@ -63,14 +63,14 @@ public class ConfigUtils
         }
     }
 
-    public static Integer getInteger(Map<String, Object> data, String key, Integer defaultValue)
+    public static Integer getInteger(Map<String, Object> data, String key)
     {
         Object value = data.get(key);
         if (null != value)
         {
-            if (value instanceof Double)
+            if (value instanceof Number)
             {
-                return ((Double) value).intValue();
+                return ((Number) value).intValue();
             }
             else
             {
@@ -79,7 +79,7 @@ public class ConfigUtils
         }
         else
         {
-            return defaultValue;
+            return null;
         }
     }
 
