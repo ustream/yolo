@@ -38,6 +38,10 @@ public class ConfigValue<T>
             {
                 return false;
             }
+            if (value instanceof String && "".equals(value))
+            {
+                return false;
+            }
             if (value instanceof Collection && ((Collection) value).isEmpty())
             {
                 return false;

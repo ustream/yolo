@@ -42,10 +42,10 @@ public class DataHandlerTest
         processor1 = mock(IProcessor.class);
         processor2 = mock(IProcessor.class);
 
-        when(moduleFactory.create(anyString(), eq("parser1"), anyMap(), anyBoolean())).thenReturn(parser1);
-        when(moduleFactory.create(anyString(), eq("parser2"), anyMap(), anyBoolean())).thenReturn(parser2);
-        when(moduleFactory.create(anyString(), eq("processor1"), anyMap(), anyBoolean())).thenReturn(processor1);
-        when(moduleFactory.create(anyString(), eq("processor2"), anyMap(), anyBoolean())).thenReturn(processor2);
+        when(moduleFactory.createParser(eq("pa1"), anyMap(), anyBoolean())).thenReturn(parser1);
+        when(moduleFactory.createParser(eq("pa2"), anyMap(), anyBoolean())).thenReturn(parser2);
+        when(moduleFactory.createProcessor(eq("pr1"), anyMap(), anyBoolean())).thenReturn(processor1);
+        when(moduleFactory.createProcessor(eq("pr2"), anyMap(), anyBoolean())).thenReturn(processor2);
 
         dataHandler = new DataHandler(moduleFactory, false);
     }

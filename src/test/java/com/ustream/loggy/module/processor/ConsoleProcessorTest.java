@@ -36,7 +36,7 @@ public class ConsoleProcessorTest
     public void shouldEchoResultToConsole()
     {
         ConsoleProcessor processor = new ConsoleProcessor();
-        processor.setUp(new HashMap<String, Object>(), false);
+        processor.setUpModule(new HashMap<String, Object>(), false);
 
         Map<String, String> parserParams = new HashMap<String, String>();
         parserParams.put("key1", "value1");

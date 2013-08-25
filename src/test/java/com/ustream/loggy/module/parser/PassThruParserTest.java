@@ -18,7 +18,7 @@ public class PassThruParserTest
     public void shouldPassThroughLine()
     {
         PassThruParser parser = new PassThruParser();
-        parser.setUp(new HashMap<String, Object>(), false);
+        parser.setUpModule(new HashMap<String, Object>(), false);
 
         Map<String, String> actual = parser.parse("This is some line");
 
@@ -32,7 +32,7 @@ public class PassThruParserTest
     public void outputParametersCheck()
     {
         PassThruParser parser = new PassThruParser();
-        parser.setUp(new HashMap<String, Object>(), false);
+        parser.setUpModule(new HashMap<String, Object>(), false);
 
         Map<String, String> actual = parser.parse("This is some line");
 

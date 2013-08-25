@@ -3,6 +3,8 @@ package com.ustream.loggy.module.processor;
 import com.timgroup.statsd.StatsDClient;
 import com.ustream.loggy.config.ConfigException;
 import com.ustream.loggy.config.ConfigPattern;
+import com.ustream.loggy.module.ModuleFactory;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -26,38 +28,43 @@ public class StatsDProcessorTest
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    private StatsDFactory factory;
+    private StatsDFactory statsDFactory;
 
     private StatsDClient statsDClient;
 
     private StatsDProcessor processor;
 
     @Before
-    public void setUp()
+    public void setUp() throws ConfigException
     {
-        factory = mock(StatsDFactory.class);
+        statsDFactory = mock(StatsDFactory.class);
         statsDClient = mock(StatsDClient.class);
 
-        when(factory.createClient(anyString(), anyString(), anyInt())).thenReturn(statsDClient);
+        when(statsDFactory.createClient(anyString(), anyString(), anyInt())).thenReturn(statsDClient);
 
-        processor = new StatsDProcessor();
-        processor.setStatsDFactory(factory);
+        StatsDProcessor.setStatsDFactory(statsDFactory);
+
+        processor = createProcessor("prefix1", "host1", 1234);
+    }
+
+    @After
+    public void tearDown()
+    {
+        StatsDProcessor.setStatsDFactory(new StatsDFactory());
     }
 
     @Test
-    public void testSetup()
+    public void testSetup() throws ConfigException
     {
-        processor.setUp(createConfig("prefix1", "host1", 1234), false);
-
-        verify(factory).createClient("prefix1", "host1", 1234);
+        verify(statsDFactory).createClient("prefix1", "host1", 1234);
     }
 
     @Test
-    public void emptyHostShouldThrowException() throws Exception
+    public void emptyHostShouldThrowException() throws ConfigException
     {
-        thrown.expect(IllegalArgumentException.class);
+        thrown.expect(ConfigException.class);
 
-        processor.setUp(createConfig("prefix1", null, 1234), false);
+        createProcessor("prefix1", null, 1234);
     }
 
     @Test
@@ -104,10 +111,8 @@ public class StatsDProcessorTest
     }
 
     @Test
-    public void processShouldSendStatsdCount()
+    public void processShouldSendStatsdCount() throws ConfigException
     {
-        processor.setUp(createConfig("prefix", "host", 1234), false);
-
         Map<String, String> parserParams = new HashMap<String, String>();
 
         processor.process(parserParams, createProcessorParams("count", "key", 5D));
@@ -116,10 +121,8 @@ public class StatsDProcessorTest
     }
 
     @Test
-    public void processShouldSendStatsdGauge()
+    public void processShouldSendStatsdGauge() throws ConfigException
     {
-        processor.setUp(createConfig("prefix", "host", 1234), false);
-
         Map<String, String> parserParams = new HashMap<String, String>();
 
         processor.process(parserParams, createProcessorParams("gauge", "key", 5D));
@@ -128,10 +131,8 @@ public class StatsDProcessorTest
     }
 
     @Test
-    public void processShouldSendStatsdTime()
+    public void processShouldSendStatsdTime() throws ConfigException
     {
-        processor.setUp(createConfig("prefix", "host", 1234), false);
-
         Map<String, String> parserParams = new HashMap<String, String>();
 
         processor.process(parserParams, createProcessorParams("time", "key", 5D));
@@ -142,8 +143,6 @@ public class StatsDProcessorTest
     @Test
     public void processShouldAddParamsToKey()
     {
-        processor.setUp(createConfig("prefix", "host", 1234), false);
-
         Map<String, String> parserParams = new HashMap<String, String>();
         parserParams.put("p1", "v1");
 
@@ -157,8 +156,6 @@ public class StatsDProcessorTest
     @Test
     public void processShouldUseValueFromParameters()
     {
-        processor.setUp(createConfig("prefix", "host", 1234), false);
-
         Map<String, String> parserParams = new HashMap<String, String>();
         parserParams.put("v1", "5");
 
@@ -170,8 +167,6 @@ public class StatsDProcessorTest
     @Test
     public void processShouldUseDynamicKeyAndValue()
     {
-        processor.setUp(createConfig("prefix", "host", 1234), false);
-
         Map<String, String> parserParams = new HashMap<String, String>();
         parserParams.put("p1", "v1");
         parserParams.put("v1", "5");
@@ -183,15 +178,6 @@ public class StatsDProcessorTest
         verify(statsDClient).count("some.v1.key", 5);
     }
 
-    private Map<String, Object> createConfig(String prefix, String host, Integer port)
-    {
-        Map<String, Object> config = new HashMap<String, Object>();
-        config.put("prefix", prefix);
-        config.put("host", host);
-        config.put("port", port.doubleValue());
-        return config;
-    }
-
     private Map<String, Object> createProcessorParams(String type, Object key, Object value)
     {
         Map<String, Object> config = new HashMap<String, Object>();
@@ -199,6 +185,19 @@ public class StatsDProcessorTest
         config.put("key", key);
         config.put("value", value);
         return config;
+    }
+
+    private StatsDProcessor createProcessor(String prefix, String host, Integer port) throws ConfigException
+    {
+        Map<String, Object> config = new HashMap<String, Object>();
+        config.put("class", StatsDProcessor.class.getCanonicalName());
+        config.put("prefix", prefix);
+        config.put("host", host);
+        config.put("port", port.doubleValue());
+        config.put("processor", "x");
+
+        StatsDProcessor processor = (StatsDProcessor)new ModuleFactory().createProcessor("x", config, false);
+        return processor;
     }
 
 }

@@ -1,7 +1,6 @@
 package com.ustream.loggy.handler;
 
 import com.ustream.loggy.config.ConfigException;
-import com.ustream.loggy.config.ConfigGroup;
 import com.ustream.loggy.config.ConfigPattern;
 import com.ustream.loggy.config.ConfigUtils;
 import com.ustream.loggy.module.ModuleFactory;
@@ -31,19 +30,10 @@ public class DataHandler implements ILineHandler
 
     private final Map<String, String> transitions = new HashMap<String, String>();
 
-    private final ConfigGroup processorModuleConfig = new ConfigGroup();
-
-    private final ConfigGroup parserModuleConfig = new ConfigGroup();
-
     public DataHandler(ModuleFactory moduleFactory, Boolean debug)
     {
         this.moduleFactory = moduleFactory;
         this.debug = debug;
-
-        processorModuleConfig.addConfigValue("class", String.class);
-        parserModuleConfig.addConfigValue("class", String.class);
-        parserModuleConfig.addConfigValue("processor", String.class);
-        parserModuleConfig.addConfigValue("processorParams", Map.class, false, null);
     }
 
     public void addProcessor(String name, Object data) throws Exception
@@ -54,9 +44,8 @@ public class DataHandler implements ILineHandler
         }
 
         Map<String, Object> config = ConfigUtils.castObjectMap(data);
-        processorModuleConfig.validate(name, config);
 
-        IProcessor processor = moduleFactory.create(name, (String) config.get("class"), config, debug);
+        IProcessor processor = moduleFactory.createProcessor(name, config, debug);
         processors.put(name, processor);
 
         if (processor instanceof ICompositeProcessor)
@@ -88,9 +77,8 @@ public class DataHandler implements ILineHandler
         }
 
         Map<String, Object> config = ConfigUtils.castObjectMap(data);
-        parserModuleConfig.validate(name, config);
 
-        IParser parser = moduleFactory.create(name, (String) config.get("class"), config, debug);
+        IParser parser = moduleFactory.createParser(name, config, debug);
         parsers.put(name, parser);
 
         String processorName = (String) config.get("processor");

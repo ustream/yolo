@@ -18,14 +18,14 @@ public class StatsDProcessor implements IProcessor
 
     private static final List<String> types = Arrays.asList("count", "gauge", "time");
 
-    private StatsDFactory statsDFactory = new StatsDFactory();
+    private static StatsDFactory statsDFactory = new StatsDFactory();
 
     private StatsDClient statsDClient;
 
     private boolean debug;
 
     @Override
-    public void setUp(Map<String, Object> parameters, boolean debug)
+    public void setUpModule(Map<String, Object> parameters, boolean debug)
     {
         this.debug = debug;
 
@@ -124,9 +124,9 @@ public class StatsDProcessor implements IProcessor
         }
     }
 
-    public void setStatsDFactory(StatsDFactory statsDFactory)
+    public static void setStatsDFactory(StatsDFactory statsDFactory)
     {
-        this.statsDFactory = statsDFactory;
+        StatsDProcessor.statsDFactory = statsDFactory;
     }
 
 }

@@ -30,7 +30,7 @@ public class CompositeProcessor implements IProcessor, ICompositeProcessor
     }
 
     @Override
-    public void setUp(Map<String, Object> parameters, boolean debug)
+    public void setUpModule(Map<String, Object> parameters, boolean debug)
     {
     }
 

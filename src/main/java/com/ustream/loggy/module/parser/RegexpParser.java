@@ -20,7 +20,7 @@ public class RegexpParser implements IParser
     private List<String> namedGroups = new ArrayList<String>();
 
     @Override
-    public void setUp(Map<String, Object> parameters, boolean debug)
+    public void setUpModule(Map<String, Object> parameters, boolean debug)
     {
         String regex = (String) parameters.get("regex");
         Pattern pattern = Pattern.compile(regex);

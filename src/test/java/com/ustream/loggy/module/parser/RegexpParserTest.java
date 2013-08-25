@@ -1,5 +1,7 @@
 package com.ustream.loggy.module.parser;
 
+import com.ustream.loggy.config.ConfigException;
+import com.ustream.loggy.module.ModuleFactory;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -19,34 +21,25 @@ public class RegexpParserTest
     public ExpectedException thrown = ExpectedException.none();
 
     @Test
-    public void missingRegexShouldThrowException()
+    public void missingRegexShouldThrowException() throws ConfigException
     {
-        thrown.expect(IllegalArgumentException.class);
+        thrown.expect(ConfigException.class);
 
-        Map<String, Object> config = new HashMap<String, Object>();
-        config.put("params", "value");
-
-        RegexpParser parser = new RegexpParser();
-        parser.setUp(config, false);
+        createParser(null);
     }
 
     @Test
-    public void emptyRegexShouldThrowException()
+    public void emptyRegexShouldThrowException() throws ConfigException
     {
-        thrown.expect(IllegalArgumentException.class);
+        thrown.expect(ConfigException.class);
 
-        Map<String, Object> config = new HashMap<String, Object>();
-        config.put("regex", "");
-
-        RegexpParser parser = new RegexpParser();
-        parser.setUp(config, false);
+        createParser("");
     }
 
     @Test
-    public void simpleMatchShouldReturnEmptyMap()
+    public void simpleMatchShouldReturnEmptyMap() throws ConfigException
     {
-        RegexpParser parser = new RegexpParser();
-        parser.setUp(createConfig("[a-z]+[0-9]+"), false);
+        IParser parser = createParser("[a-z]+[0-9]+");
 
         Map<String, String> actual = parser.parse("___abcd0123____");
 
@@ -54,10 +47,9 @@ public class RegexpParserTest
     }
 
     @Test
-    public void namedMatchShouldReturnNamedGroups()
+    public void namedMatchShouldReturnNamedGroups() throws ConfigException
     {
-        RegexpParser parser = new RegexpParser();
-        parser.setUp(createConfig("(?<first>[a-z]+)(?<second>[0-9]+)"), false);
+        IParser parser = createParser("(?<first>[a-z]+)(?<second>[0-9]+)");
 
         Map<String, String> actual = parser.parse("___abcd0123___");
 
@@ -69,10 +61,9 @@ public class RegexpParserTest
     }
 
     @Test
-    public void namedMatchShouldReturnFirstMatch()
+    public void namedMatchShouldReturnFirstMatch() throws ConfigException
     {
-        RegexpParser parser = new RegexpParser();
-        parser.setUp(createConfig("(?<first>[a-z]+)(?<second>[0-9]+)"), false);
+        IParser parser = createParser("(?<first>[a-z]+)(?<second>[0-9]+)");
 
         Map<String, String> actual = parser.parse("___abcd0123___efgh4567___");
 
@@ -84,10 +75,9 @@ public class RegexpParserTest
     }
 
     @Test
-    public void multipleMatchShouldReturnDifferentResults()
+    public void multipleMatchShouldReturnDifferentResults() throws ConfigException
     {
-        RegexpParser parser = new RegexpParser();
-        parser.setUp(createConfig("(?<first>[a-z]+)(?<second>[0-9]+)"), false);
+        IParser parser = createParser("(?<first>[a-z]+)(?<second>[0-9]+)");
 
         Map<String, String> actual = parser.parse("___abcd0123___");
 
@@ -103,10 +93,9 @@ public class RegexpParserTest
     }
 
     @Test
-    public void noMatchShouldReturnNull()
+    public void noMatchShouldReturnNull() throws ConfigException
     {
-        RegexpParser parser = new RegexpParser();
-        parser.setUp(createConfig("(?<first>[a-z]+)(?<second>[0-9]+)"), false);
+        IParser parser = createParser("(?<first>[a-z]+)(?<second>[0-9]+)");
 
         Map<String, String> actual = parser.parse("___abcd____");
 
@@ -114,19 +103,17 @@ public class RegexpParserTest
     }
 
     @Test
-    public void invalidRegexpShouldThrowException()
+    public void invalidRegexpShouldThrowException() throws ConfigException
     {
         thrown.expect(PatternSyntaxException.class);
 
-        RegexpParser parser = new RegexpParser();
-        parser.setUp(createConfig("(abcd"), false);
+        IParser parser = createParser("(abcd");
     }
 
     @Test
-    public void outputParametersCheck()
+    public void outputParametersCheck() throws ConfigException
     {
-        RegexpParser parser = new RegexpParser();
-        parser.setUp(createConfig("(?<first>[a-z]+)(?<second>[0-9]+)"), false);
+        IParser parser = createParser("(?<first>[a-z]+)(?<second>[0-9]+)");
 
         Map<String, String> actual = parser.parse("___abcd0123___");
 
@@ -134,11 +121,13 @@ public class RegexpParserTest
         Assert.assertTrue(parser.getOutputParameters().containsAll(actual.keySet()));
     }
 
-    private Map<String, Object> createConfig(String regex)
+    private IParser createParser(String regex) throws ConfigException
     {
         Map<String, Object> config = new HashMap<String, Object>();
+        config.put("class", RegexpParser.class.getCanonicalName());
         config.put("regex", regex);
-        return config;
+        config.put("processor", "p");
+        return new ModuleFactory().createParser("x", config, false);
     }
 
 }
