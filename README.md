@@ -43,6 +43,7 @@ usage: loggy
  -debug           print debugging information
  -file <path>     path to logfile
  -help            print this message
+ -listModules     list available modules
  -reopen          reopen file between reading the chunks
  -whole           tail file from the beginning
 ```
@@ -51,4 +52,38 @@ usage: loggy
 
 ```bash
 java -jar gradlebuild/libs/loggy-1.0.0.jar -config /YOURPATH/src/main/config/example.json -file /YOURPATH/foo.log -debug -whole
+```
+
+## Available modules
+
+Just run the jar with "-listModules" option.
+
+```bash
+Available processors
+--------------------
+
+· com.ustream.loggy.module.processor.CompositeProcessor - runs multiple processors
+
+      processors[java.util.List]+
+
+· com.ustream.loggy.module.processor.ConsoleProcessor - writes parameters to console, use it for debug purposes
+
+· com.ustream.loggy.module.processor.NoOpProcessor - does nothing, use it if you want to disable a parser temporarily
+
+· com.ustream.loggy.module.processor.StatsDProcessor - sends metrics to statsd, it handles counter, gauge and timing values
+
+      prefix[java.lang.String] (default: )
+      host[java.lang.String]+
+      port[java.lang.Double] (default: 8192.0)
+
+
+Available parsers
+-----------------
+
+· com.ustream.loggy.module.parser.PassThruParser - forwards all lines to processor, runs always
+
+· com.ustream.loggy.module.parser.RegexpParser - parses line via regular expression and returns with matches
+
+      regex[java.lang.String]+
+
 ```

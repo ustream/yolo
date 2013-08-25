@@ -35,4 +35,13 @@ public class ConfigGroup
         }
     }
 
+    public String getUsageString(String linePrefix)
+    {
+        String result = "";
+        for (ConfigValue value : config)
+        {
+            result += linePrefix + value + "\n";
+        }
+        return result;
+    }
 }

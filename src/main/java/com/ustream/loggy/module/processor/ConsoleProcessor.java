@@ -34,4 +34,10 @@ public class ConsoleProcessor implements IProcessor
         return null;
     }
 
+    @Override
+    public String getModuleDescription()
+    {
+        return "writes parameters to console, use it for debug purposes";
+    }
+
 }

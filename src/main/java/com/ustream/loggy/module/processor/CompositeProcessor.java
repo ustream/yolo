@@ -43,6 +43,12 @@ public class CompositeProcessor implements IProcessor, ICompositeProcessor
     }
 
     @Override
+    public String getModuleDescription()
+    {
+        return "runs multiple processors";
+    }
+
+    @Override
     public void addProcessor(IProcessor processor)
     {
         processors.add(processor);

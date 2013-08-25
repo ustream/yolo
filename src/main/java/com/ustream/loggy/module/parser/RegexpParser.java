@@ -37,6 +37,12 @@ public class RegexpParser implements IParser
     }
 
     @Override
+    public String getModuleDescription()
+    {
+        return "parses line via regular expression and returns with matches";
+    }
+
+    @Override
     public Map<String, String> parse(String line)
     {
         matcher.reset(line);

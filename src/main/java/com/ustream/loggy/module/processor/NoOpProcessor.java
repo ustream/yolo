@@ -33,4 +33,10 @@ public class NoOpProcessor implements IProcessor
         return null;
     }
 
+    @Override
+    public String getModuleDescription()
+    {
+        return "does nothing, use it if you want to disable a parser temporarily";
+    }
+
 }

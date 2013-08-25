@@ -46,6 +46,12 @@ public class StatsDProcessor implements IProcessor
     }
 
     @Override
+    public String getModuleDescription()
+    {
+        return "sends metrics to statsd, it handles counter, gauge and timing values";
+    }
+
+    @Override
     public void validateProcessorParams(List<String> parserParams, Map<String, Object> params) throws ConfigException
     {
         String type = (String) params.get("type");

@@ -3,8 +3,12 @@ package com.ustream.loggy.module;
 import com.ustream.loggy.config.ConfigException;
 import com.ustream.loggy.config.ConfigGroup;
 import com.ustream.loggy.module.parser.IParser;
-import com.ustream.loggy.module.processor.IProcessor;
+import com.ustream.loggy.module.parser.PassThruParser;
+import com.ustream.loggy.module.parser.RegexpParser;
+import com.ustream.loggy.module.processor.*;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -12,6 +16,18 @@ import java.util.Map;
  */
 public class ModuleFactory
 {
+
+    private static final List<String> availableProcessors = Arrays.asList(
+        CompositeProcessor.class.getCanonicalName(),
+        ConsoleProcessor.class.getCanonicalName(),
+        NoOpProcessor.class.getCanonicalName(),
+        StatsDProcessor.class.getCanonicalName()
+    );
+
+    private static final List<String> availableParsers = Arrays.asList(
+        PassThruParser.class.getCanonicalName(),
+        RegexpParser.class.getCanonicalName()
+    );
 
     private static final ConfigGroup processorModuleConfig = getDefaultProcessorModuleConfig();
 
@@ -77,6 +93,36 @@ public class ModuleFactory
         setupModule(name, parser, rawConfig, debug);
 
         return parser;
+    }
+
+    public static void printAvailableModules() throws ConfigException
+    {
+        ModuleFactory factory = new ModuleFactory();
+        System.out.println("Available processors");
+        System.out.println("--------------------");
+        System.out.println();
+        for (String className : availableProcessors)
+        {
+            IModule module = factory.create(className);
+            ConfigGroup config = module.getModuleConfig();
+            String usage = config != null ? "\n" + config.getUsageString("      ") : "";
+
+            System.out.format("· %s - %s\n%s\n", className, module.getModuleDescription(), usage);
+        }
+        System.out.println();
+
+        System.out.println("Available parsers");
+        System.out.println("-----------------");
+        System.out.println();
+        for (String className : availableParsers)
+        {
+            IModule module = factory.create(className);
+            ConfigGroup config = module.getModuleConfig();
+            String usage = config != null ? "\n" + config.getUsageString("      ") : "";
+
+            System.out.format("· %s - %s\n%s\n", className, module.getModuleDescription(), usage);
+        }
+        System.out.println("");
     }
 
 }

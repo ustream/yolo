@@ -14,4 +14,6 @@ public interface IModule
 
     public ConfigGroup getModuleConfig();
 
+    public String getModuleDescription();
+
 }

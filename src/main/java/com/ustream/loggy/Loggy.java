@@ -55,9 +55,11 @@ public class Loggy
         cliOptions.addOption("whole", false, "tail file from the beginning");
 
         cliOptions.addOption("reopen", false, "reopen file between reading the chunks");
+
+        cliOptions.addOption("listModules", false, "list available modules");
     }
 
-    private void parseCliOptions(String[] args)
+    private void parseCliOptions(String[] args) throws Exception
     {
         CommandLine cli;
         try
@@ -73,6 +75,12 @@ public class Loggy
         if (cli.hasOption("help"))
         {
             printHelp();
+            System.exit(0);
+        }
+
+        if (cli.hasOption("listModules"))
+        {
+            ModuleFactory.printAvailableModules();
             System.exit(0);
         }
 
