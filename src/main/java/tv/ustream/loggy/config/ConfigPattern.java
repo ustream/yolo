@@ -7,7 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * @author bandesz <bandesz@ustream.tv>
+ * @author bandesz
  */
 public class ConfigPattern
 {

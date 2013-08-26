@@ -6,7 +6,7 @@ import org.apache.commons.io.input.TailerListener;
 import java.io.File;
 
 /**
- * @author bandesz <bandesz@ustream.tv>
+ * @author bandesz
  */
 public class FileHandler implements TailerListener
 {

@@ -1,7 +1,7 @@
 package tv.ustream.loggy.config;
 
 /**
- * @author bandesz <bandesz@ustream.tv>
+ * @author bandesz
  */
 public class ConfigException extends Exception
 {

@@ -5,7 +5,7 @@ import tv.ustream.loggy.config.ConfigGroup;
 import java.util.Map;
 
 /**
- * @author bandesz <bandesz@ustream.tv>
+ * @author bandesz
  */
 public interface IModule
 {

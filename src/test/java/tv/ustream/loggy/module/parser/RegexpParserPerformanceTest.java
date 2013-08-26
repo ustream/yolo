@@ -6,7 +6,7 @@ import org.junit.Test;
 import java.util.*;
 
 /**
- * @author bandesz <bandesz@ustream.tv>
+ * @author bandesz
  */
 public class RegexpParserPerformanceTest
 {

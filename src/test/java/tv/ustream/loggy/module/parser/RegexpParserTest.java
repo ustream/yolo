@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.regex.PatternSyntaxException;
 
 /**
- * @author bandesz <bandesz@ustream.tv>
+ * @author bandesz
  */
 public class RegexpParserTest
 {

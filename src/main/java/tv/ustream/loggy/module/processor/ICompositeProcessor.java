@@ -1,7 +1,7 @@
 package tv.ustream.loggy.module.processor;
 
 /**
- * @author bandesz <bandesz@ustream.tv>
+ * @author bandesz
  */
 public interface ICompositeProcessor
 {

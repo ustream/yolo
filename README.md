@@ -102,3 +102,8 @@ Available parsers
 ## Licence
 
 This project is licensed under the terms of the [MIT License (MIT)](LICENCE.md).
+
+
+## Authors
+
+* [bandesz](https://github.com/bandesz)

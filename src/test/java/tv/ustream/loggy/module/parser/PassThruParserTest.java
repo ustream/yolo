@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author bandesz <bandesz@ustream.tv>
+ * @author bandesz
  */
 @SuppressWarnings("unchecked")
 public class PassThruParserTest

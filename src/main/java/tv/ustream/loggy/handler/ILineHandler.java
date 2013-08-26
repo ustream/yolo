@@ -1,7 +1,7 @@
 package tv.ustream.loggy.handler;
 
 /**
- * @author bandesz <bandesz@ustream.tv>
+ * @author bandesz
  */
 public interface ILineHandler
 {

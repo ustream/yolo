@@ -15,7 +15,7 @@ import java.util.Map;
 import static org.mockito.Mockito.*;
 
 /**
- * @author bandesz <bandesz@ustream.tv>
+ * @author bandesz
  */
 @SuppressWarnings("unchecked")
 public class DataHandlerTest
