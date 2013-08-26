@@ -37,7 +37,7 @@ public class CompositeProcessor implements IProcessor, ICompositeProcessor
     public ConfigGroup getProcessorParamsConfig()
     {
         ConfigGroup config = new ConfigGroup();
-        for(IProcessor processor : processors)
+        for (IProcessor processor : processors)
         {
             config.merge(processor.getProcessorParamsConfig());
         }

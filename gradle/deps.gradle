@@ -1,17 +1,3 @@
-configurations {
-    provided
-}
-
-sourceSets {
-    main { compileClasspath += configurations.provided }
-}
-
-idea {
-    module {
-        scopes.PROVIDED.plus += configurations.provided
-    }
-}
-
 dependencies {
     compile 'commons-cli:commons-cli:1.2'
     compile 'com.google.code.gson:gson:2.2.4'

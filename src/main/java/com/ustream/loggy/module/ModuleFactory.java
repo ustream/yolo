@@ -104,11 +104,11 @@ public class ModuleFactory
         for (String className : availableProcessors)
         {
             IProcessor module = factory.create(className);
-            ConfigGroup config = module.getModuleConfig();
-            String usage = config != null ? "\n" + config.getUsageString("      ") : "";
+            ConfigGroup config = getDefaultProcessorModuleConfig().merge(module.getModuleConfig());
+            String usage = config.getUsageString("  · ");
 
             ConfigGroup processorParamsConfig = module.getProcessorParamsConfig();
-            String usage2 = processorParamsConfig != null ? "      processorParams in parser:\n" + processorParamsConfig.getUsageString("          ") : "";
+            String usage2 = processorParamsConfig != null ? "  · parser processorParams:\n" + processorParamsConfig.getUsageString("    · ") : "";
 
             System.out.format("· %s - %s\n%s%s\n", className, module.getModuleDescription(), usage, usage2);
         }
@@ -119,8 +119,8 @@ public class ModuleFactory
         for (String className : availableParsers)
         {
             IParser module = factory.create(className);
-            ConfigGroup config = module.getModuleConfig();
-            String usage = config != null ? "\n" + config.getUsageString("      ") : "";
+            ConfigGroup config = getDefaultParserModuleConfig().merge(module.getModuleConfig());
+            String usage = config.getUsageString("  · ");
 
             System.out.format("· %s - %s\n%s\n", className, module.getModuleDescription(), usage);
         }

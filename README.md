@@ -63,30 +63,38 @@ Available processors
 --------------------
 
 · com.ustream.loggy.module.processor.CompositeProcessor - runs multiple processors
-
-      processors [List], required
+  · class [String], required
+  · processors [List], required
+  · parser processorParams:
 
 · com.ustream.loggy.module.processor.ConsoleProcessor - writes parameters to console, use it for debug purposes
+  · class [String], required
 
 · com.ustream.loggy.module.processor.NoOpProcessor - does nothing, use it if you want to disable a parser temporarily
+  · class [String], required
 
 · com.ustream.loggy.module.processor.StatsDProcessor - sends metrics to statsd, it handles counter, gauge and timing values
-
-      prefix [String]
-      host [String], required
-      port [Number], default: 8192
-      processorParams in parser:
-          type [String], required, allowed values: [count, gauge, time]
-          key [Object], required
-          value [Object], required
+  · class [String], required
+  · prefix [String]
+  · host [String], required
+  · port [Number], default: 8192
+  · parser processorParams:
+    · type [String], required, allowed values: [count, gauge, time]
+    · key [String], required
+    · value [String|Number], required
 
 Available parsers
 -----------------
 
 · com.ustream.loggy.module.parser.PassThruParser - forwards all lines to processor, runs always
+  · class [String], required
+  · processor [String], required
+  · processorParams [Map]
 
 · com.ustream.loggy.module.parser.RegexpParser - parses line via regular expression and returns with matches
-
-      regex [String], required
+  · class [String], required
+  · processor [String], required
+  · processorParams [Map]
+  · regex [String], required
 
 ```

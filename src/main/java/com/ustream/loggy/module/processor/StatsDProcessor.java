@@ -53,12 +53,16 @@ public class StatsDProcessor implements IProcessor
     {
         ConfigGroup config = new ConfigGroup();
 
-        ConfigValue typeConfig = new ConfigValue("type", String.class);
+        ConfigValue<String> typeConfig = new ConfigValue<String>("type", String.class);
         typeConfig.setAllowedValues(types);
         config.addConfigValue(typeConfig);
 
-        config.addConfigValue("key", Object.class);
-        config.addConfigValue("value", Object.class);
+        config.addConfigValue("key", String.class);
+
+        ConfigValue<Object> valueConfig = new ConfigValue<Object>("value", Object.class);
+        valueConfig.setAllowedTypes(Arrays.<Class>asList(String.class, Number.class));
+        config.addConfigValue(valueConfig);
+
         return config;
     }
 

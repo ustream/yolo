@@ -28,15 +28,16 @@ public class ConfigGroup
         config.add(new ConfigValue(name, type, required, defaultValue));
     }
 
-    public void merge(ConfigGroup configGroup)
+    public ConfigGroup merge(ConfigGroup configGroup)
     {
-        if (null == configGroup) {
-            return;
-        }
-        for (ConfigValue configValue : configGroup.config)
+        if (null != configGroup)
         {
-            addConfigValue(configValue);
+            for (ConfigValue configValue : configGroup.config)
+            {
+                addConfigValue(configValue);
+            }
         }
+        return this;
     }
 
     public Map<String, Object> parseValues(String root, Map<String, Object> data) throws ConfigException

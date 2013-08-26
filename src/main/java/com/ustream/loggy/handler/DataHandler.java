@@ -93,13 +93,13 @@ public class DataHandler implements ILineHandler
 
         if (params != null)
         {
-            processorParams.put(name, ConfigPattern.processMap(params));
-
             ConfigGroup processorParamsConfig = processors.get(processorName).getProcessorParamsConfig();
             if (processorParamsConfig != null)
             {
                 processorParamsConfig.parseValues(name + ".processorParams", params);
             }
+
+            processorParams.put(name, ConfigPattern.processMap(params));
 
             processors.get(processorName).validateProcessorParams(parser.getOutputParameters(), params);
         }
