@@ -1,19 +1,37 @@
-defaultTasks 'clean'
-version='1.0.0'
 group='com.ustream.loggy'
+version='1.0.0'
 
-allprojects {
-    apply from: rootProject.file('gradle/common.gradle')
-    repositories {
-        mavenCentral()
-        maven { url project.'archiva.repo.internal' }
-        maven { url project.'archiva.repo.snapshot' }
-    }
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'idea'
+
+sourceCompatibility = '1.7'
+targetCompatibility = '1.7'
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+repositories {
+    mavenCentral()
 }
 
-apply from: 'gradle/deps.gradle'
-apply from: 'gradle/jar.gradle'
+dependencies {
+    compile 'commons-cli:commons-cli:1.2'
+    compile 'com.google.code.gson:gson:2.2.4'
+    compile 'com.timgroup:java-statsd-client:2.0.0'
+    compile 'commons-io:commons-io:2.4'
+    testCompile 'junit:junit:4.10'
+    testCompile 'org.mockito:mockito-all:1.9.5'
+}
 
 task wrapper(type: Wrapper) {
     gradleVersion = '1.6'
+}
+
+jar {
+    from files(project.sourceSets.main.output.classesDir)
+    from project.configurations.runtime.collect {
+        zipTree(it)
+    }
+    manifest {
+        from "manifest.mf"
+    }
 }

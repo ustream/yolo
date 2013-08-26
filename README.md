@@ -16,17 +16,14 @@ A general log tailer and parser tool written in Java, inspired by [Parsible](htt
 The project uses Gradle and it is embedded with a Gradle wrapper.
 
 ```bash
-# the first time duplicate the gradle properties and set your custom build config (like Archiva)
-cp gradle.properties.dist gradle.properties
-
 # run tests, if you want
 ./gradlew test
 
-# run build
-./gradlew buildJar
+# create jar file
+./gradlew jar
 
 # check if it works
-java -jar gradlebuild/libs/loggy-1.0.0.jar -help
+java -jar build/libs/loggy-[version].jar -help
 ```
  
 ## Sample configuration
@@ -38,6 +35,7 @@ An example config file can be found in [example.json](src/main/config/example.js
 Just run the jar with "-help" option.
 
 ```bash
+$ java -jar build/libs/loggy-[version].jar -help
 usage: loggy
  -config <path>   path to config file
  -debug           print debugging information
@@ -51,7 +49,7 @@ usage: loggy
 ## Example usage
 
 ```bash
-java -jar gradlebuild/libs/loggy-1.0.0.jar -config /YOURPATH/src/main/config/example.json -file /YOURPATH/foo.log -debug -whole
+$ java -jar build/libs/loggy-1.0.0.jar -config `pwd`/src/main/config/example.json -file /YOURPATH/foo.log -debug -whole
 ```
 
 ## Available modules
@@ -59,6 +57,8 @@ java -jar gradlebuild/libs/loggy-1.0.0.jar -config /YOURPATH/src/main/config/exa
 Just run the jar with "-listModules" option.
 
 ```bash
+$ java -jar build/libs/loggy-[version].jar -listModules
+
 Available processors
 --------------------
 

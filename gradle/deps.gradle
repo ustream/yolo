@@ -1,8 +1,0 @@
-dependencies {
-    compile 'commons-cli:commons-cli:1.2'
-    compile 'com.google.code.gson:gson:2.2.4'
-    compile 'com.timgroup:java-statsd-client:2.0.0'
-    compile 'commons-io:commons-io:2.4'
-    testCompile 'junit:junit:4.10'
-    testCompile 'org.mockito:mockito-all:1.9.5'
-}
