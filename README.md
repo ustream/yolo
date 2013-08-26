@@ -98,3 +98,7 @@ Available parsers
   · regex [String], required
 
 ```
+
+## Licence
+
+This project is licensed under the terms of the [MIT License (MIT)](LICENCE.md).
