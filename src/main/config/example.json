@@ -1,7 +1,7 @@
 {
 	"parsers": {
 		"regexp1": {
-			"class": "com.ustream.loggy.module.parser.RegexpParser",
+			"class": "tv.ustream.loggy.module.parser.RegexpParser",
 			"regex": "(?<exceptionName>[a-zA-Z]+)[eE]xception value (?<val>\\d+)",
 			"processor": "composite",
 			"processorParams": {
@@ -11,7 +11,7 @@
 			}
 		},
 		"regexp2": {
-			"class": "com.ustream.loggy.module.parser.RegexpParser",
+			"class": "tv.ustream.loggy.module.parser.RegexpParser",
 			"regex": "(?<errorName>[a-zA-Z]+)[eE]rror",
 			"processor": "statsd",
 			"processorParams": {
@@ -21,25 +21,25 @@
 			}
 		},
 		"passthru": {
-			"class": "com.ustream.loggy.module.parser.PassThruParser",
+			"class": "tv.ustream.loggy.module.parser.PassThruParser",
 			"processor": "noop"
 		}
 	},
 	"processors": {
 		"statsd": {
-			"class": "com.ustream.loggy.module.processor.StatsDProcessor",
+			"class": "tv.ustream.loggy.module.processor.StatsDProcessor",
 			"host": "127.0.0.1",
 			"port": 8192
   		},
   		"console": {
-  			"class": "com.ustream.loggy.module.processor.ConsoleProcessor"
+  			"class": "tv.ustream.loggy.module.processor.ConsoleProcessor"
   		},
   		"composite": {
-  			"class": "com.ustream.loggy.module.processor.CompositeProcessor",
+  			"class": "tv.ustream.loggy.module.processor.CompositeProcessor",
   			"processors": ["statsd", "console"]
   		},
   		"noop": {
-  			"class": "com.ustream.loggy.module.processor.NoOpProcessor"
+  			"class": "tv.ustream.loggy.module.processor.NoOpProcessor"
   		}
 	}
 }

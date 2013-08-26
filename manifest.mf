@@ -1,2 +1,2 @@
 Manifest-Version: 1.0
-Main-Class: com.ustream.loggy.Loggy
+Main-Class: tv.ustream.loggy.Loggy

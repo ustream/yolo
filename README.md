@@ -62,18 +62,18 @@ $ java -jar build/libs/loggy-[version].jar -listModules
 Available processors
 --------------------
 
-· com.ustream.loggy.module.processor.CompositeProcessor - runs multiple processors
+· tv.ustream.loggy.module.processor.CompositeProcessor - runs multiple processors
   · class [String], required
   · processors [List], required
   · parser processorParams:
 
-· com.ustream.loggy.module.processor.ConsoleProcessor - writes parameters to console, use it for debug purposes
+· tv.ustream.loggy.module.processor.ConsoleProcessor - writes parameters to console, use it for debug purposes
   · class [String], required
 
-· com.ustream.loggy.module.processor.NoOpProcessor - does nothing, use it if you want to disable a parser temporarily
+· tv.ustream.loggy.module.processor.NoOpProcessor - does nothing, use it if you want to disable a parser temporarily
   · class [String], required
 
-· com.ustream.loggy.module.processor.StatsDProcessor - sends metrics to statsd, it handles counter, gauge and timing values
+· tv.ustream.loggy.module.processor.StatsDProcessor - sends metrics to statsd, it handles counter, gauge and timing values
   · class [String], required
   · prefix [String]
   · host [String], required
@@ -86,12 +86,12 @@ Available processors
 Available parsers
 -----------------
 
-· com.ustream.loggy.module.parser.PassThruParser - forwards all lines to processor, runs always
+· tv.ustream.loggy.module.parser.PassThruParser - forwards all lines to processor, runs always
   · class [String], required
   · processor [String], required
   · processorParams [Map]
 
-· com.ustream.loggy.module.parser.RegexpParser - parses line via regular expression and returns with matches
+· tv.ustream.loggy.module.parser.RegexpParser - parses line via regular expression and returns with matches
   · class [String], required
   · processor [String], required
   · processorParams [Map]
