@@ -77,7 +77,7 @@ public class ConfigValue<T>
         return false;
     }
 
-    public boolean validate(Object value)
+    public boolean validateValue(Object value)
     {
         if (required && isEmpty(value))
         {

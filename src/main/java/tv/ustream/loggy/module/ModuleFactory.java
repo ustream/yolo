@@ -45,7 +45,7 @@ public class ModuleFactory
         ConfigGroup config = new ConfigGroup();
         config.addConfigValue("class", String.class);
         config.addConfigValue("processor", String.class);
-        config.addConfigValue("processorParams", Map.class, false, null);
+        config.addConfigValue("processParams", Map.class, false, null);
         return config;
     }
 
@@ -105,12 +105,16 @@ public class ModuleFactory
         {
             IProcessor module = factory.create(className);
             ConfigGroup config = getDefaultProcessorModuleConfig().merge(module.getModuleConfig());
-            String usage = config.getUsageString("  · ");
+            String usage = config.getUsageString("  - ");
 
-            ConfigGroup processorParamsConfig = module.getProcessorParamsConfig();
-            String usage2 = processorParamsConfig != null ? "  · parser processorParams:\n" + processorParamsConfig.getUsageString("    · ") : "";
+            ConfigGroup processParamsConfig = module.getProcessParamsConfig();
+            String usage2 = "";
+            if (processParamsConfig != null && !processParamsConfig.isEmpty())
+            {
+                usage2 = "  - processParams:\n" + processParamsConfig.getUsageString("    - ");
+            }
 
-            System.out.format("· %s - %s\n%s%s\n", className, module.getModuleDescription(), usage, usage2);
+            System.out.format("* %s - %s\n%s%s\n", className, module.getModuleDescription(), usage, usage2);
         }
 
         System.out.println("Available parsers");
@@ -120,9 +124,9 @@ public class ModuleFactory
         {
             IParser module = factory.create(className);
             ConfigGroup config = getDefaultParserModuleConfig().merge(module.getModuleConfig());
-            String usage = config.getUsageString("  · ");
+            String usage = config.getUsageString("  - ");
 
-            System.out.format("· %s - %s\n%s\n", className, module.getModuleDescription(), usage);
+            System.out.format("* %s - %s\n%s\n", className, module.getModuleDescription(), usage);
         }
     }
 

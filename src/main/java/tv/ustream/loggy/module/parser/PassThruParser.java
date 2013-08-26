@@ -28,7 +28,7 @@ public class PassThruParser implements IParser
     }
 
     @Override
-    public List<String> getOutputParameters()
+    public List<String> getOutputKeys()
     {
         return Arrays.asList("line");
     }

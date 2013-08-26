@@ -13,18 +13,18 @@ public class ConsoleProcessor implements IProcessor
 {
 
     @Override
-    public void validateProcessorParams(List<String> parserParams, Map<String, Object> params) throws ConfigException
+    public void validateProcessParams(List<String> parserOutputKeys, Map<String, Object> params) throws ConfigException
     {
     }
 
     @Override
-    public void process(Map<String, String> parserParams, Map<String, Object> processorParams)
+    public void process(Map<String, String> parserOutput, Map<String, Object> processParams)
     {
-        System.out.format("Parser parameters: %s, processor parameters: %s\n", parserParams, processorParams);
+        System.out.format("[console] Parser output: %s, process parameters: %s\n", parserOutput, processParams);
     }
 
     @Override
-    public ConfigGroup getProcessorParamsConfig()
+    public ConfigGroup getProcessParamsConfig()
     {
         return null;
     }

@@ -4,7 +4,6 @@ import junit.framework.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,7 +36,7 @@ public class PassThruParserTest
 
         Map<String, String> actual = parser.parse("This is some line");
 
-        Assert.assertEquals(Arrays.asList("line"), new ArrayList(actual.keySet()));
+        Assert.assertEquals(new ArrayList(actual.keySet()), parser.getOutputKeys());
     }
 
 }

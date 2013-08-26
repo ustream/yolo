@@ -13,17 +13,17 @@ public class NoOpProcessor implements IProcessor
 {
 
     @Override
-    public void validateProcessorParams(List<String> parserParams, Map<String, Object> params) throws ConfigException
+    public void validateProcessParams(List<String> parserOutputKeys, Map<String, Object> params) throws ConfigException
     {
     }
 
     @Override
-    public void process(Map<String, String> parserParams, Map<String, Object> processorParams)
+    public void process(Map<String, String> parserOutput, Map<String, Object> processParams)
     {
     }
 
     @Override
-    public ConfigGroup getProcessorParamsConfig()
+    public ConfigGroup getProcessParamsConfig()
     {
         return null;
     }

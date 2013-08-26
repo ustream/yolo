@@ -4,7 +4,7 @@
 			"class": "tv.ustream.loggy.module.parser.RegexpParser",
 			"regex": "(?<exceptionName>[a-zA-Z]+)[eE]xception value (?<val>\\d+)",
 			"processor": "composite",
-			"processorParams": {
+			"processParams": {
 				"type": "gauge",
 				"key": "loggy.test.#exceptionName#",
 				"value": "val"
@@ -14,7 +14,7 @@
 			"class": "tv.ustream.loggy.module.parser.RegexpParser",
 			"regex": "(?<errorName>[a-zA-Z]+)[eE]rror",
 			"processor": "statsd",
-			"processorParams": {
+			"processParams": {
 				"type": "count",
 				"key": "loggy.error.#errorName#",
 				"value": 1

@@ -10,36 +10,36 @@ import java.util.Map;
 /**
  * @author bandesz
  */
-public class CompositeProcessor implements IProcessor, ICompositeProcessor
+public class CompositeProcessor implements ICompositeProcessor
 {
 
     private final List<IProcessor> processors = new ArrayList<IProcessor>();
 
     @Override
-    public void validateProcessorParams(List<String> parserParams, Map<String, Object> params) throws ConfigException
+    public void validateProcessParams(List<String> parserOutputKeys, Map<String, Object> params) throws ConfigException
     {
         for (IProcessor processor : processors)
         {
-            processor.validateProcessorParams(parserParams, params);
+            processor.validateProcessParams(parserOutputKeys, params);
         }
     }
 
     @Override
-    public void process(Map<String, String> parserParams, Map<String, Object> processorParams)
+    public void process(Map<String, String> parserOutput, Map<String, Object> processParams)
     {
         for (IProcessor processor : processors)
         {
-            processor.process(parserParams, processorParams);
+            processor.process(parserOutput, processParams);
         }
     }
 
     @Override
-    public ConfigGroup getProcessorParamsConfig()
+    public ConfigGroup getProcessParamsConfig()
     {
         ConfigGroup config = new ConfigGroup();
         for (IProcessor processor : processors)
         {
-            config.merge(processor.getProcessorParamsConfig());
+            config.merge(processor.getProcessParamsConfig());
         }
         return config;
     }

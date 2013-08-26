@@ -15,6 +15,6 @@ public interface IParser extends IModule
 
     public boolean runAlways();
 
-    public List<String> getOutputParameters();
+    public List<String> getOutputKeys();
 
 }

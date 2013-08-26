@@ -1,7 +1,10 @@
 package tv.ustream.loggy.module.processor;
 
 import com.timgroup.statsd.StatsDClient;
-import tv.ustream.loggy.config.*;
+import tv.ustream.loggy.config.ConfigException;
+import tv.ustream.loggy.config.ConfigGroup;
+import tv.ustream.loggy.config.ConfigPattern;
+import tv.ustream.loggy.config.ConfigValue;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,7 +31,7 @@ public class StatsDProcessor implements IProcessor
 
         String prefix = (String) parameters.get("prefix");
         String host = (String) parameters.get("host");
-        Integer port = ConfigUtils.getInteger(parameters, "port");
+        Integer port = ((Number) parameters.get("port")).intValue();
 
         if (debug)
         {
@@ -49,7 +52,7 @@ public class StatsDProcessor implements IProcessor
     }
 
     @Override
-    public ConfigGroup getProcessorParamsConfig()
+    public ConfigGroup getProcessParamsConfig()
     {
         ConfigGroup config = new ConfigGroup();
 
@@ -73,31 +76,21 @@ public class StatsDProcessor implements IProcessor
     }
 
     @Override
-    public void validateProcessorParams(List<String> parserParams, Map<String, Object> params) throws ConfigException
+    public void validateProcessParams(List<String> parserOutputKeys, Map<String, Object> params) throws ConfigException
     {
-        Object key = params.get("key");
-        if (!(key instanceof String) && !(key instanceof ConfigPattern))
-        {
-            throw new ConfigException("key parameter is invalid!");
-        }
-
         Object value = params.get("value");
-        if (!(value instanceof String) && !(value instanceof Double))
-        {
-            throw new ConfigException("value parameter is missing from processor parameters");
-        }
-        if (value instanceof String && !parserParams.contains(value))
+        if (value instanceof String && !parserOutputKeys.contains(value))
         {
             throw new ConfigException("value parameter is missing from the parser output");
         }
     }
 
     @Override
-    public void process(Map<String, String> parserParams, Map<String, Object> processorParams)
+    public void process(Map<String, String> parserOutput, Map<String, Object> processParams)
     {
-        String type = (String) processorParams.get("type");
+        String type = (String) processParams.get("type");
 
-        Object keyObject = processorParams.get("key");
+        Object keyObject = processParams.get("key");
         String key;
         if (keyObject instanceof String)
         {
@@ -105,14 +98,14 @@ public class StatsDProcessor implements IProcessor
         }
         else
         {
-            key = ((ConfigPattern) keyObject).getValue(parserParams);
+            key = ((ConfigPattern) keyObject).applyValues(parserOutput);
         }
 
-        Object valueObject = processorParams.get("value");
+        Object valueObject = processParams.get("value");
         Double value;
         if (valueObject instanceof String)
         {
-            value = Double.parseDouble(parserParams.get(valueObject));
+            value = Double.parseDouble(parserOutput.get(valueObject));
         }
         else
         {

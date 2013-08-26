@@ -31,6 +31,11 @@ public class FileHandler implements TailerListener
         thread.start();
     }
 
+    public void stop()
+    {
+        tailer.stop();
+    }
+
     @Override
     public void init(Tailer tailer)
     {

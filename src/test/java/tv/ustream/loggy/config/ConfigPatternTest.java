@@ -13,32 +13,32 @@ public class ConfigPatternTest
 {
 
     @Test
-    public void isPatternShouldReturnFalseForNotString() throws Exception
+    public void applicableShouldReturnFalseForNotString() throws Exception
     {
-        Assert.assertFalse(ConfigPattern.isPattern(5));
+        Assert.assertFalse(ConfigPattern.applicable(5));
     }
 
     @Test
-    public void isPatternShouldReturnFalseForSimpleString() throws Exception
+    public void applicableShouldReturnFalseForSimpleString() throws Exception
     {
-        Assert.assertFalse(ConfigPattern.isPattern("simple string #notparam"));
+        Assert.assertFalse(ConfigPattern.applicable("simple string #notparam"));
     }
 
     @Test
-    public void isPatternShouldReturnTrueForPatternString() throws Exception
+    public void applicableShouldReturnTrueForPatternString() throws Exception
     {
-        Assert.assertTrue(ConfigPattern.isPattern("string with #param#"));
+        Assert.assertTrue(ConfigPattern.applicable("string with #param#"));
     }
 
     @Test
-    public void processMapShouldReplacePatternStringsWithObjects() throws Exception
+    public void replacePatternsShouldReplacePatternStringsWithObjects() throws Exception
     {
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("key1", "simple string");
         data.put("key2", 5);
         data.put("key3", "string with #param#");
 
-        ConfigPattern.processMap(data);
+        ConfigPattern.replacePatterns(data);
 
         Assert.assertEquals("simple string", data.get("key1"));
         Assert.assertEquals(5, data.get("key2"));
@@ -46,25 +46,25 @@ public class ConfigPatternTest
     }
 
     @Test
-    public void getValueShouldReplaceParameters() throws Exception
+    public void applyValuesShouldReplaceParameters() throws Exception
     {
         ConfigPattern pattern = new ConfigPattern("text #p1# text #p2# text");
         Map<String, String> params = new HashMap<String, String>();
         params.put("p1", "v1");
         params.put("p2", "v2");
-        String actual = pattern.getValue(params);
+        String actual = pattern.applyValues(params);
 
         Assert.assertEquals("text v1 text v2 text", actual);
     }
 
     @Test
-    public void getValueShouldLeaveMissingParamAsIs() throws Exception
+    public void applyValuesShouldLeaveMissingParamAsIs() throws Exception
     {
         ConfigPattern pattern = new ConfigPattern("text #p1# text #p2# text #p3# text");
         Map<String, String> params = new HashMap<String, String>();
         params.put("p1", "v1");
         params.put("p2", "v2");
-        String actual = pattern.getValue(params);
+        String actual = pattern.applyValues(params);
 
         Assert.assertEquals("text v1 text v2 text #p3# text", actual);
     }

@@ -1,10 +1,9 @@
-package tv.ustream.loggy.handler;
+package tv.ustream.loggy.module;
 
 import tv.ustream.loggy.config.ConfigException;
 import tv.ustream.loggy.config.ConfigGroup;
 import tv.ustream.loggy.config.ConfigPattern;
-import tv.ustream.loggy.config.ConfigUtils;
-import tv.ustream.loggy.module.ModuleFactory;
+import tv.ustream.loggy.handler.ILineHandler;
 import tv.ustream.loggy.module.parser.IParser;
 import tv.ustream.loggy.module.processor.ICompositeProcessor;
 import tv.ustream.loggy.module.processor.IProcessor;
@@ -16,7 +15,7 @@ import java.util.Map;
 /**
  * @author bandesz
  */
-public class DataHandler implements ILineHandler
+public class ModuleChain implements ILineHandler
 {
 
     private final ModuleFactory moduleFactory;
@@ -25,33 +24,32 @@ public class DataHandler implements ILineHandler
 
     private final Map<String, IParser> parsers = new HashMap<String, IParser>();
 
-    private final Map<String, Map<String, Object>> processorParams = new HashMap<String, Map<String, Object>>();
+    private final Map<String, Map<String, Object>> processParams = new HashMap<String, Map<String, Object>>();
 
     private final Map<String, IProcessor> processors = new HashMap<String, IProcessor>();
 
     private final Map<String, String> transitions = new HashMap<String, String>();
 
-    public DataHandler(ModuleFactory moduleFactory, Boolean debug)
+    public ModuleChain(ModuleFactory moduleFactory, Boolean debug)
     {
         this.moduleFactory = moduleFactory;
         this.debug = debug;
     }
 
-    public void addProcessor(String name, Object data) throws Exception
+    @SuppressWarnings("unchecked")
+    public void addProcessor(String name, Map<String, Object> config) throws Exception
     {
         if (debug)
         {
-            System.out.format("Adding %s processor %s\n", name, data);
+            System.out.format("Adding %s processor %s\n", name, config);
         }
-
-        Map<String, Object> config = ConfigUtils.castObjectMap(data);
 
         IProcessor processor = moduleFactory.createProcessor(name, config, debug);
         processors.put(name, processor);
 
         if (processor instanceof ICompositeProcessor)
         {
-            setupCompositeProcessor((ICompositeProcessor) processor, ConfigUtils.castStringList(config.get("processors")));
+            setupCompositeProcessor((ICompositeProcessor) processor, (List<String>) config.get("processors"));
         }
     }
 
@@ -70,14 +68,12 @@ public class DataHandler implements ILineHandler
         }
     }
 
-    public void addParser(String name, Object data) throws Exception
+    public void addParser(String name, Map<String, Object> config) throws Exception
     {
         if (debug)
         {
-            System.out.format("Adding %s parser %s\n", name, data);
+            System.out.format("Adding %s parser %s\n", name, config);
         }
-
-        Map<String, Object> config = ConfigUtils.castObjectMap(data);
 
         IParser parser = moduleFactory.createParser(name, config, debug);
         parsers.put(name, parser);
@@ -89,19 +85,19 @@ public class DataHandler implements ILineHandler
             throw new ConfigException(processorName + " processor does not exist");
         }
 
-        Map<String, Object> params = ConfigUtils.castObjectMap(config.get("processorParams"));
+        Map<String, Object> params = (Map<String, Object>) config.get("processParams");
 
         if (params != null)
         {
-            ConfigGroup processorParamsConfig = processors.get(processorName).getProcessorParamsConfig();
-            if (processorParamsConfig != null)
+            ConfigGroup processParamsConfig = processors.get(processorName).getProcessParamsConfig();
+            if (processParamsConfig != null)
             {
-                processorParamsConfig.parseValues(name + ".processorParams", params);
+                processParamsConfig.parseValues(name + ".processParams", params);
             }
 
-            processorParams.put(name, ConfigPattern.processMap(params));
+            processParams.put(name, ConfigPattern.replacePatterns(params));
 
-            processors.get(processorName).validateProcessorParams(parser.getOutputParameters(), params);
+            processors.get(processorName).validateProcessParams(parser.getOutputKeys(), params);
         }
 
         transitions.put(name, processorName);
@@ -114,11 +110,11 @@ public class DataHandler implements ILineHandler
         {
             if (!match || parsers.get(parserName).runAlways())
             {
-                Map<String, String> parserParams = parsers.get(parserName).parse(line);
-                if (parserParams != null)
+                Map<String, String> parserOutput = parsers.get(parserName).parse(line);
+                if (parserOutput != null)
                 {
                     match = true;
-                    processors.get(transitions.get(parserName)).process(parserParams, processorParams.get(parserName));
+                    processors.get(transitions.get(parserName)).process(parserOutput, processParams.get(parserName));
                 }
             }
         }

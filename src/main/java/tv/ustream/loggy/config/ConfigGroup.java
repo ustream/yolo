@@ -10,11 +10,11 @@ import java.util.Map;
 public class ConfigGroup
 {
 
-    private final List<ConfigValue> config = new ArrayList<ConfigValue>();
+    private final List<ConfigValue> configValues = new ArrayList<ConfigValue>();
 
     public void addConfigValue(ConfigValue configValue)
     {
-        config.add(configValue);
+        configValues.add(configValue);
     }
 
     public <T> void addConfigValue(String name, Class<T> type)
@@ -25,14 +25,14 @@ public class ConfigGroup
     @SuppressWarnings("unchecked")
     public <T> void addConfigValue(String name, Class<T> type, boolean required, T defaultValue)
     {
-        config.add(new ConfigValue(name, type, required, defaultValue));
+        configValues.add(new ConfigValue(name, type, required, defaultValue));
     }
 
     public ConfigGroup merge(ConfigGroup configGroup)
     {
         if (null != configGroup)
         {
-            for (ConfigValue configValue : configGroup.config)
+            for (ConfigValue configValue : configGroup.configValues)
             {
                 addConfigValue(configValue);
             }
@@ -42,10 +42,10 @@ public class ConfigGroup
 
     public Map<String, Object> parseValues(String root, Map<String, Object> data) throws ConfigException
     {
-        for (ConfigValue configValue : config)
+        for (ConfigValue configValue : configValues)
         {
             Object value = data.get(configValue.getName());
-            if (!configValue.validate(value))
+            if (!configValue.validateValue(value))
             {
                 throw new ConfigException(
                     root + "." + configValue.getName() + " field is missing or invalid, value definition: " + configValue + ""
@@ -62,10 +62,16 @@ public class ConfigGroup
     public String getUsageString(String linePrefix)
     {
         String result = "";
-        for (ConfigValue value : config)
+        for (ConfigValue value : configValues)
         {
             result += linePrefix + value + "\n";
         }
         return result;
     }
+
+    public boolean isEmpty()
+    {
+        return configValues.isEmpty();
+    }
+
 }

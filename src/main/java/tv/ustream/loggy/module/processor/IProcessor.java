@@ -13,10 +13,10 @@ import java.util.Map;
 public interface IProcessor extends IModule
 {
 
-    public ConfigGroup getProcessorParamsConfig();
+    public ConfigGroup getProcessParamsConfig();
 
-    public void validateProcessorParams(List<String> parserParams, Map<String, Object> params) throws ConfigException;
+    public void validateProcessParams(List<String> parserOutputKeys, Map<String, Object> params) throws ConfigException;
 
-    public void process(Map<String, String> parserParams, Map<String, Object> processorParams);
+    public void process(Map<String, String> parserOutput, Map<String, Object> processParams);
 
 }

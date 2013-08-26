@@ -1,13 +1,14 @@
 package tv.ustream.loggy;
 
+import com.google.gson.Gson;
 import org.apache.commons.cli.*;
 import tv.ustream.loggy.config.ConfigException;
 import tv.ustream.loggy.config.ConfigGroup;
-import tv.ustream.loggy.config.ConfigUtils;
-import tv.ustream.loggy.handler.DataHandler;
 import tv.ustream.loggy.handler.FileHandler;
+import tv.ustream.loggy.module.ModuleChain;
 import tv.ustream.loggy.module.ModuleFactory;
 
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.Map;
 
@@ -31,7 +32,7 @@ public class Loggy
 
     private Boolean reopenFile;
 
-    private DataHandler dataHandler;
+    private ModuleChain moduleChain;
 
     public Loggy()
     {
@@ -116,7 +117,7 @@ public class Loggy
     {
         try
         {
-            config = ConfigUtils.getConfigFromFile(configPath);
+            config = (Map<String, Object>) new Gson().fromJson(new FileReader(configPath), Map.class);
         }
         catch (IOException e)
         {
@@ -126,22 +127,23 @@ public class Loggy
         getMainConfig().parseValues("[root]", config);
     }
 
-    private void initDataHandler() throws Exception
+    @SuppressWarnings("unchecked")
+    private void initModuleChain() throws Exception
     {
-        dataHandler = new DataHandler(new ModuleFactory(), debug);
+        moduleChain = new ModuleChain(new ModuleFactory(), debug);
 
         try
         {
-            Map<String, Object> processors = ConfigUtils.getObjectMap(config, "processors");
+            Map<String, Object> processors = (Map<String, Object>) config.get("processors");
             for (String name : processors.keySet())
             {
-                dataHandler.addProcessor(name, processors.get(name));
+                moduleChain.addProcessor(name, (Map<String, Object>) processors.get(name));
             }
 
-            Map<String, Object> parsers = ConfigUtils.getObjectMap(config, "parsers");
+            Map<String, Object> parsers = (Map<String, Object>) config.get("parsers");
             for (String name : parsers.keySet())
             {
-                dataHandler.addParser(name, parsers.get(name));
+                moduleChain.addParser(name, (Map<String, Object>) parsers.get(name));
             }
         }
         catch (ConfigException e)
@@ -152,7 +154,7 @@ public class Loggy
 
     private void startFileHandler()
     {
-        FileHandler fileHandler = new FileHandler(dataHandler, filePath, readWholeFile, reopenFile, debug);
+        FileHandler fileHandler = new FileHandler(moduleChain, filePath, readWholeFile, reopenFile, debug);
 
         fileHandler.start();
     }
@@ -165,7 +167,7 @@ public class Loggy
 
             readConfig();
 
-            initDataHandler();
+            initModuleChain();
 
             startFileHandler();
         }

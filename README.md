@@ -62,40 +62,39 @@ $ java -jar build/libs/loggy-[version].jar -listModules
 Available processors
 --------------------
 
-· tv.ustream.loggy.module.processor.CompositeProcessor - runs multiple processors
-  · class [String], required
-  · processors [List], required
-  · parser processorParams:
+* tv.ustream.loggy.module.processor.CompositeProcessor - runs multiple processors
+  - class [String], required
+  - processors [List], required
 
-· tv.ustream.loggy.module.processor.ConsoleProcessor - writes parameters to console, use it for debug purposes
-  · class [String], required
+* tv.ustream.loggy.module.processor.ConsoleProcessor - writes parameters to console, use it for debug purposes
+  - class [String], required
 
-· tv.ustream.loggy.module.processor.NoOpProcessor - does nothing, use it if you want to disable a parser temporarily
-  · class [String], required
+* tv.ustream.loggy.module.processor.NoOpProcessor - does nothing, use it if you want to disable a parser temporarily
+  - class [String], required
 
-· tv.ustream.loggy.module.processor.StatsDProcessor - sends metrics to statsd, it handles counter, gauge and timing values
-  · class [String], required
-  · prefix [String]
-  · host [String], required
-  · port [Number], default: 8192
-  · parser processorParams:
-    · type [String], required, allowed values: [count, gauge, time]
-    · key [String], required
-    · value [String|Number], required
+* tv.ustream.loggy.module.processor.StatsDProcessor - sends metrics to statsd, it handles counter, gauge and timing values
+  - class [String], required
+  - prefix [String]
+  - host [String], required
+  - port [Number], default: 8192
+  - processParams:
+    - type [String], required, allowed values: [count, gauge, time]
+    - key [String], required
+    - value [String|Number], required
 
 Available parsers
 -----------------
 
-· tv.ustream.loggy.module.parser.PassThruParser - forwards all lines to processor, runs always
-  · class [String], required
-  · processor [String], required
-  · processorParams [Map]
+* tv.ustream.loggy.module.parser.PassThruParser - forwards all lines to processor, runs always
+  - class [String], required
+  - processor [String], required
+  - processParams [Map]
 
-· tv.ustream.loggy.module.parser.RegexpParser - parses line via regular expression and returns with matches
-  · class [String], required
-  · processor [String], required
-  · processorParams [Map]
-  · regex [String], required
+* tv.ustream.loggy.module.parser.RegexpParser - parses line via regular expression and returns with matches
+  - class [String], required
+  - processor [String], required
+  - processParams [Map]
+  - regex [String], required
 
 ```
 

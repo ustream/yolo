@@ -117,8 +117,8 @@ public class RegexpParserTest
 
         Map<String, String> actual = parser.parse("___abcd0123___");
 
-        Assert.assertTrue(actual.keySet().containsAll(parser.getOutputParameters()));
-        Assert.assertTrue(parser.getOutputParameters().containsAll(actual.keySet()));
+        Assert.assertTrue(actual.keySet().containsAll(parser.getOutputKeys()));
+        Assert.assertTrue(parser.getOutputKeys().containsAll(actual.keySet()));
     }
 
     private IParser createParser(String regex) throws ConfigException

@@ -68,35 +68,11 @@ public class StatsDProcessorTest
     }
 
     @Test
-    public void validateShouldThrowExceptionForInvalidType() throws Exception
-    {
-        thrown.expect(ConfigException.class);
-
-        processor.validateProcessorParams(new ArrayList<String>(), createProcessorParams("xxx", "key", 1));
-    }
-
-    @Test
-    public void validateShouldThrowExceptionForInvalidKey() throws Exception
-    {
-        thrown.expect(ConfigException.class);
-
-        processor.validateProcessorParams(new ArrayList<String>(), createProcessorParams("count", "", 1));
-    }
-
-    @Test
-    public void validateShouldThrowExceptionForInvalidValue() throws Exception
-    {
-        thrown.expect(ConfigException.class);
-
-        processor.validateProcessorParams(new ArrayList<String>(), createProcessorParams("count", "key", ""));
-    }
-
-    @Test
     public void validateShouldThrowExceptionWhenValueNameIsMissing() throws Exception
     {
         thrown.expect(ConfigException.class);
 
-        processor.validateProcessorParams(new ArrayList<String>(), createProcessorParams("count", "key", "value"));
+        processor.validateProcessParams(new ArrayList<String>(), createprocessParams("count", "key", "value"));
     }
 
     @Test
@@ -104,18 +80,18 @@ public class StatsDProcessorTest
     {
         ConfigPattern key = new ConfigPattern("some text #p1#");
 
-        List<String> parserParams = new ArrayList<String>();
-        parserParams.add("value");
+        List<String> parserOutputKeys = new ArrayList<String>();
+        parserOutputKeys.add("value");
 
-        processor.validateProcessorParams(parserParams, createProcessorParams("count", key, "value"));
+        processor.validateProcessParams(parserOutputKeys, createprocessParams("count", key, "value"));
     }
 
     @Test
     public void processShouldSendStatsdCount() throws ConfigException
     {
-        Map<String, String> parserParams = new HashMap<String, String>();
+        Map<String, String> parserOutput = new HashMap<String, String>();
 
-        processor.process(parserParams, createProcessorParams("count", "key", 5D));
+        processor.process(parserOutput, createprocessParams("count", "key", 5D));
 
         verify(statsDClient).count("key", 5);
     }
@@ -123,9 +99,9 @@ public class StatsDProcessorTest
     @Test
     public void processShouldSendStatsdGauge() throws ConfigException
     {
-        Map<String, String> parserParams = new HashMap<String, String>();
+        Map<String, String> parserOutput = new HashMap<String, String>();
 
-        processor.process(parserParams, createProcessorParams("gauge", "key", 5D));
+        processor.process(parserOutput, createprocessParams("gauge", "key", 5D));
 
         verify(statsDClient).gauge("key", 5);
     }
@@ -133,9 +109,9 @@ public class StatsDProcessorTest
     @Test
     public void processShouldSendStatsdTime() throws ConfigException
     {
-        Map<String, String> parserParams = new HashMap<String, String>();
+        Map<String, String> parserOutput = new HashMap<String, String>();
 
-        processor.process(parserParams, createProcessorParams("time", "key", 5D));
+        processor.process(parserOutput, createprocessParams("time", "key", 5D));
 
         verify(statsDClient).time("key", 5);
     }
@@ -143,12 +119,12 @@ public class StatsDProcessorTest
     @Test
     public void processShouldAddParamsToKey()
     {
-        Map<String, String> parserParams = new HashMap<String, String>();
-        parserParams.put("p1", "v1");
+        Map<String, String> parserOutput = new HashMap<String, String>();
+        parserOutput.put("p1", "v1");
 
         ConfigPattern key = new ConfigPattern("some.#p1#.key");
 
-        processor.process(parserParams, createProcessorParams("count", key, 5D));
+        processor.process(parserOutput, createprocessParams("count", key, 5D));
 
         verify(statsDClient).count("some.v1.key", 5);
     }
@@ -156,10 +132,10 @@ public class StatsDProcessorTest
     @Test
     public void processShouldUseValueFromParameters()
     {
-        Map<String, String> parserParams = new HashMap<String, String>();
-        parserParams.put("v1", "5");
+        Map<String, String> parserOutput = new HashMap<String, String>();
+        parserOutput.put("v1", "5");
 
-        processor.process(parserParams, createProcessorParams("count", "key", "v1"));
+        processor.process(parserOutput, createprocessParams("count", "key", "v1"));
 
         verify(statsDClient).count("key", 5);
     }
@@ -167,18 +143,18 @@ public class StatsDProcessorTest
     @Test
     public void processShouldUseDynamicKeyAndValue()
     {
-        Map<String, String> parserParams = new HashMap<String, String>();
-        parserParams.put("p1", "v1");
-        parserParams.put("v1", "5");
+        Map<String, String> parserOutput = new HashMap<String, String>();
+        parserOutput.put("p1", "v1");
+        parserOutput.put("v1", "5");
 
         ConfigPattern key = new ConfigPattern("some.#p1#.key");
 
-        processor.process(parserParams, createProcessorParams("count", key, "v1"));
+        processor.process(parserOutput, createprocessParams("count", key, "v1"));
 
         verify(statsDClient).count("some.v1.key", 5);
     }
 
-    private Map<String, Object> createProcessorParams(String type, Object key, Object value)
+    private Map<String, Object> createprocessParams(String type, Object key, Object value)
     {
         Map<String, Object> config = new HashMap<String, Object>();
         config.put("type", type);

@@ -28,7 +28,7 @@ public class ConfigPattern
         }
     }
 
-    public static boolean isPattern(Object pattern)
+    public static boolean applicable(Object pattern)
     {
         if (!(pattern instanceof String))
         {
@@ -38,11 +38,11 @@ public class ConfigPattern
         return matcher.find();
     }
 
-    public static Map<String, Object> processMap(Map<String, Object> data)
+    public static Map<String, Object> replacePatterns(Map<String, Object> data)
     {
         for (String key : data.keySet())
         {
-            if (isPattern(data.get(key)))
+            if (applicable(data.get(key)))
             {
                 data.put(key, new ConfigPattern((String) data.get(key)));
             }
@@ -50,7 +50,7 @@ public class ConfigPattern
         return data;
     }
 
-    public String getValue(Map<String, String> values)
+    public String applyValues(Map<String, String> values)
     {
         String result = pattern;
         for (String parameter : parameters)
@@ -85,5 +85,11 @@ public class ConfigPattern
     public int hashCode()
     {
         return pattern.hashCode();
+    }
+
+    @Override
+    public String toString()
+    {
+        return "ConfigPattern('" + pattern + "')";
     }
 }
