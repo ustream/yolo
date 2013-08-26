@@ -3,7 +3,7 @@
 		"regexp1": {
 			"class": "com.ustream.loggy.module.parser.RegexpParser",
 			"regex": "(?<exceptionName>[a-zA-Z]+)[eE]xception value (?<val>\\d+)",
-			"processor": "statsd",
+			"processor": "composite",
 			"processorParams": {
 				"type": "gauge",
 				"key": "loggy.test.#exceptionName#",

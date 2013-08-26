@@ -18,6 +18,10 @@ public class CompositeProcessor implements IProcessor, ICompositeProcessor
     @Override
     public void validateProcessorParams(List<String> parserParams, Map<String, Object> params) throws ConfigException
     {
+        for (IProcessor processor : processors)
+        {
+            processor.validateProcessorParams(parserParams, params);
+        }
     }
 
     @Override
@@ -32,7 +36,12 @@ public class CompositeProcessor implements IProcessor, ICompositeProcessor
     @Override
     public ConfigGroup getProcessorParamsConfig()
     {
-        return null;
+        ConfigGroup config = new ConfigGroup();
+        for(IProcessor processor : processors)
+        {
+            config.merge(processor.getProcessorParamsConfig());
+        }
+        return config;
     }
 
     @Override
@@ -59,4 +68,5 @@ public class CompositeProcessor implements IProcessor, ICompositeProcessor
     {
         processors.add(processor);
     }
+
 }
