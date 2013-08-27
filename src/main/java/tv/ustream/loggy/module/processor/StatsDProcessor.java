@@ -18,7 +18,7 @@ import java.util.Map;
 public class StatsDProcessor implements IProcessor
 {
 
-    private Logger logger = LoggerFactory.getLogger(StatsDProcessor.class);
+    private final Logger logger = LoggerFactory.getLogger(StatsDProcessor.class);
 
     public static final String TYPE_COUNTER = "counter";
 

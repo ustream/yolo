@@ -13,7 +13,7 @@ import java.io.File;
 public class FileHandler implements TailerListener
 {
 
-    private Logger logger = LoggerFactory.getLogger(FileHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(FileHandler.class);
 
     private final Tailer tailer;
 
@@ -71,7 +71,14 @@ public class FileHandler implements TailerListener
     @Override
     public void handle(String line)
     {
-        lineProcessor.handle(line);
+        try
+        {
+            lineProcessor.handle(line);
+        }
+        catch (Exception e)
+        {
+            logger.error("Line processing error: " + e.getMessage());
+        }
     }
 
     @Override

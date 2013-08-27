@@ -13,25 +13,25 @@ public class ConfigPatternTest
 {
 
     @Test
-    public void applicableShouldReturnFalseForNotString() throws Exception
+    public void applicableShouldReturnFalseForNotString()
     {
         Assert.assertFalse(ConfigPattern.applicable(5));
     }
 
     @Test
-    public void applicableShouldReturnFalseForSimpleString() throws Exception
+    public void applicableShouldReturnFalseForSimpleString()
     {
         Assert.assertFalse(ConfigPattern.applicable("simple string #notparam"));
     }
 
     @Test
-    public void applicableShouldReturnTrueForPatternString() throws Exception
+    public void applicableShouldReturnTrueForPatternString()
     {
         Assert.assertTrue(ConfigPattern.applicable("string with #param#"));
     }
 
     @Test
-    public void replacePatternsShouldReplacePatternStringsWithObjects() throws Exception
+    public void replacePatternsShouldReplacePatternStringsWithObjects()
     {
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("key1", "simple string");
@@ -46,7 +46,7 @@ public class ConfigPatternTest
     }
 
     @Test
-    public void applyValuesShouldReplaceParameters() throws Exception
+    public void applyValuesShouldReplaceParameters()
     {
         ConfigPattern pattern = new ConfigPattern("text #p1# text #p2# text");
         Map<String, String> params = new HashMap<String, String>();
@@ -58,7 +58,7 @@ public class ConfigPatternTest
     }
 
     @Test
-    public void applyValuesShouldLeaveMissingParamAsIs() throws Exception
+    public void applyValuesShouldLeaveMissingParamAsIs()
     {
         ConfigPattern pattern = new ConfigPattern("text #p1# text #p2# text #p3# text");
         Map<String, String> params = new HashMap<String, String>();

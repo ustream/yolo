@@ -87,7 +87,7 @@ public class StatsDProcessorTest
     }
 
     @Test
-    public void processShouldSendStatsdCount() throws ConfigException
+    public void processShouldSendStatsdCount()
     {
         Map<String, String> parserOutput = new HashMap<String, String>();
 
@@ -97,7 +97,7 @@ public class StatsDProcessorTest
     }
 
     @Test
-    public void processShouldSendStatsdGauge() throws ConfigException
+    public void processShouldSendStatsdGauge()
     {
         Map<String, String> parserOutput = new HashMap<String, String>();
 
@@ -107,7 +107,7 @@ public class StatsDProcessorTest
     }
 
     @Test
-    public void processShouldSendStatsdTime() throws ConfigException
+    public void processShouldSendStatsdTime()
     {
         Map<String, String> parserOutput = new HashMap<String, String>();
 

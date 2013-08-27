@@ -12,31 +12,31 @@ public class ConfigValueTest
 {
 
     @Test
-    public void isEmptyShouldReturnFalseWhenValueIsNotEmpty() throws Exception
+    public void isEmptyShouldReturnFalseWhenValueIsNotEmpty()
     {
         Assert.assertFalse(new ConfigValue<String>("key", String.class).isEmpty("value"));
     }
 
     @Test
-    public void isEmptyShouldReturnTrueWhenValueIsNull() throws Exception
+    public void isEmptyShouldReturnTrueWhenValueIsNull()
     {
         Assert.assertTrue(new ConfigValue<String>("key", String.class).isEmpty(null));
     }
 
     @Test
-    public void isEmptyShouldReturnTrueWhenValueIsEmptyString() throws Exception
+    public void isEmptyShouldReturnTrueWhenValueIsEmptyString()
     {
         Assert.assertTrue(new ConfigValue<String>("key", String.class).isEmpty(""));
     }
 
     @Test
-    public void isEmptyShouldReturnTrueWhenValueIsEmptyCollection() throws Exception
+    public void isEmptyShouldReturnTrueWhenValueIsEmptyCollection()
     {
         Assert.assertTrue(new ConfigValue<Collection>("key", Collection.class).isEmpty(new ArrayList()));
     }
 
     @Test
-    public void isEmptyShouldReturnTrueWhenValueIsEmptyMap() throws Exception
+    public void isEmptyShouldReturnTrueWhenValueIsEmptyMap()
     {
         Assert.assertTrue(new ConfigValue<Map>("key", Map.class).isEmpty(new HashMap()));
     }

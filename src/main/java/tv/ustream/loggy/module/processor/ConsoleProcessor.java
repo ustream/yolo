@@ -1,7 +1,5 @@
 package tv.ustream.loggy.module.processor;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import tv.ustream.loggy.config.ConfigException;
 import tv.ustream.loggy.config.ConfigGroup;
 
@@ -14,8 +12,6 @@ import java.util.Map;
 public class ConsoleProcessor implements IProcessor
 {
 
-    private Logger logger = LoggerFactory.getLogger(ConsoleProcessor.class);
-
     @Override
     public void validateProcessParams(List<String> parserOutputKeys, Map<String, Object> params) throws ConfigException
     {
@@ -24,7 +20,7 @@ public class ConsoleProcessor implements IProcessor
     @Override
     public void process(Map<String, String> parserOutput, Map<String, Object> processParams)
     {
-        logger.info("Parser output: {}, process parameters: {}", parserOutput, processParams);
+        System.out.format("[console] Parser output: %s, process parameters: %s%n", parserOutput, processParams);
     }
 
     @Override

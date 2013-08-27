@@ -17,7 +17,7 @@ public class RegexpParser implements IParser
 
     private Matcher matcher;
 
-    private List<String> namedGroups = new ArrayList<String>();
+    private final List<String> namedGroups = new ArrayList<String>();
 
     @Override
     public void setUpModule(Map<String, Object> parameters)

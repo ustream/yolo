@@ -20,7 +20,7 @@ import java.util.Map;
 public class ModuleChain implements ILineHandler
 {
 
-    private Logger logger = LoggerFactory.getLogger(ModuleChain.class);
+    private final Logger logger = LoggerFactory.getLogger(ModuleChain.class);
 
 
     private final ModuleFactory moduleFactory;

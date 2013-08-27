@@ -20,7 +20,7 @@ import java.util.Map;
 public class Loggy
 {
 
-    private Logger logger = LoggerFactory.getLogger(Loggy.class);
+    private final Logger logger = LoggerFactory.getLogger(Loggy.class);
 
     private final Options cliOptions = new Options();
 
@@ -171,6 +171,10 @@ public class Loggy
             initModuleChain();
 
             startFileHandler();
+        }
+        catch (ConfigException e)
+        {
+            System.out.println(e.getMessage());
         }
         catch (Exception e)
         {
