@@ -2,6 +2,8 @@ package tv.ustream.loggy.handler;
 
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
@@ -10,6 +12,8 @@ import java.io.File;
  */
 public class FileHandler implements TailerListener
 {
+
+    private Logger logger = LoggerFactory.getLogger(FileHandler.class);
 
     private Boolean debug;
 
@@ -46,7 +50,7 @@ public class FileHandler implements TailerListener
     {
         if (debug)
         {
-            System.out.println("Tail error: file not found");
+            logger.error("Tailer error: file not found: {}", tailer.getFile().getAbsolutePath());
             try
             {
                 Thread.sleep(1000);
@@ -62,7 +66,7 @@ public class FileHandler implements TailerListener
     {
         if (debug)
         {
-            System.out.println("Tail: file was rotated");
+            logger.info("Tailer: file was rotated: {}", tailer.getFile().getAbsolutePath());
             try
             {
                 Thread.sleep(1000);
@@ -84,7 +88,7 @@ public class FileHandler implements TailerListener
     {
         if (debug)
         {
-            System.out.println("Tail error: " + ex.getMessage());
+            logger.error("Tailer error: {}", ex.getMessage());
         }
     }
 }

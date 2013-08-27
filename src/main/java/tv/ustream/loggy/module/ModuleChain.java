@@ -1,5 +1,7 @@
 package tv.ustream.loggy.module;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tv.ustream.loggy.config.ConfigException;
 import tv.ustream.loggy.config.ConfigGroup;
 import tv.ustream.loggy.config.ConfigPattern;
@@ -17,6 +19,9 @@ import java.util.Map;
  */
 public class ModuleChain implements ILineHandler
 {
+
+    private Logger logger = LoggerFactory.getLogger(ModuleChain.class);
+
 
     private final ModuleFactory moduleFactory;
 
@@ -41,7 +46,7 @@ public class ModuleChain implements ILineHandler
     {
         if (debug)
         {
-            System.out.format("Adding %s processor %s%n", name, config);
+            logger.info("Adding {} processor {}", name, config);
         }
 
         IProcessor processor = moduleFactory.createProcessor(name, config, debug);
@@ -73,7 +78,7 @@ public class ModuleChain implements ILineHandler
     {
         if (debug)
         {
-            System.out.format("Adding %s parser %s%n", name, config);
+            logger.info("Adding {} parser {}", name, config);
         }
 
         IParser parser = moduleFactory.createParser(name, config, debug);

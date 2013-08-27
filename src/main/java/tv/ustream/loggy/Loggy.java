@@ -2,6 +2,8 @@ package tv.ustream.loggy;
 
 import com.google.gson.Gson;
 import org.apache.commons.cli.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tv.ustream.loggy.config.ConfigException;
 import tv.ustream.loggy.config.ConfigGroup;
 import tv.ustream.loggy.handler.FileHandler;
@@ -17,6 +19,8 @@ import java.util.Map;
  */
 public class Loggy
 {
+
+    private Logger logger = LoggerFactory.getLogger(Loggy.class);
 
     private final Options cliOptions = new Options();
 
@@ -176,7 +180,7 @@ public class Loggy
         {
             if (!debug && !e.getMessage().isEmpty())
             {
-                System.out.println(e.getMessage());
+                logger.error(e.getMessage());
             }
             else
             {

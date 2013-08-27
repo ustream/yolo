@@ -1,6 +1,8 @@
 package tv.ustream.loggy.module.processor;
 
 import com.timgroup.statsd.StatsDClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tv.ustream.loggy.config.ConfigException;
 import tv.ustream.loggy.config.ConfigGroup;
 import tv.ustream.loggy.config.ConfigPattern;
@@ -15,6 +17,8 @@ import java.util.Map;
  */
 public class StatsDProcessor implements IProcessor
 {
+
+    private Logger logger = LoggerFactory.getLogger(StatsDProcessor.class);
 
     public static final String TYPE_COUNTER = "counter";
 
@@ -41,7 +45,7 @@ public class StatsDProcessor implements IProcessor
 
         if (debug)
         {
-            System.out.format("Initializing StatsD connection: %s:%d%n", host, port);
+            logger.info("Initializing StatsD connection: {}:{}", host, port);
         }
 
         statsDClient = statsDFactory.createClient(prefix != null ? prefix : "", host, port);
@@ -127,7 +131,7 @@ public class StatsDProcessor implements IProcessor
 
         if (debug)
         {
-            System.out.println("statsd: " + type + " " + key + " " + String.valueOf(value));
+            logger.info("statsd: {} {} {}", type, key, String.valueOf(value));
         }
 
         if (TYPE_COUNTER.equals(type))
