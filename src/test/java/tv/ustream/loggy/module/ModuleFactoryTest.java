@@ -28,7 +28,7 @@ public class ModuleFactoryTest
         Map<String, Object> config = new HashMap<String, Object>();
         config.put("class", NoOpProcessor.class.getCanonicalName());
 
-        IProcessor processor = new ModuleFactory().createProcessor("x", config, false);
+        IProcessor processor = new ModuleFactory().createProcessor("x", config);
 
         Assert.assertEquals(NoOpProcessor.class, processor.getClass());
     }
@@ -40,7 +40,7 @@ public class ModuleFactoryTest
 
         Map<String, Object> config = new HashMap<String, Object>();
 
-        IProcessor processor = new ModuleFactory().createProcessor("x", config, false);
+        IProcessor processor = new ModuleFactory().createProcessor("x", config);
 
         Assert.assertEquals(NoOpProcessor.class, processor.getClass());
     }
@@ -52,7 +52,7 @@ public class ModuleFactoryTest
         config.put("class", PassThruParser.class.getCanonicalName());
         config.put("processor", "processor1");
 
-        IParser parser = new ModuleFactory().createParser("x", config, false);
+        IParser parser = new ModuleFactory().createParser("x", config);
 
         Assert.assertEquals(PassThruParser.class, parser.getClass());
     }
@@ -64,7 +64,7 @@ public class ModuleFactoryTest
 
         Map<String, Object> config = new HashMap<String, Object>();
 
-        IParser parser = new ModuleFactory().createParser("pr1", config, false);
+        IParser parser = new ModuleFactory().createParser("pr1", config);
 
         Assert.assertEquals(NoOpProcessor.class, parser.getClass());
     }

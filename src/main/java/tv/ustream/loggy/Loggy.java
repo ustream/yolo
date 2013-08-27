@@ -30,13 +30,13 @@ public class Loggy
 
     private String filePath;
 
-    private Boolean debug = false;
-
     private Boolean readWholeFile;
 
     private Boolean reopenFile;
 
     private ModuleChain moduleChain;
+
+    private FileHandler fileHandler;
 
     public Loggy()
     {
@@ -54,8 +54,6 @@ public class Loggy
         Option config = new Option("config", true, "path to config file");
         config.setArgName("path");
         cliOptions.addOption(config);
-
-        cliOptions.addOption("debug", false, "print debugging information");
 
         cliOptions.addOption("whole", false, "tail file from the beginning");
 
@@ -102,8 +100,6 @@ public class Loggy
             exitWithError("file parameter is missing!", true);
         }
 
-        debug = cli.hasOption("debug");
-
         readWholeFile = cli.hasOption("whole");
 
         reopenFile = cli.hasOption("reopen");
@@ -135,7 +131,7 @@ public class Loggy
     @SuppressWarnings("unchecked")
     private void initModuleChain() throws Exception
     {
-        moduleChain = new ModuleChain(new ModuleFactory(), debug);
+        moduleChain = new ModuleChain(new ModuleFactory());
 
         try
         {
@@ -159,12 +155,12 @@ public class Loggy
 
     private void startFileHandler()
     {
-        FileHandler fileHandler = new FileHandler(moduleChain, filePath, readWholeFile, reopenFile, debug);
+        fileHandler = new FileHandler(moduleChain, filePath, readWholeFile, reopenFile);
 
         fileHandler.start();
     }
 
-    private void run(String[] args)
+    public void start(String[] args)
     {
         try
         {
@@ -178,7 +174,7 @@ public class Loggy
         }
         catch (Exception e)
         {
-            if (!debug && !e.getMessage().isEmpty())
+            if (!e.getMessage().isEmpty())
             {
                 logger.error(e.getMessage());
             }
@@ -186,6 +182,14 @@ public class Loggy
             {
                 e.printStackTrace();
             }
+        }
+    }
+
+    public void stop()
+    {
+        if (null != fileHandler)
+        {
+            fileHandler.stop();
         }
     }
 
@@ -208,7 +212,7 @@ public class Loggy
     public static void main(String[] args)
     {
         Loggy loggy = new Loggy();
-        loggy.run(args);
+        loggy.start(args);
     }
 
 }

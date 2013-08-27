@@ -62,7 +62,7 @@ public class ModuleFactory
         }
     }
 
-    private void setupModule(String name, IModule module, Map<String, Object> rawConfig, boolean debug) throws ConfigException
+    private void setupModule(String name, IModule module, Map<String, Object> rawConfig) throws ConfigException
     {
         ConfigGroup moduleConfig = module.getModuleConfig();
         if (moduleConfig != null)
@@ -70,27 +70,27 @@ public class ModuleFactory
             module.getModuleConfig().parseValues(name, rawConfig);
         }
 
-        module.setUpModule(rawConfig, debug);
+        module.setUpModule(rawConfig);
     }
 
-    public IProcessor createProcessor(String name, Map<String, Object> rawConfig, boolean debug) throws ConfigException
+    public IProcessor createProcessor(String name, Map<String, Object> rawConfig) throws ConfigException
     {
         processorModuleConfig.parseValues(name, rawConfig);
 
         IProcessor processor = create((String) rawConfig.get("class"));
 
-        setupModule(name, processor, rawConfig, debug);
+        setupModule(name, processor, rawConfig);
 
         return processor;
     }
 
-    public IParser createParser(String name, Map<String, Object> rawConfig, boolean debug) throws ConfigException
+    public IParser createParser(String name, Map<String, Object> rawConfig) throws ConfigException
     {
         parserModuleConfig.parseValues(name, rawConfig);
 
         IParser parser = create((String) rawConfig.get("class"));
 
-        setupModule(name, parser, rawConfig, debug);
+        setupModule(name, parser, rawConfig);
 
         return parser;
     }

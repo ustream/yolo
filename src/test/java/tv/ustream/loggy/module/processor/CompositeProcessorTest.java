@@ -71,6 +71,6 @@ public class CompositeProcessorTest
         config.put("class", CompositeProcessor.class.getCanonicalName());
         config.put("processors", Arrays.asList("x"));
 
-        return (CompositeProcessor) new ModuleFactory().createProcessor("x", config, false);
+        return (CompositeProcessor) new ModuleFactory().createProcessor("x", config);
     }
 }

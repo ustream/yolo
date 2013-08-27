@@ -15,16 +15,13 @@ public class FileHandler implements TailerListener
 
     private Logger logger = LoggerFactory.getLogger(FileHandler.class);
 
-    private Boolean debug;
-
     private final Tailer tailer;
 
     private final ILineHandler lineProcessor;
 
-    public FileHandler(ILineHandler lineProcessor, String filePath, Boolean readWhole, Boolean reopen, Boolean debug)
+    public FileHandler(ILineHandler lineProcessor, String filePath, Boolean readWhole, Boolean reopen)
     {
         this.lineProcessor = lineProcessor;
-        this.debug = debug;
 
         tailer = new Tailer(new File(filePath), this, 1000, !readWhole, reopen);
     }
@@ -48,32 +45,26 @@ public class FileHandler implements TailerListener
     @Override
     public void fileNotFound()
     {
-        if (debug)
+        logger.error("Tailer error: file not found: {}", tailer.getFile().getAbsolutePath());
+        try
         {
-            logger.error("Tailer error: file not found: {}", tailer.getFile().getAbsolutePath());
-            try
-            {
-                Thread.sleep(1000);
-            }
-            catch (InterruptedException ignored)
-            {
-            }
+            Thread.sleep(1000);
+        }
+        catch (InterruptedException ignored)
+        {
         }
     }
 
     @Override
     public void fileRotated()
     {
-        if (debug)
+        logger.debug("Tailer: file was rotated: {}", tailer.getFile().getAbsolutePath());
+        try
         {
-            logger.info("Tailer: file was rotated: {}", tailer.getFile().getAbsolutePath());
-            try
-            {
-                Thread.sleep(1000);
-            }
-            catch (InterruptedException ignored)
-            {
-            }
+            Thread.sleep(1000);
+        }
+        catch (InterruptedException ignored)
+        {
         }
     }
 
@@ -86,9 +77,13 @@ public class FileHandler implements TailerListener
     @Override
     public void handle(Exception ex)
     {
-        if (debug)
+        logger.error("Tailer error: {}", ex.getMessage());
+        try
         {
-            logger.error("Tailer error: {}", ex.getMessage());
+            Thread.sleep(1000);
+        }
+        catch (InterruptedException ignored)
+        {
         }
     }
 }

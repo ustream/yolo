@@ -25,8 +25,6 @@ public class ModuleChain implements ILineHandler
 
     private final ModuleFactory moduleFactory;
 
-    private Boolean debug;
-
     private final Map<String, IParser> parsers = new HashMap<String, IParser>();
 
     private final Map<String, Map<String, Object>> processParams = new HashMap<String, Map<String, Object>>();
@@ -35,21 +33,17 @@ public class ModuleChain implements ILineHandler
 
     private final Map<String, String> transitions = new HashMap<String, String>();
 
-    public ModuleChain(ModuleFactory moduleFactory, Boolean debug)
+    public ModuleChain(ModuleFactory moduleFactory)
     {
         this.moduleFactory = moduleFactory;
-        this.debug = debug;
     }
 
     @SuppressWarnings("unchecked")
     public void addProcessor(String name, Map<String, Object> config) throws Exception
     {
-        if (debug)
-        {
-            logger.info("Adding {} processor {}", name, config);
-        }
+        logger.debug("Adding {} processor {}", name, config);
 
-        IProcessor processor = moduleFactory.createProcessor(name, config, debug);
+        IProcessor processor = moduleFactory.createProcessor(name, config);
         processors.put(name, processor);
 
         if (processor instanceof ICompositeProcessor)
@@ -76,12 +70,9 @@ public class ModuleChain implements ILineHandler
     @SuppressWarnings("unchecked")
     public void addParser(String name, Map<String, Object> config) throws Exception
     {
-        if (debug)
-        {
-            logger.info("Adding {} parser {}", name, config);
-        }
+        logger.debug("Adding {} parser {}", name, config);
 
-        IParser parser = moduleFactory.createParser(name, config, debug);
+        IParser parser = moduleFactory.createParser(name, config);
         parsers.put(name, parser);
 
         String processorName = (String) config.get("processor");

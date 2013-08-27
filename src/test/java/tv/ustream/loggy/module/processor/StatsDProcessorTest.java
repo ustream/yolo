@@ -172,7 +172,7 @@ public class StatsDProcessorTest
         config.put("port", port.doubleValue());
         config.put("processor", "x");
 
-        return (StatsDProcessor) new ModuleFactory().createProcessor("x", config, false);
+        return (StatsDProcessor) new ModuleFactory().createProcessor("x", config);
     }
 
 }

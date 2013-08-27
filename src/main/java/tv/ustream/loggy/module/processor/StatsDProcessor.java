@@ -32,21 +32,14 @@ public class StatsDProcessor implements IProcessor
 
     private StatsDClient statsDClient;
 
-    private boolean debug;
-
     @Override
-    public void setUpModule(Map<String, Object> parameters, boolean debug)
+    public void setUpModule(Map<String, Object> parameters)
     {
-        this.debug = debug;
-
         String prefix = (String) parameters.get("prefix");
         String host = (String) parameters.get("host");
         Integer port = ((Number) parameters.get("port")).intValue();
 
-        if (debug)
-        {
-            logger.info("Initializing StatsD connection: {}:{}", host, port);
-        }
+        logger.debug("Initializing StatsD connection: {}:{}", host, port);
 
         statsDClient = statsDFactory.createClient(prefix != null ? prefix : "", host, port);
     }
@@ -129,10 +122,7 @@ public class StatsDProcessor implements IProcessor
     {
         key = key.toLowerCase();
 
-        if (debug)
-        {
-            logger.info("statsd: {} {} {}", type, key, String.valueOf(value));
-        }
+        logger.debug("statsd: {} {} {}", type, key, String.valueOf(value));
 
         if (TYPE_COUNTER.equals(type))
         {

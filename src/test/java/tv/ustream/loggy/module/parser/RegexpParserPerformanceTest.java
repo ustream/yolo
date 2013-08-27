@@ -20,7 +20,7 @@ public class RegexpParserPerformanceTest
         List<String> lines = generateLines(byteCount);
 
         RegexpParser parser = new RegexpParser();
-        parser.setUpModule(createConfig("(?<first>[a-z])(?<second>[0-9])"), false);
+        parser.setUpModule(createConfig("(?<first>[a-z])(?<second>[0-9])"));
 
         Long startTime = System.currentTimeMillis();
         int found = 0;
@@ -43,7 +43,7 @@ public class RegexpParserPerformanceTest
         List<String> lines = generateLines(byteCount);
 
         RegexpParser parser = new RegexpParser();
-        parser.setUpModule(createConfig("(?<first>[a-z]{5})(?<second>[0-9]{5})"), false);
+        parser.setUpModule(createConfig("(?<first>[a-z]{5})(?<second>[0-9]{5})"));
 
 
         Long startTime = System.currentTimeMillis();

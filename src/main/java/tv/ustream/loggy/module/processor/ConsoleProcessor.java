@@ -34,7 +34,7 @@ public class ConsoleProcessor implements IProcessor
     }
 
     @Override
-    public void setUpModule(Map<String, Object> parameters, boolean debug)
+    public void setUpModule(Map<String, Object> parameters)
     {
     }
 

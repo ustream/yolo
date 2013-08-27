@@ -127,7 +127,7 @@ public class RegexpParserTest
         config.put("class", RegexpParser.class.getCanonicalName());
         config.put("regex", regex);
         config.put("processor", "p");
-        return new ModuleFactory().createParser("x", config, false);
+        return new ModuleFactory().createParser("x", config);
     }
 
 }

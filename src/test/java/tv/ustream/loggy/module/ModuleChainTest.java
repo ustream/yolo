@@ -48,15 +48,15 @@ public class ModuleChainTest
         pr3Config.put("class", CompositeProcessor.class.getCanonicalName());
         pr3Config.put("processors", Arrays.asList("pr1", "pr2"));
 
-        IProcessor processor3 = new ModuleFactory().createProcessor("pr3", pr3Config, false);
+        IProcessor processor3 = new ModuleFactory().createProcessor("pr3", pr3Config);
 
-        when(moduleFactory.createParser(eq("pa1"), anyMap(), anyBoolean())).thenReturn(parser1);
-        when(moduleFactory.createParser(eq("pa2"), anyMap(), anyBoolean())).thenReturn(parser2);
-        when(moduleFactory.createProcessor(eq("pr1"), anyMap(), anyBoolean())).thenReturn(processor1);
-        when(moduleFactory.createProcessor(eq("pr2"), anyMap(), anyBoolean())).thenReturn(processor2);
-        when(moduleFactory.createProcessor(eq("pr3"), anyMap(), anyBoolean())).thenReturn(processor3);
+        when(moduleFactory.createParser(eq("pa1"), anyMap())).thenReturn(parser1);
+        when(moduleFactory.createParser(eq("pa2"), anyMap())).thenReturn(parser2);
+        when(moduleFactory.createProcessor(eq("pr1"), anyMap())).thenReturn(processor1);
+        when(moduleFactory.createProcessor(eq("pr2"), anyMap())).thenReturn(processor2);
+        when(moduleFactory.createProcessor(eq("pr3"), anyMap())).thenReturn(processor3);
 
-        moduleChain = new ModuleChain(moduleFactory, false);
+        moduleChain = new ModuleChain(moduleFactory);
     }
 
     @Test

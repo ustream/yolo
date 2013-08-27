@@ -38,7 +38,6 @@ Just run the jar with "-help" option.
 $ java -jar build/libs/loggy-[version].jar -help
 usage: loggy
  -config <path>   path to config file
- -debug           print debugging information
  -file <path>     path to logfile
  -help            print this message
  -listModules     list available modules
@@ -49,7 +48,7 @@ usage: loggy
 ## Example usage
 
 ```bash
-$ java -jar build/libs/loggy-1.0.0.jar -config `pwd`/src/main/config/example.json -file /YOURPATH/foo.log -debug -whole
+$ java -jar build/libs/loggy-[version].jar -config /YOURPATH/src/main/config/example.json -file /YOURPATH/foo.log
 ```
 
 ## Available modules
@@ -96,6 +95,14 @@ Available parsers
   - processParams [Map]
   - regex [String], required
 
+```
+
+## Debugging
+
+To display debug messages use the -Dorg.slf4j.simpleLogger.defaultLogLevel=debug option.
+
+```bash
+$ java -Dorg.slf4j.simpleLogger.defaultLogLevel=debug -jar build/libs/loggy-[version].jar -config /YOURPATH/src/main/config/example.json -file /YOURPATH/foo.log
 ```
 
 ## Licence

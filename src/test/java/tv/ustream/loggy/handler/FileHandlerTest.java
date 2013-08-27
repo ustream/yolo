@@ -44,7 +44,7 @@ public class FileHandlerTest implements ILineHandler
     @Test
     public void shouldTailFile() throws Exception
     {
-        handler = new FileHandler(this, testFile.getAbsolutePath(), false, false, false);
+        handler = new FileHandler(this, testFile.getAbsolutePath(), false, false);
         handler.start();
 
         Thread.sleep(100);
@@ -61,7 +61,7 @@ public class FileHandlerTest implements ILineHandler
     @Test
     public void shouldTailFileFromTheBeginning() throws Exception
     {
-        handler = new FileHandler(this, testFile.getAbsolutePath(), true, false, false);
+        handler = new FileHandler(this, testFile.getAbsolutePath(), true, false);
         handler.start();
 
         Thread.sleep(100);
@@ -78,7 +78,7 @@ public class FileHandlerTest implements ILineHandler
     @Test
     public void shouldHandleRotate() throws Exception
     {
-        handler = new FileHandler(this, testFile.getAbsolutePath(), true, false, false);
+        handler = new FileHandler(this, testFile.getAbsolutePath(), true, false);
         handler.start();
 
         Thread.sleep(100);
