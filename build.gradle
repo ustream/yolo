@@ -1,4 +1,4 @@
-group='tv.ustream.loggy'
+group='tv.ustream.yolo'
 version='1.0.0'
 
 apply plugin: 'java'

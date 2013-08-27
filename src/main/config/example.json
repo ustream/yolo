@@ -1,46 +1,46 @@
 {
 	"parsers": {
 		"regexp1": {
-			"class": "tv.ustream.loggy.module.parser.RegexpParser",
+			"class": "tv.ustream.yolo.module.parser.RegexpParser",
 			"regex": "(?<exceptionName>[a-zA-Z]+)[eE]xception value (?<val>\\d+)",
 			"processor": "composite",
 			"processParams": {
 				"type": "gauge",
-				"key": "loggy.test.#exceptionName#",
+				"key": "yolo.test.#exceptionName#",
 				"value": "val"
 			}
 		},
 		"regexp2": {
-			"class": "tv.ustream.loggy.module.parser.RegexpParser",
+			"class": "tv.ustream.yolo.module.parser.RegexpParser",
 			"regex": "(?<errorName>[a-zA-Z]+)[eE]rror",
 			"processor": "statsd",
 			"processParams": {
 				"type": "counter",
-				"key": "loggy.error.#errorName#",
+				"key": "yolo.error.#errorName#",
 				"value": 1
 			}
 		},
 		"passthru": {
-			"class": "tv.ustream.loggy.module.parser.PassThruParser",
+			"class": "tv.ustream.yolo.module.parser.PassThruParser",
 			"processor": "noop"
 		}
 	},
 	"processors": {
 		"statsd": {
-			"class": "tv.ustream.loggy.module.processor.StatsDProcessor",
+			"class": "tv.ustream.yolo.module.processor.StatsDProcessor",
 			"prefix": "prefix",
 			"host": "127.0.0.1",
 			"port": 8125
   		},
   		"console": {
-  			"class": "tv.ustream.loggy.module.processor.ConsoleProcessor"
+  			"class": "tv.ustream.yolo.module.processor.ConsoleProcessor"
   		},
   		"composite": {
-  			"class": "tv.ustream.loggy.module.processor.CompositeProcessor",
+  			"class": "tv.ustream.yolo.module.processor.CompositeProcessor",
   			"processors": ["statsd", "console"]
   		},
   		"noop": {
-  			"class": "tv.ustream.loggy.module.processor.NoOpProcessor"
+  			"class": "tv.ustream.yolo.module.processor.NoOpProcessor"
   		}
 	}
 }

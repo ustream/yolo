@@ -1,4 +1,4 @@
-# Loggy
+# Yolo - You only log once but you can parse it as many ways as you want
 
 A general log tailer and parser tool written in Java, inspired by [Parsible](https://github.com/Yipit/parsible) and [Logster](https://github.com/etsy/logster). It is easily extensible with new parsers and processors. The main purpose was to build a simple tool to get metrics values and errors from log files and report to StatsD (or Graphite), but everyone can write custom modules in minutes.
 
@@ -23,7 +23,7 @@ The project uses Gradle and it is embedded with a Gradle wrapper.
 ./gradlew jar
 
 # check if it works
-java -jar build/libs/loggy-[version].jar -help
+java -jar build/libs/yolo-[version].jar -help
 ```
  
 ## Sample configuration
@@ -35,8 +35,8 @@ An example config file can be found in [example.json](src/main/config/example.js
 Just run the jar with "-help" option.
 
 ```bash
-$ java -jar build/libs/loggy-[version].jar -help
-usage: loggy
+$ java -jar build/libs/yolo-[version].jar -help
+usage: yolo
  -config <path>   path to config file
  -file <path>     path to logfile
  -help            print this message
@@ -48,7 +48,7 @@ usage: loggy
 ## Example usage
 
 ```bash
-$ java -jar build/libs/loggy-[version].jar -config /YOURPATH/src/main/config/example.json -file /YOURPATH/foo.log
+$ java -jar build/libs/yolo-[version].jar -config /YOURPATH/src/main/config/example.json -file /YOURPATH/foo.log
 ```
 
 ## Available modules
@@ -56,22 +56,22 @@ $ java -jar build/libs/loggy-[version].jar -config /YOURPATH/src/main/config/exa
 Just run the jar with "-listModules" option.
 
 ```bash
-$ java -jar build/libs/loggy-[version].jar -listModules
+$ java -jar build/libs/yolo-[version].jar -listModules
 
 Available processors
 --------------------
 
-* tv.ustream.loggy.module.processor.CompositeProcessor - runs multiple processors
+* tv.ustream.yolo.module.processor.CompositeProcessor - runs multiple processors
   - class [String], required
   - processors [List], required
 
-* tv.ustream.loggy.module.processor.ConsoleProcessor - writes parameters to console, use it for debug purposes
+* tv.ustream.yolo.module.processor.ConsoleProcessor - writes parameters to console, use it for debug purposes
   - class [String], required
 
-* tv.ustream.loggy.module.processor.NoOpProcessor - does nothing, use it if you want to disable a parser temporarily
+* tv.ustream.yolo.module.processor.NoOpProcessor - does nothing, use it if you want to disable a parser temporarily
   - class [String], required
 
-* tv.ustream.loggy.module.processor.StatsDProcessor - sends metrics to statsd, it handles counter, gauge and timing values
+* tv.ustream.yolo.module.processor.StatsDProcessor - sends metrics to statsd, it handles counter, gauge and timing values
   - class [String], required
   - prefix [String]
   - host [String], required
@@ -84,12 +84,12 @@ Available processors
 Available parsers
 -----------------
 
-* tv.ustream.loggy.module.parser.PassThruParser - forwards all lines to processor, runs always
+* tv.ustream.yolo.module.parser.PassThruParser - forwards all lines to processor, runs always
   - class [String], required
   - processor [String], required
   - processParams [Map]
 
-* tv.ustream.loggy.module.parser.RegexpParser - parses line via regular expression and returns with matches
+* tv.ustream.yolo.module.parser.RegexpParser - parses line via regular expression and returns with matches
   - class [String], required
   - processor [String], required
   - processParams [Map]
@@ -102,7 +102,7 @@ Available parsers
 To display debug messages use the -Dorg.slf4j.simpleLogger.defaultLogLevel=debug option.
 
 ```bash
-$ java -Dorg.slf4j.simpleLogger.defaultLogLevel=debug -jar build/libs/loggy-[version].jar -config /YOURPATH/src/main/config/example.json -file /YOURPATH/foo.log
+$ java -Dorg.slf4j.simpleLogger.defaultLogLevel=debug -jar build/libs/yolo-[version].jar -config /YOURPATH/src/main/config/example.json -file /YOURPATH/foo.log
 ```
 
 ## Licence
