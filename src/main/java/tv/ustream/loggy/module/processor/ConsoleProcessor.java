@@ -20,7 +20,7 @@ public class ConsoleProcessor implements IProcessor
     @Override
     public void process(Map<String, String> parserOutput, Map<String, Object> processParams)
     {
-        System.out.format("[console] Parser output: %s, process parameters: %s\n", parserOutput, processParams);
+        System.out.format("[console] Parser output: %s, process parameters: %s%n", parserOutput, processParams);
     }
 
     @Override

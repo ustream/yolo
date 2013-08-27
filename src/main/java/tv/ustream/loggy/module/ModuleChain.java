@@ -41,7 +41,7 @@ public class ModuleChain implements ILineHandler
     {
         if (debug)
         {
-            System.out.format("Adding %s processor %s\n", name, config);
+            System.out.format("Adding %s processor %s%n", name, config);
         }
 
         IProcessor processor = moduleFactory.createProcessor(name, config, debug);
@@ -68,11 +68,12 @@ public class ModuleChain implements ILineHandler
         }
     }
 
+    @SuppressWarnings("unchecked")
     public void addParser(String name, Map<String, Object> config) throws Exception
     {
         if (debug)
         {
-            System.out.format("Adding %s parser %s\n", name, config);
+            System.out.format("Adding %s parser %s%n", name, config);
         }
 
         IParser parser = moduleFactory.createParser(name, config, debug);

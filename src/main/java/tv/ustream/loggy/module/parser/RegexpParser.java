@@ -23,9 +23,8 @@ public class RegexpParser implements IParser
     public void setUpModule(Map<String, Object> parameters, boolean debug)
     {
         String regex = (String) parameters.get("regex");
-        Pattern pattern = Pattern.compile(regex);
-        matcher = pattern.matcher("");
-        namedGroups = getNamedGroups(regex);
+        matcher = Pattern.compile(regex).matcher("");
+        setNamedGroups(regex);
     }
 
     @Override
@@ -86,18 +85,14 @@ public class RegexpParser implements IParser
         return namedGroups;
     }
 
-    private List<String> getNamedGroups(String regex)
+    private void setNamedGroups(String regex)
     {
-        List<String> namedGroups = new ArrayList<String>();
-
         Matcher m = Pattern.compile("\\(\\?<([a-zA-Z][a-zA-Z0-9]*)>").matcher(regex);
 
         while (m.find())
         {
             namedGroups.add(m.group(1));
         }
-
-        return namedGroups;
     }
 
 }

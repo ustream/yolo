@@ -15,7 +15,7 @@
 			"regex": "(?<errorName>[a-zA-Z]+)[eE]rror",
 			"processor": "statsd",
 			"processParams": {
-				"type": "count",
+				"type": "counter",
 				"key": "loggy.error.#errorName#",
 				"value": 1
 			}

@@ -111,10 +111,10 @@ public class ModuleFactory
             String usage2 = "";
             if (processParamsConfig != null && !processParamsConfig.isEmpty())
             {
-                usage2 = "  - processParams:\n" + processParamsConfig.getUsageString("    - ");
+                usage2 = "  - processParams:" + System.lineSeparator() + processParamsConfig.getUsageString("    - ");
             }
 
-            System.out.format("* %s - %s\n%s%s\n", className, module.getModuleDescription(), usage, usage2);
+            System.out.format("* %s - %s%n%s%s%n", className, module.getModuleDescription(), usage, usage2);
         }
 
         System.out.println("Available parsers");
@@ -126,7 +126,7 @@ public class ModuleFactory
             ConfigGroup config = getDefaultParserModuleConfig().merge(module.getModuleConfig());
             String usage = config.getUsageString("  - ");
 
-            System.out.format("* %s - %s\n%s\n", className, module.getModuleDescription(), usage);
+            System.out.format("* %s - %s%n%s%n", className, module.getModuleDescription(), usage);
         }
     }
 

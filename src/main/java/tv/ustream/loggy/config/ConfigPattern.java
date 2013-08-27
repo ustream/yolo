@@ -40,11 +40,11 @@ public class ConfigPattern
 
     public static Map<String, Object> replacePatterns(Map<String, Object> data)
     {
-        for (String key : data.keySet())
+        for (Map.Entry<String, Object> entry : data.entrySet())
         {
-            if (applicable(data.get(key)))
+            if (applicable(data.get(entry.getKey())))
             {
-                data.put(key, new ConfigPattern((String) data.get(key)));
+                data.put(entry.getKey(), new ConfigPattern((String) entry.getValue()));
             }
         }
         return data;

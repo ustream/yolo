@@ -64,7 +64,7 @@ public class ConfigGroup
         String result = "";
         for (ConfigValue value : configValues)
         {
-            result += linePrefix + value + "\n";
+            result += linePrefix + value + System.lineSeparator();
         }
         return result;
     }

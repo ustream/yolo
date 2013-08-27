@@ -16,7 +16,13 @@ import java.util.Map;
 public class StatsDProcessor implements IProcessor
 {
 
-    private static final List<String> types = Arrays.asList("count", "gauge", "time");
+    public static final String TYPE_COUNTER = "counter";
+
+    public static final String TYPE_GAUGE = "gauge";
+
+    public static final String TYPE_TIMER = "timer";
+
+    private static final List<String> types = Arrays.asList(TYPE_COUNTER, TYPE_GAUGE, TYPE_TIMER);
 
     private static StatsDFactory statsDFactory = new StatsDFactory();
 
@@ -35,7 +41,7 @@ public class StatsDProcessor implements IProcessor
 
         if (debug)
         {
-            System.out.format("Initializing StatsD connection: %s:%d\n", host, port);
+            System.out.format("Initializing StatsD connection: %s:%d%n", host, port);
         }
 
         statsDClient = statsDFactory.createClient(prefix != null ? prefix : "", host, port);
@@ -124,15 +130,15 @@ public class StatsDProcessor implements IProcessor
             System.out.println("statsd: " + type + " " + key + " " + String.valueOf(value));
         }
 
-        if ("count".equals(type))
+        if (TYPE_COUNTER.equals(type))
         {
             statsDClient.count(key, value);
         }
-        else if ("gauge".equals(type))
+        else if (TYPE_GAUGE.equals(type))
         {
             statsDClient.gauge(key, value);
         }
-        else if ("time".equals(type))
+        else if (TYPE_TIMER.equals(type))
         {
             statsDClient.time(key, value);
         }

@@ -113,6 +113,7 @@ public class Loggy
         return config;
     }
 
+    @SuppressWarnings("unchecked")
     private void readConfig() throws ConfigException
     {
         try
@@ -135,15 +136,15 @@ public class Loggy
         try
         {
             Map<String, Object> processors = (Map<String, Object>) config.get("processors");
-            for (String name : processors.keySet())
+            for (Map.Entry<String, Object> processor : processors.entrySet())
             {
-                moduleChain.addProcessor(name, (Map<String, Object>) processors.get(name));
+                moduleChain.addProcessor(processor.getKey(), (Map<String, Object>) processor.getValue());
             }
 
             Map<String, Object> parsers = (Map<String, Object>) config.get("parsers");
-            for (String name : parsers.keySet())
+            for (Map.Entry<String, Object> parser : parsers.entrySet())
             {
-                moduleChain.addParser(name, (Map<String, Object>) parsers.get(name));
+                moduleChain.addParser(parser.getKey(), (Map<String, Object>) parser.getValue());
             }
         }
         catch (ConfigException e)

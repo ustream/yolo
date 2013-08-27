@@ -60,11 +60,11 @@ public class RegexpParserPerformanceTest
 
     private void printStats(int lineCount, int byteCount, int found, long elapsed)
     {
-        System.out.format("Line count: %d\n", lineCount);
-        System.out.format("Byte count: %d\n", byteCount);
-        System.out.format("Found matches: %d\n", found);
-        System.out.format("Elapsed time: %d ms\n", elapsed);
-        System.out.format("Processing speed: %.02f Mb/s \n", byteCount / 1024.0 / 1024.0 / (elapsed / 1000.0));
+        System.out.format("Line count: %d%n", lineCount);
+        System.out.format("Byte count: %d%n", byteCount);
+        System.out.format("Found matches: %d%n", found);
+        System.out.format("Elapsed time: %d ms%n", elapsed);
+        System.out.format("Processing speed: %.02f Mb/s%n", byteCount / 1024.0 / 1024.0 / (elapsed / 1000.0));
     }
 
     private List<String> generateLines(int length)
