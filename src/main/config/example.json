@@ -28,8 +28,9 @@
 	"processors": {
 		"statsd": {
 			"class": "tv.ustream.loggy.module.processor.StatsDProcessor",
+			"prefix": "prefix",
 			"host": "127.0.0.1",
-			"port": 8192
+			"port": 8125
   		},
   		"console": {
   			"class": "tv.ustream.loggy.module.processor.ConsoleProcessor"

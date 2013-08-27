@@ -75,7 +75,7 @@ Available processors
   - class [String], required
   - prefix [String]
   - host [String], required
-  - port [Number], default: 8192
+  - port [Number], default: 8125
   - processParams:
     - type [String], required, allowed values: [count, gauge, time]
     - key [String], required

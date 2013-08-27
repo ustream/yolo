@@ -48,9 +48,9 @@ public class StatsDProcessor implements IProcessor
     public ConfigGroup getModuleConfig()
     {
         ConfigGroup config = new ConfigGroup();
-        config.addConfigValue("prefix", String.class, false, "");
+        config.addConfigValue("prefix", String.class);
         config.addConfigValue("host", String.class);
-        config.addConfigValue("port", Number.class, false, 8192);
+        config.addConfigValue("port", Number.class, false, 8125);
         return config;
     }
 
