@@ -1,4 +1,4 @@
-# Yolo
+# Yolo [![Build Status](https://travis-ci.org/ustream/yolo.png?branch=master)](https://travis-ci.org/ustream/yolo)
 
 **You only log once but you can easily parse your data as many ways as you want.**
 
