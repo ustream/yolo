@@ -52,6 +52,7 @@ public class ModuleChainTest
 
         when(moduleFactory.createParser(eq("pa1"), anyMap())).thenReturn(parser1);
         when(moduleFactory.createParser(eq("pa2"), anyMap())).thenReturn(parser2);
+        when(moduleFactory.createParser(eq("pa3"), anyMap())).thenReturn(null);
         when(moduleFactory.createProcessor(eq("pr1"), anyMap())).thenReturn(processor1);
         when(moduleFactory.createProcessor(eq("pr2"), anyMap())).thenReturn(processor2);
         when(moduleFactory.createProcessor(eq("pr3"), anyMap())).thenReturn(processor3);
@@ -70,6 +71,19 @@ public class ModuleChainTest
         moduleChain.handle("some text");
 
         verify(processor1).process(anyMap(), anyMap());
+    }
+
+    @Test
+    public void disabledParserShouldNotBeAdded() throws Exception
+    {
+        moduleChain.addProcessor("pr1", createProcessorConfig("processor1"));
+        moduleChain.addParser("pa3", createParserConfig("parser3", "pr3", new HashMap<String, Object>()));
+
+        when(parser1.parse(anyString())).thenReturn(new HashMap<String, String>());
+
+        moduleChain.handle("some text");
+
+        verify(processor1, never()).process(anyMap(), anyMap());
     }
 
     @Test

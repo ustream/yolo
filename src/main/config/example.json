@@ -22,7 +22,8 @@
 		},
 		"passthru": {
 			"class": "tv.ustream.yolo.module.parser.PassThruParser",
-			"processor": "noop"
+			"processor": "console",
+			"enabled": false
 		}
 	},
 	"processors": {

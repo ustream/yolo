@@ -69,4 +69,17 @@ public class ModuleFactoryTest
         Assert.assertEquals(NoOpProcessor.class, parser.getClass());
     }
 
+    @Test
+    public void createParserShouldReturnNullWhenNotEnabled() throws ConfigException
+    {
+        Map<String, Object> config = new HashMap<String, Object>();
+        config.put("class", PassThruParser.class.getCanonicalName());
+        config.put("processor", "processor1");
+        config.put("enabled", false);
+
+        IParser parser = new ModuleFactory().createParser("x", config);
+
+        Assert.assertNull(parser);
+    }
+
 }

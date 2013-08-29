@@ -44,6 +44,7 @@ public class ModuleFactory
     {
         ConfigGroup config = new ConfigGroup();
         config.addConfigValue("class", String.class);
+        config.addConfigValue("enabled", Boolean.class, false, true);
         config.addConfigValue("processor", String.class);
         config.addConfigValue("processParams", Map.class, false, null);
         return config;
@@ -87,6 +88,11 @@ public class ModuleFactory
     public IParser createParser(String name, Map<String, Object> rawConfig) throws ConfigException
     {
         parserModuleConfig.parseValues(name, rawConfig);
+
+        if (!(Boolean)rawConfig.get("enabled"))
+        {
+            return null;
+        }
 
         IParser parser = create((String) rawConfig.get("class"));
 

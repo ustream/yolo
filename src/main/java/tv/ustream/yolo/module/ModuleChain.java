@@ -44,6 +44,12 @@ public class ModuleChain implements ILineHandler
         logger.debug("Adding {} processor {}", name, config);
 
         IProcessor processor = moduleFactory.createProcessor(name, config);
+
+        if (processor == null)
+        {
+            return;
+        }
+
         processors.put(name, processor);
 
         if (processor instanceof ICompositeProcessor)
@@ -73,6 +79,12 @@ public class ModuleChain implements ILineHandler
         logger.debug("Adding {} parser {}", name, config);
 
         IParser parser = moduleFactory.createParser(name, config);
+
+        if (parser == null)
+        {
+            return;
+        }
+
         parsers.put(name, parser);
 
         String processorName = (String) config.get("processor");
