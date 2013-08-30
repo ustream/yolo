@@ -5,7 +5,11 @@ import tv.ustream.yolo.config.ConfigGroup;
 import tv.ustream.yolo.module.parser.IParser;
 import tv.ustream.yolo.module.parser.PassThruParser;
 import tv.ustream.yolo.module.parser.RegexpParser;
-import tv.ustream.yolo.module.processor.*;
+import tv.ustream.yolo.module.processor.CompositeProcessor;
+import tv.ustream.yolo.module.processor.ConsoleProcessor;
+import tv.ustream.yolo.module.processor.IProcessor;
+import tv.ustream.yolo.module.processor.NoOpProcessor;
+import tv.ustream.yolo.module.processor.StatsDProcessor;
 
 import java.util.Arrays;
 import java.util.List;
@@ -89,7 +93,7 @@ public class ModuleFactory
     {
         parserModuleConfig.parseValues(name, rawConfig);
 
-        if (!(Boolean)rawConfig.get("enabled"))
+        if (!(Boolean) rawConfig.get("enabled"))
         {
             return null;
         }

@@ -8,6 +8,7 @@ import tv.ustream.yolo.config.ConfigGroup;
 import tv.ustream.yolo.config.ConfigPattern;
 import tv.ustream.yolo.config.ConfigValue;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -20,13 +21,30 @@ public class StatsDProcessor implements IProcessor
 
     private final Logger logger = LoggerFactory.getLogger(StatsDProcessor.class);
 
-    public static final String TYPE_COUNTER = "counter";
+    public static enum Types
+    {
+        COUNTER,
+        GAUGE,
+        TIMER;
 
-    public static final String TYPE_GAUGE = "gauge";
+        public final String value;
 
-    public static final String TYPE_TIMER = "timer";
+        private Types()
+        {
+            value = name().toLowerCase();
+        }
 
-    private static final List<String> types = Arrays.asList(TYPE_COUNTER, TYPE_GAUGE, TYPE_TIMER);
+        public static List<String> getStringValues()
+        {
+            List<String> values = new ArrayList<String>();
+            for (Types type : Types.values())
+            {
+                values.add(type.value);
+            }
+            return values;
+        }
+
+    }
 
     private static StatsDFactory statsDFactory = new StatsDFactory();
 
@@ -60,7 +78,7 @@ public class StatsDProcessor implements IProcessor
         ConfigGroup config = new ConfigGroup();
 
         ConfigValue<String> typeConfig = new ConfigValue<String>("type", String.class);
-        typeConfig.setAllowedValues(types);
+        typeConfig.setAllowedValues(Types.getStringValues());
         config.addConfigValue(typeConfig);
 
         config.addConfigValue("key", String.class);
@@ -124,15 +142,15 @@ public class StatsDProcessor implements IProcessor
 
         logger.debug("statsd: {} {} {}", type, key, String.valueOf(value));
 
-        if (TYPE_COUNTER.equals(type))
+        if (Types.COUNTER.value.equals(type))
         {
             statsDClient.count(key, value);
         }
-        else if (TYPE_GAUGE.equals(type))
+        else if (Types.GAUGE.value.equals(type))
         {
             statsDClient.gauge(key, value);
         }
-        else if (TYPE_TIMER.equals(type))
+        else if (Types.TIMER.value.equals(type))
         {
             statsDClient.time(key, value);
         }
