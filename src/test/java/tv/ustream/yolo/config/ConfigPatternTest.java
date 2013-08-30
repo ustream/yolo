@@ -3,6 +3,7 @@ package tv.ustream.yolo.config;
 import junit.framework.Assert;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,36 +14,20 @@ public class ConfigPatternTest
 {
 
     @Test
-    public void applicableShouldReturnFalseForNotString()
-    {
-        Assert.assertFalse(ConfigPattern.applicable(5));
-    }
-
-    @Test
-    public void applicableShouldReturnFalseForSimpleString()
-    {
-        Assert.assertFalse(ConfigPattern.applicable("simple string #notparam"));
-    }
-
-    @Test
-    public void applicableShouldReturnTrueForPatternString()
-    {
-        Assert.assertTrue(ConfigPattern.applicable("string with #param#"));
-    }
-
-    @Test
     public void replacePatternsShouldReplacePatternStringsWithObjects()
     {
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("key1", "simple string");
         data.put("key2", 5);
         data.put("key3", "string with #param#");
+        data.put("key4", Arrays.<Object>asList("s1", "s1 #param#"));
 
         ConfigPattern.replacePatterns(data);
 
         Assert.assertEquals("simple string", data.get("key1"));
         Assert.assertEquals(5, data.get("key2"));
         Assert.assertEquals(new ConfigPattern("string with #param#"), data.get("key3"));
+        Assert.assertEquals(Arrays.<Object>asList("s1", new ConfigPattern("s1 #param#")), data.get("key4"));
     }
 
     @Test

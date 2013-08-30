@@ -118,8 +118,7 @@ public class ConfigValue<T> implements IConfigEntry<T>
         }
 
         return String.format(
-            "%s%s%s%s%s",
-            indent,
+            "%s%s%s%s%n",
             types,
             required ? ", required" : "",
             !required && !isEmpty(defaultValue) ? ", default: " + defaultValue : "",

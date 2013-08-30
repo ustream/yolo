@@ -32,7 +32,7 @@ public class ConfigList implements IConfigEntry<List>
 
     public String getDescription(String indent)
     {
-        return String.format("%sList[%n%s%s%n%s]%n", indent, indent, configEntry.getDescription(""), indent);
+        return String.format("List [%n%s%s%s]%n", indent + "  ", configEntry.getDescription(indent + "  "), indent);
     }
 
 }

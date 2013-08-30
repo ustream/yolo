@@ -75,19 +75,23 @@ public class StatsDProcessor implements IProcessor
     @Override
     public ConfigMap getProcessParamsConfig()
     {
-        ConfigMap config = new ConfigMap();
+        ConfigMap map = new ConfigMap();
+
+        ConfigMap keyConfig = new ConfigMap();
 
         ConfigValue<String> typeConfig = new ConfigValue<String>(String.class);
         typeConfig.setAllowedValues(Types.getStringValues());
-        config.addConfigEntry("type", typeConfig);
+        keyConfig.addConfigEntry("type", typeConfig);
 
-        config.addConfigValue("key", String.class);
+        keyConfig.addConfigValue("key", String.class);
 
         ConfigValue<Object> valueConfig = new ConfigValue<Object>(Object.class);
         valueConfig.setAllowedTypes(Arrays.<Class>asList(String.class, Number.class));
-        config.addConfigEntry("value", valueConfig);
+        keyConfig.addConfigEntry("value", valueConfig);
 
-        return config;
+        map.addConfigList("keys", keyConfig);
+
+        return map;
     }
 
     @Override
@@ -99,19 +103,34 @@ public class StatsDProcessor implements IProcessor
     @Override
     public void validateProcessParams(List<String> parserOutputKeys, Map<String, Object> params) throws ConfigException
     {
-        Object value = params.get("value");
-        if (value instanceof String && !parserOutputKeys.contains(value))
+        List<Map<String, Object>> keys = (List<Map<String, Object>>) params.get("keys");
+
+        for (Map<String, Object> keyParams : keys)
         {
-            throw new ConfigException("value parameter is missing from the parser output");
+            Object value = keyParams.get("value");
+            if (value instanceof String && !parserOutputKeys.contains(value))
+            {
+                throw new ConfigException("value parameter '" + value + "' is missing from the parser output");
+            }
         }
     }
 
     @Override
     public void process(Map<String, String> parserOutput, Map<String, Object> processParams)
     {
-        String type = (String) processParams.get("type");
+        List<Map<String, Object>> keys = (List<Map<String, Object>>) processParams.get("keys");
 
-        Object keyObject = processParams.get("key");
+        for (Map<String, Object> keyParams : keys)
+        {
+            sendKey(parserOutput, keyParams);
+        }
+    }
+
+    private void sendKey(Map<String, String> parserOutput, Map<String, Object> keyParams)
+    {
+        String type = (String) keyParams.get("type");
+
+        Object keyObject = keyParams.get("key");
         String key;
         if (keyObject instanceof String)
         {
@@ -122,7 +141,7 @@ public class StatsDProcessor implements IProcessor
             key = ((ConfigPattern) keyObject).applyValues(parserOutput);
         }
 
-        Object valueObject = processParams.get("value");
+        Object valueObject = keyParams.get("value");
         Double value;
         if (valueObject instanceof String)
         {

@@ -82,40 +82,57 @@ Available processors
 --------------------
 
 * tv.ustream.yolo.module.processor.CompositeProcessor - runs multiple processors
-  - class: String, required
-  - processors: List, required
+  - params: Map {
+      class: String, required
+      processors: List, required
+    }
 
 * tv.ustream.yolo.module.processor.ConsoleProcessor - writes parameters to console, use it for debug purposes
-  - class: String, required
+  - params: Map {
+      class: String, required
+    }
 
 * tv.ustream.yolo.module.processor.NoOpProcessor - does nothing, use it if you want to disable a parser temporarily
-  - class: String, required
+  - params: Map {
+      class: String, required
+    }
 
 * tv.ustream.yolo.module.processor.StatsDProcessor - sends metrics to statsd, it handles counter, gauge and timing values
-  - port: Number, default: 8125
-  - host: String, required
-  - prefix: String, required
-  - class: String, required
-  - processParams:
-    - value: String|Number, required
-    - type: String, required, allowed values: [counter, gauge, timer]
-    - key: String, required
+  - params: Map {
+      port: Number, default: 8125
+      host: String, required
+      prefix: String, required
+      class: String, required
+    }
+  - processParams: Map {
+      keys: List [
+        Map {
+          value: String|Number, required
+          type: String, required, allowed values: [counter, gauge, timer]
+          key: String, required
+        }
+      ]
+    }
 
 Available parsers
 -----------------
 
 * tv.ustream.yolo.module.parser.PassThruParser - forwards all lines to processor, runs always
-  - enabled: Boolean, default: true
-  - class: String, required
-  - processor: String, required
-  - processParams: Map
+  - params: Map {
+      enabled: Boolean, default: true
+      class: String, required
+      processor: String, required
+      processParams: Map
+    }
 
 * tv.ustream.yolo.module.parser.RegexpParser - parses line via regular expression and returns with matches
-  - enabled: Boolean, default: true
-  - regex: String, required
-  - class: String, required
-  - processor: String, required
-  - processParams: Map
+  - params: Map {
+      enabled: Boolean, default: true
+      regex: String, required
+      class: String, required
+      processor: String, required
+      processParams: Map
+    }
 
 ```
 

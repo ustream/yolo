@@ -103,7 +103,7 @@ public class ModuleChain implements ILineHandler
                 processParamsConfig.parse(name + ".processParams", params);
             }
 
-            processParams.put(name, ConfigPattern.replacePatterns(params));
+            processParams.put(name, (Map<String, Object>) ConfigPattern.replacePatterns(params));
 
             processors.get(processorName).validateProcessParams(parser.getOutputKeys(), params);
         }

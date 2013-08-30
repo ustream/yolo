@@ -115,13 +115,13 @@ public class ModuleFactory
         {
             IProcessor module = factory.create(className);
             ConfigMap config = getDefaultProcessorModuleConfig().merge(module.getModuleConfig());
-            String usage = config.getDescription("  - ");
+            String usage = "  - params: " + config.getDescription("    ");
 
             ConfigMap processParamsConfig = module.getProcessParamsConfig();
             String usage2 = "";
             if (processParamsConfig != null && !processParamsConfig.isEmpty())
             {
-                usage2 = "  - processParams:" + System.lineSeparator() + processParamsConfig.getDescription("    - ");
+                usage2 = "  - processParams: " + processParamsConfig.getDescription("    ");
             }
 
             System.out.format("* %s - %s%n%s%s%n", className, module.getModuleDescription(), usage, usage2);
@@ -134,7 +134,7 @@ public class ModuleFactory
         {
             IParser module = factory.create(className);
             ConfigMap config = getDefaultParserModuleConfig().merge(module.getModuleConfig());
-            String usage = config.getDescription("  - ");
+            String usage = "  - params: " + config.getDescription("    ");
 
             System.out.format("* %s - %s%n%s%n", className, module.getModuleDescription(), usage);
         }

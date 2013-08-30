@@ -28,7 +28,7 @@ public class ConfigPattern
         }
     }
 
-    public static boolean applicable(Object pattern)
+    private static boolean applicable(Object pattern)
     {
         if (!(pattern instanceof String))
         {
@@ -38,16 +38,32 @@ public class ConfigPattern
         return matcher.find();
     }
 
-    public static Map<String, Object> replacePatterns(Map<String, Object> data)
+    public static Object replacePatterns(Object data)
     {
-        for (Map.Entry<String, Object> entry : data.entrySet())
+        if (data instanceof Map)
         {
-            if (applicable(data.get(entry.getKey())))
+            Map<String, Object> map = ((Map<String, Object>) data);
+            for (Map.Entry<String, Object> entry : map.entrySet())
             {
-                data.put(entry.getKey(), new ConfigPattern((String) entry.getValue()));
+                map.put(entry.getKey(), replacePatterns(entry.getValue()));
             }
         }
-        return data;
+        if (data instanceof List)
+        {
+            List<Object> list = (List<Object>) data;
+            for (int i = 0; i < list.size(); i++)
+            {
+                list.set(i, replacePatterns(list.get(i)));
+            }
+        }
+        if (applicable(data))
+        {
+            return new ConfigPattern((String) data);
+        }
+        else
+        {
+            return data;
+        }
     }
 
     public String applyValues(Map<String, String> values)

@@ -11,6 +11,7 @@ import tv.ustream.yolo.config.ConfigPattern;
 import tv.ustream.yolo.module.ModuleFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -154,13 +155,41 @@ public class StatsDProcessorTest
         verify(statsDClient).count("some.v1.key", 5);
     }
 
+    @Test
+    public void processShouldSendMultipleKeys()
+    {
+        Map<String, Object> params = new HashMap<String, Object>();
+
+        Map<String, Object> key1 = new HashMap<String, Object>();
+        key1.put("type", "gauge");
+        key1.put("key", new ConfigPattern("some.#p1#.key"));
+        key1.put("value", 1D);
+
+        Map<String, Object> key2 = new HashMap<String, Object>();
+        key2.put("type", "timer");
+        key2.put("key", new ConfigPattern("someother.#p1#.key"));
+        key2.put("value", 2D);
+
+        params.put("keys", Arrays.<Map>asList(key1, key2));
+
+        Map<String, String> parserOutput = new HashMap<String, String>();
+        parserOutput.put("p1", "v1");
+
+        processor.process(parserOutput, params);
+
+        verify(statsDClient).gauge("some.v1.key", 1);
+        verify(statsDClient).time("someother.v1.key", 2);
+    }
+
     private Map<String, Object> createprocessParams(String type, Object key, Object value)
     {
-        Map<String, Object> config = new HashMap<String, Object>();
-        config.put("type", type);
-        config.put("key", key);
-        config.put("value", value);
-        return config;
+        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> key1 = new HashMap<String, Object>();
+        key1.put("type", type);
+        key1.put("key", key);
+        key1.put("value", value);
+        params.put("keys", Arrays.<Map>asList(key1));
+        return params;
     }
 
     private StatsDProcessor createProcessor(String prefix, String host, Integer port) throws ConfigException

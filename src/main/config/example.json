@@ -2,22 +2,35 @@
 	"parsers": {
 		"regexp1": {
 			"class": "tv.ustream.yolo.module.parser.RegexpParser",
-			"regex": "(?<exceptionName>[a-zA-Z]+)[eE]xception value (?<val>\\d+)",
+			"regex": "(?i:(?<exceptionName>[a-zA-Z]+)exception value (?<val>\\d+))",
 			"processor": "composite",
 			"processParams": {
-				"type": "gauge",
-				"key": "yolo.test.#exceptionName#",
-				"value": "val"
+				"keys": [
+					{
+						"type": "gauge",
+						"key": "yolo.gauge.#exceptionName#",
+						"value": "val"
+					},
+					{
+						"type": "counter",
+						"key": "yolo.counter.#exceptionName#",
+						"value": 1
+					}
+				]
 			}
 		},
 		"regexp2": {
 			"class": "tv.ustream.yolo.module.parser.RegexpParser",
-			"regex": "(?<errorName>[a-zA-Z]+)[eE]rror",
-			"processor": "statsd",
+			"regex": "(?i:(?<errorName>[a-zA-Z]+)error)",
+			"processor": "composite",
 			"processParams": {
-				"type": "counter",
-				"key": "yolo.error.#errorName#",
-				"value": 1
+				"keys": [
+					{
+						"type": "counter",
+						"key": "yolo.error.#errorName#",
+						"value": 1
+					}
+				]
 			}
 		},
 		"passthru": {

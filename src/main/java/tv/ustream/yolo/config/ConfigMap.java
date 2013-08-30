@@ -68,11 +68,12 @@ public class ConfigMap implements IConfigEntry<Map<String, Object>>
 
     public String getDescription(String indent)
     {
-        String result = "";
+        String result = String.format("Map {%n");
         for (Map.Entry<String, IConfigEntry> configEntry : config.entrySet())
         {
-            result += indent + configEntry.getKey() + ": " + configEntry.getValue().getDescription("") + System.lineSeparator();
+            result += String.format("%s%s: %s", indent + "  ", configEntry.getKey(), configEntry.getValue().getDescription(indent + "  "));
         }
+        result += String.format("%s}%n", indent);
         return result;
     }
 
