@@ -237,7 +237,9 @@ configValue.setAllowedValues(Arrays.asList("value1", "value2"));
 config.addConfigValue(configValue);
 ```
 
-## Debugging
+## Logging
+
+The tool uses [SLF4J](http://www.slf4j.org/) for logging with the SimpleLogger implementation. The minimum log level is INFO and all the logs are written to the standard error output.
 
 To display debug messages use the -Dorg.slf4j.simpleLogger.defaultLogLevel=debug option.
 

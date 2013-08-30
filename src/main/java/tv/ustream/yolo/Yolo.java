@@ -25,7 +25,7 @@ import java.util.Map;
 public class Yolo
 {
 
-    private final Logger logger = LoggerFactory.getLogger(Yolo.class);
+    private static final Logger logger = LoggerFactory.getLogger(Yolo.class);
 
     private final Options cliOptions = new Options();
 

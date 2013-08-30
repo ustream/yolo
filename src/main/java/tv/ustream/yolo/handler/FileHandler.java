@@ -13,7 +13,7 @@ import java.io.File;
 public class FileHandler implements TailerListener
 {
 
-    private final Logger logger = LoggerFactory.getLogger(FileHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(FileHandler.class);
 
     private final Tailer tailer;
 

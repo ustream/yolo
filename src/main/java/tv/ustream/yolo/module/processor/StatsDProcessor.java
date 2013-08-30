@@ -19,7 +19,7 @@ import java.util.Map;
 public class StatsDProcessor implements IProcessor
 {
 
-    private final Logger logger = LoggerFactory.getLogger(StatsDProcessor.class);
+    private static final Logger logger = LoggerFactory.getLogger(StatsDProcessor.class);
 
     public static enum Types
     {
