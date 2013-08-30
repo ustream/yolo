@@ -1,7 +1,9 @@
 package tv.ustream.yolo.config;
 
 import junit.framework.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,75 +17,99 @@ import java.util.Map;
 public class ConfigValueTest
 {
 
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
+
     @Test
-    public void isEmptyShouldReturnFalseWhenValueIsNotEmpty()
+    public void parseShouldReturnValueWhenValueIsNotEmpty() throws ConfigException
     {
-        Assert.assertFalse(new ConfigValue<String>("key", String.class).isEmpty("value"));
+        Assert.assertEquals("value", new ConfigValue<String>(String.class).parse("root", "value"));
     }
 
     @Test
-    public void isEmptyShouldReturnTrueWhenValueIsNull()
+    public void parseShouldThrowExceptionWhenRequiredAndValueIsNull() throws ConfigException
     {
-        Assert.assertTrue(new ConfigValue<String>("key", String.class).isEmpty(null));
+        thrown.expect(ConfigException.class);
+
+        new ConfigValue<String>(String.class).parse("root", null);
     }
 
     @Test
-    public void isEmptyShouldReturnTrueWhenValueIsEmptyString()
+    public void parseShouldThrowExceptionWhenRequiredAndValueIsEmptyString() throws ConfigException
     {
-        Assert.assertTrue(new ConfigValue<String>("key", String.class).isEmpty(""));
+        thrown.expect(ConfigException.class);
+
+        new ConfigValue<String>(String.class).parse("root", "");
     }
 
     @Test
-    public void isEmptyShouldReturnTrueWhenValueIsEmptyCollection()
+    public void parseShouldThrowExceptionWhenRequiredAndValueIsEmptyCollection() throws ConfigException
     {
-        Assert.assertTrue(new ConfigValue<Collection>("key", Collection.class).isEmpty(new ArrayList()));
+        thrown.expect(ConfigException.class);
+
+        new ConfigValue<Collection>(Collection.class).parse("root", new ArrayList());
     }
 
     @Test
-    public void isEmptyShouldReturnTrueWhenValueIsEmptyMap()
+    public void parseShouldThrowExceptionWhenRequiredAndValueIsEmptyMap() throws ConfigException
     {
-        Assert.assertTrue(new ConfigValue<Map>("key", Map.class).isEmpty(new HashMap()));
+        thrown.expect(ConfigException.class);
+
+        new ConfigValue<Map>(Map.class).parse("root", new HashMap());
     }
 
     @Test
-    public void validateShouldReturnTrueWhenRequiredAndNotEmpty()
+    public void parseShouldReturnEmptyWhenOptionalAndEmpty() throws ConfigException
     {
-        Assert.assertTrue(new ConfigValue<String>("key", String.class).validateValue("value"));
+        Assert.assertNull(new ConfigValue<String>(String.class, false, null).parse("root", null));
     }
 
     @Test
-    public void validateShouldReturnFalseWhenRequiredAndEmpty()
+    public void parseShouldThrowExceptionWhenTypeIsInvalid() throws ConfigException
     {
-        Assert.assertFalse(new ConfigValue<String>("key", String.class).validateValue(null));
+        thrown.expect(ConfigException.class);
+
+        new ConfigValue<String>(String.class).parse("root", new Object());
     }
 
     @Test
-    public void validateShouldReturnTrueWhenOptionalAndEmpty()
+    public void parseShouldThrowExceptionWhenTypeIsNotInAllowedTypes() throws ConfigException
     {
-        Assert.assertTrue(new ConfigValue<String>("key", String.class, false, null).validateValue(null));
-    }
+        thrown.expect(ConfigException.class);
 
-    @Test
-    public void validateShouldReturnFalseWhenTypeIsInvalid()
-    {
-        Assert.assertFalse(new ConfigValue<String>("key", String.class).validateValue(new Object()));
-    }
-
-    @Test
-    public void validateShouldReturnFalseWhenTypeIsNotInAllowedTypes()
-    {
-        ConfigValue value = new ConfigValue<Object>("key", Object.class);
+        ConfigValue value = new ConfigValue<Object>(Object.class);
         value.setAllowedTypes(Arrays.<Class>asList(String.class, Double.class));
 
-        Assert.assertFalse(value.validateValue(new Object()));
+        value.parse("root", new Object());
     }
 
     @Test
-    public void validateShouldReturnTrueWhenTypeIsInAllowedTypes()
+    public void parseShouldReturnValueWhenTypeIsInAllowedTypes() throws ConfigException
     {
-        ConfigValue value = new ConfigValue<Object>("key", Object.class);
+        ConfigValue value = new ConfigValue<Object>(Object.class);
         value.setAllowedTypes(Arrays.<Class>asList(String.class, Double.class));
 
-        Assert.assertTrue(value.validateValue(5D));
+        Assert.assertEquals(5D, value.parse("root", 5D));
     }
+
+    @Test
+    public void parseShouldThrowExceptionWhenTypeIsNotInAllowedValues() throws ConfigException
+    {
+        thrown.expect(ConfigException.class);
+
+        ConfigValue<String> value = new ConfigValue<String>(String.class);
+        value.setAllowedValues(Arrays.<String>asList("a", "b", "c"));
+
+        value.parse("root", "d");
+    }
+
+    @Test
+    public void parseShouldReturnValueWhenTypeIsInAllowedValues() throws ConfigException
+    {
+        ConfigValue<String> value = new ConfigValue<String>(String.class);
+        value.setAllowedValues(Arrays.<String>asList("a", "b", "c"));
+
+        Assert.assertEquals("c", value.parse("root", "c"));
+    }
+
 }

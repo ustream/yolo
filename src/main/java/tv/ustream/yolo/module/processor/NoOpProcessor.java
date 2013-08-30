@@ -1,7 +1,7 @@
 package tv.ustream.yolo.module.processor;
 
 import tv.ustream.yolo.config.ConfigException;
-import tv.ustream.yolo.config.ConfigGroup;
+import tv.ustream.yolo.config.ConfigMap;
 
 import java.util.List;
 import java.util.Map;
@@ -23,7 +23,7 @@ public class NoOpProcessor implements IProcessor
     }
 
     @Override
-    public ConfigGroup getProcessParamsConfig()
+    public ConfigMap getProcessParamsConfig()
     {
         return null;
     }
@@ -34,7 +34,7 @@ public class NoOpProcessor implements IProcessor
     }
 
     @Override
-    public ConfigGroup getModuleConfig()
+    public ConfigMap getModuleConfig()
     {
         return null;
     }

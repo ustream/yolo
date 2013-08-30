@@ -1,6 +1,6 @@
 package tv.ustream.yolo.module.parser;
 
-import tv.ustream.yolo.config.ConfigGroup;
+import tv.ustream.yolo.config.ConfigMap;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -39,7 +39,7 @@ public class PassThruParser implements IParser
     }
 
     @Override
-    public ConfigGroup getModuleConfig()
+    public ConfigMap getModuleConfig()
     {
         return null;
     }

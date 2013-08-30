@@ -3,7 +3,7 @@ package tv.ustream.yolo.module;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tv.ustream.yolo.config.ConfigException;
-import tv.ustream.yolo.config.ConfigGroup;
+import tv.ustream.yolo.config.ConfigMap;
 import tv.ustream.yolo.config.ConfigPattern;
 import tv.ustream.yolo.handler.ILineHandler;
 import tv.ustream.yolo.module.parser.IParser;
@@ -97,10 +97,10 @@ public class ModuleChain implements ILineHandler
 
         if (params != null)
         {
-            ConfigGroup processParamsConfig = processors.get(processorName).getProcessParamsConfig();
+            ConfigMap processParamsConfig = processors.get(processorName).getProcessParamsConfig();
             if (processParamsConfig != null)
             {
-                processParamsConfig.parseValues(name + ".processParams", params);
+                processParamsConfig.parse(name + ".processParams", params);
             }
 
             processParams.put(name, ConfigPattern.replacePatterns(params));

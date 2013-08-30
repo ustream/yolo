@@ -10,7 +10,7 @@ import org.apache.commons.cli.PosixParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tv.ustream.yolo.config.ConfigException;
-import tv.ustream.yolo.config.ConfigGroup;
+import tv.ustream.yolo.config.ConfigMap;
 import tv.ustream.yolo.handler.FileHandler;
 import tv.ustream.yolo.module.ModuleChain;
 import tv.ustream.yolo.module.ModuleFactory;
@@ -110,9 +110,9 @@ public class Yolo
         reopenFile = cli.hasOption("reopen");
     }
 
-    private ConfigGroup getMainConfig()
+    private ConfigMap getMainConfig()
     {
-        ConfigGroup config = new ConfigGroup();
+        ConfigMap config = new ConfigMap();
         config.addConfigValue("processors", Map.class);
         config.addConfigValue("parsers", Map.class);
         return config;
@@ -130,7 +130,7 @@ public class Yolo
             exitWithError("Failed to open configuration file: " + e.getMessage(), false);
         }
 
-        getMainConfig().parseValues("[root]", config);
+        getMainConfig().parse("[root]", config);
     }
 
     @SuppressWarnings("unchecked")

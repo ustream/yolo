@@ -1,6 +1,6 @@
 package tv.ustream.yolo.module;
 
-import tv.ustream.yolo.config.ConfigGroup;
+import tv.ustream.yolo.config.ConfigMap;
 
 import java.util.Map;
 
@@ -12,7 +12,7 @@ public interface IModule
 
     public void setUpModule(Map<String, Object> parameters);
 
-    public ConfigGroup getModuleConfig();
+    public ConfigMap getModuleConfig();
 
     public String getModuleDescription();
 

@@ -1,7 +1,7 @@
 package tv.ustream.yolo.module.processor;
 
 import tv.ustream.yolo.config.ConfigException;
-import tv.ustream.yolo.config.ConfigGroup;
+import tv.ustream.yolo.config.ConfigMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,9 +34,9 @@ public class CompositeProcessor implements ICompositeProcessor
     }
 
     @Override
-    public ConfigGroup getProcessParamsConfig()
+    public ConfigMap getProcessParamsConfig()
     {
-        ConfigGroup config = new ConfigGroup();
+        ConfigMap config = new ConfigMap();
         for (IProcessor processor : processors)
         {
             config.merge(processor.getProcessParamsConfig());
@@ -50,9 +50,9 @@ public class CompositeProcessor implements ICompositeProcessor
     }
 
     @Override
-    public ConfigGroup getModuleConfig()
+    public ConfigMap getModuleConfig()
     {
-        ConfigGroup config = new ConfigGroup();
+        ConfigMap config = new ConfigMap();
         config.addConfigValue("processors", List.class);
         return config;
     }

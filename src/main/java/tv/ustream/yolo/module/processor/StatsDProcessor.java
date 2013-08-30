@@ -4,7 +4,7 @@ import com.timgroup.statsd.StatsDClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tv.ustream.yolo.config.ConfigException;
-import tv.ustream.yolo.config.ConfigGroup;
+import tv.ustream.yolo.config.ConfigMap;
 import tv.ustream.yolo.config.ConfigPattern;
 import tv.ustream.yolo.config.ConfigValue;
 
@@ -63,9 +63,9 @@ public class StatsDProcessor implements IProcessor
     }
 
     @Override
-    public ConfigGroup getModuleConfig()
+    public ConfigMap getModuleConfig()
     {
-        ConfigGroup config = new ConfigGroup();
+        ConfigMap config = new ConfigMap();
         config.addConfigValue("prefix", String.class);
         config.addConfigValue("host", String.class);
         config.addConfigValue("port", Number.class, false, 8125);
@@ -73,19 +73,19 @@ public class StatsDProcessor implements IProcessor
     }
 
     @Override
-    public ConfigGroup getProcessParamsConfig()
+    public ConfigMap getProcessParamsConfig()
     {
-        ConfigGroup config = new ConfigGroup();
+        ConfigMap config = new ConfigMap();
 
-        ConfigValue<String> typeConfig = new ConfigValue<String>("type", String.class);
+        ConfigValue<String> typeConfig = new ConfigValue<String>(String.class);
         typeConfig.setAllowedValues(Types.getStringValues());
-        config.addConfigValue(typeConfig);
+        config.addConfigEntry("type", typeConfig);
 
         config.addConfigValue("key", String.class);
 
-        ConfigValue<Object> valueConfig = new ConfigValue<Object>("value", Object.class);
+        ConfigValue<Object> valueConfig = new ConfigValue<Object>(Object.class);
         valueConfig.setAllowedTypes(Arrays.<Class>asList(String.class, Number.class));
-        config.addConfigValue(valueConfig);
+        config.addConfigEntry("value", valueConfig);
 
         return config;
     }

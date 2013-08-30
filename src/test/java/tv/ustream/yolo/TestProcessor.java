@@ -1,7 +1,7 @@
 package tv.ustream.yolo;
 
 import tv.ustream.yolo.config.ConfigException;
-import tv.ustream.yolo.config.ConfigGroup;
+import tv.ustream.yolo.config.ConfigMap;
 import tv.ustream.yolo.module.processor.IProcessor;
 
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ public class TestProcessor implements IProcessor
     public static List<String> data = new ArrayList<String>();
 
     @Override
-    public ConfigGroup getProcessParamsConfig()
+    public ConfigMap getProcessParamsConfig()
     {
         return null;
     }
@@ -39,7 +39,7 @@ public class TestProcessor implements IProcessor
     }
 
     @Override
-    public ConfigGroup getModuleConfig()
+    public ConfigMap getModuleConfig()
     {
         return null;
     }

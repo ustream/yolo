@@ -1,7 +1,7 @@
 package tv.ustream.yolo.module.processor;
 
 import tv.ustream.yolo.config.ConfigException;
-import tv.ustream.yolo.config.ConfigGroup;
+import tv.ustream.yolo.config.ConfigMap;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -25,9 +25,9 @@ public class DbProcessor implements IProcessor
     private int batchSize;
 
     @Override
-    public ConfigGroup getProcessParamsConfig()
+    public ConfigMap getProcessParamsConfig()
     {
-        ConfigGroup config = new ConfigGroup();
+        ConfigMap config = new ConfigMap();
         config.addConfigValue("query", String.class);
         config.addConfigValue("mapping", List.class);
         return config;
@@ -80,9 +80,9 @@ public class DbProcessor implements IProcessor
     }
 
     @Override
-    public ConfigGroup getModuleConfig()
+    public ConfigMap getModuleConfig()
     {
-        ConfigGroup config = new ConfigGroup();
+        ConfigMap config = new ConfigMap();
         config.addConfigValue("jdbcUrl", String.class);
         config.addConfigValue("batchSize", Number.class, false, 1000);
         return config;

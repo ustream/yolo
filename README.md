@@ -82,38 +82,40 @@ Available processors
 --------------------
 
 * tv.ustream.yolo.module.processor.CompositeProcessor - runs multiple processors
-  - class [String], required
-  - processors [List], required
+  - class: String, required
+  - processors: List, required
 
 * tv.ustream.yolo.module.processor.ConsoleProcessor - writes parameters to console, use it for debug purposes
-  - class [String], required
+  - class: String, required
 
 * tv.ustream.yolo.module.processor.NoOpProcessor - does nothing, use it if you want to disable a parser temporarily
-  - class [String], required
+  - class: String, required
 
 * tv.ustream.yolo.module.processor.StatsDProcessor - sends metrics to statsd, it handles counter, gauge and timing values
-  - class [String], required
-  - prefix [String]
-  - host [String], required
-  - port [Number], default: 8125
+  - port: Number, default: 8125
+  - host: String, required
+  - prefix: String, required
+  - class: String, required
   - processParams:
-    - type [String], required, allowed values: [count, gauge, time]
-    - key [String], required
-    - value [String|Number], required
+    - value: String|Number, required
+    - type: String, required, allowed values: [counter, gauge, timer]
+    - key: String, required
 
 Available parsers
 -----------------
 
 * tv.ustream.yolo.module.parser.PassThruParser - forwards all lines to processor, runs always
-  - class [String], required
-  - processor [String], required
-  - processParams [Map]
+  - enabled: Boolean, default: true
+  - class: String, required
+  - processor: String, required
+  - processParams: Map
 
 * tv.ustream.yolo.module.parser.RegexpParser - parses line via regular expression and returns with matches
-  - class [String], required
-  - processor [String], required
-  - processParams [Map]
-  - regex [String], required
+  - enabled: Boolean, default: true
+  - regex: String, required
+  - class: String, required
+  - processor: String, required
+  - processParams: Map
 
 ```
 
@@ -152,7 +154,7 @@ public class TestParser implements IParser
     }
 
     @Override
-    public ConfigGroup getModuleConfig()
+    public ConfigMap getModuleConfig()
     {
         // build your module's config
     }
@@ -176,7 +178,7 @@ public class TestProcessor implements IProcessor
 {
 
     @Override
-    public ConfigGroup getProcessParamsConfig()
+    public ConfigMap getProcessParamsConfig()
     {
         // build the processParams config for parsers
     }
@@ -200,7 +202,7 @@ public class TestProcessor implements IProcessor
     }
 
     @Override
-    public ConfigGroup getModuleConfig()
+    public ConfigMap getModuleConfig()
     {
         // build your module's config
     }
@@ -215,10 +217,10 @@ public class TestProcessor implements IProcessor
 
 ## Module configuration handling
 
-The configuration is validated with ConfigGroup objects which can be built the following way.
+The configuration is validated with ConfigMap objects which can be built the following way.
 
 ```java
-ConfigGroup config = new ConfigGroup();
+ConfigMap config = new ConfigMap();
 
 // add "key1" key with string type, the value will be required
 config.addConfigValue("key1", String.class);

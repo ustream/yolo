@@ -1,6 +1,6 @@
 package tv.ustream.yolo.module.parser;
 
-import tv.ustream.yolo.config.ConfigGroup;
+import tv.ustream.yolo.config.ConfigMap;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,9 +28,9 @@ public class RegexpParser implements IParser
     }
 
     @Override
-    public ConfigGroup getModuleConfig()
+    public ConfigMap getModuleConfig()
     {
-        ConfigGroup config = new ConfigGroup();
+        ConfigMap config = new ConfigMap();
         config.addConfigValue("regex", String.class);
         return config;
     }

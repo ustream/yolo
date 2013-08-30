@@ -8,10 +8,8 @@ import java.util.Map;
 /**
  * @author bandesz
  */
-public class ConfigValue<T>
+public class ConfigValue<T> implements IConfigEntry<T>
 {
-
-    private final String name;
 
     private final boolean required;
 
@@ -19,42 +17,50 @@ public class ConfigValue<T>
 
     private List<T> allowedValues = null;
 
+    private final Class<T> type;
+
     private List<Class> allowedTypes = new ArrayList<Class>();
 
-    public ConfigValue(String name, Class<T> type)
+    public ConfigValue(Class<T> type)
     {
-        this(name, type, true, null);
+        this(type, true, null);
     }
 
-    public ConfigValue(String name, Class<T> type, boolean required, T defaultValue)
+    public ConfigValue(Class<T> type, boolean required, T defaultValue)
     {
-        this.name = name;
+        this.type = type;
         this.required = required;
         this.defaultValue = defaultValue;
         this.allowedTypes.add(type);
     }
 
-    public void setAllowedValues(List<T> allowedValues)
+    public ConfigValue setAllowedValues(List<T> allowedValues)
     {
         this.allowedValues = allowedValues;
+
+        return this;
     }
 
-    public void setAllowedTypes(List<Class> types)
+    public ConfigValue setAllowedTypes(List<Class> types)
     {
         this.allowedTypes = types;
+
+        return this;
     }
 
-    public String getName()
+    public T parse(String name, Object value) throws ConfigException
     {
-        return name;
+        if (!isValueValid(value))
+        {
+            throw new ConfigException(
+                name + " field is missing or invalid, value definition: " + this.getDescription("") + ""
+            );
+        }
+
+        return !isEmpty(value) ? type.cast(value) : defaultValue;
     }
 
-    public T getDefaultValue()
-    {
-        return defaultValue;
-    }
-
-    public boolean isEmpty(Object value)
+    private boolean isEmpty(Object value)
     {
         if (value == null)
         {
@@ -77,7 +83,7 @@ public class ConfigValue<T>
         return false;
     }
 
-    public boolean validateValue(Object value)
+    private boolean isValueValid(Object value)
     {
         if (required && isEmpty(value))
         {
@@ -103,7 +109,7 @@ public class ConfigValue<T>
         return false;
     }
 
-    public String toString()
+    public String getDescription(String indent)
     {
         String types = "";
         for (int i = 0; i < allowedTypes.size(); i++)
@@ -112,12 +118,13 @@ public class ConfigValue<T>
         }
 
         return String.format(
-            "%s [%s]%s%s%s",
-            name,
+            "%s%s%s%s%s",
+            indent,
             types,
             required ? ", required" : "",
             !required && !isEmpty(defaultValue) ? ", default: " + defaultValue : "",
             allowedValues != null ? ", allowed values: " + allowedValues : ""
         );
     }
+
 }

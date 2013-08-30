@@ -1,7 +1,7 @@
 package tv.ustream.yolo.module;
 
 import tv.ustream.yolo.config.ConfigException;
-import tv.ustream.yolo.config.ConfigGroup;
+import tv.ustream.yolo.config.ConfigMap;
 import tv.ustream.yolo.module.parser.IParser;
 import tv.ustream.yolo.module.parser.PassThruParser;
 import tv.ustream.yolo.module.parser.RegexpParser;
@@ -33,20 +33,20 @@ public class ModuleFactory
         RegexpParser.class.getCanonicalName()
     );
 
-    private static final ConfigGroup processorModuleConfig = getDefaultProcessorModuleConfig();
+    private static final ConfigMap processorModuleConfig = getDefaultProcessorModuleConfig();
 
-    private static final ConfigGroup parserModuleConfig = getDefaultParserModuleConfig();
+    private static final ConfigMap parserModuleConfig = getDefaultParserModuleConfig();
 
-    private static ConfigGroup getDefaultProcessorModuleConfig()
+    private static ConfigMap getDefaultProcessorModuleConfig()
     {
-        ConfigGroup config = new ConfigGroup();
+        ConfigMap config = new ConfigMap();
         config.addConfigValue("class", String.class);
         return config;
     }
 
-    private static ConfigGroup getDefaultParserModuleConfig()
+    private static ConfigMap getDefaultParserModuleConfig()
     {
-        ConfigGroup config = new ConfigGroup();
+        ConfigMap config = new ConfigMap();
         config.addConfigValue("class", String.class);
         config.addConfigValue("enabled", Boolean.class, false, true);
         config.addConfigValue("processor", String.class);
@@ -69,10 +69,10 @@ public class ModuleFactory
 
     private void setupModule(String name, IModule module, Map<String, Object> rawConfig) throws ConfigException
     {
-        ConfigGroup moduleConfig = module.getModuleConfig();
+        ConfigMap moduleConfig = module.getModuleConfig();
         if (moduleConfig != null)
         {
-            module.getModuleConfig().parseValues(name, rawConfig);
+            module.getModuleConfig().parse(name, rawConfig);
         }
 
         module.setUpModule(rawConfig);
@@ -80,7 +80,7 @@ public class ModuleFactory
 
     public IProcessor createProcessor(String name, Map<String, Object> rawConfig) throws ConfigException
     {
-        processorModuleConfig.parseValues(name, rawConfig);
+        processorModuleConfig.parse(name, rawConfig);
 
         IProcessor processor = create((String) rawConfig.get("class"));
 
@@ -91,7 +91,7 @@ public class ModuleFactory
 
     public IParser createParser(String name, Map<String, Object> rawConfig) throws ConfigException
     {
-        parserModuleConfig.parseValues(name, rawConfig);
+        parserModuleConfig.parse(name, rawConfig);
 
         if (!(Boolean) rawConfig.get("enabled"))
         {
@@ -114,14 +114,14 @@ public class ModuleFactory
         for (String className : availableProcessors)
         {
             IProcessor module = factory.create(className);
-            ConfigGroup config = getDefaultProcessorModuleConfig().merge(module.getModuleConfig());
-            String usage = config.getUsageString("  - ");
+            ConfigMap config = getDefaultProcessorModuleConfig().merge(module.getModuleConfig());
+            String usage = config.getDescription("  - ");
 
-            ConfigGroup processParamsConfig = module.getProcessParamsConfig();
+            ConfigMap processParamsConfig = module.getProcessParamsConfig();
             String usage2 = "";
             if (processParamsConfig != null && !processParamsConfig.isEmpty())
             {
-                usage2 = "  - processParams:" + System.lineSeparator() + processParamsConfig.getUsageString("    - ");
+                usage2 = "  - processParams:" + System.lineSeparator() + processParamsConfig.getDescription("    - ");
             }
 
             System.out.format("* %s - %s%n%s%s%n", className, module.getModuleDescription(), usage, usage2);
@@ -133,8 +133,8 @@ public class ModuleFactory
         for (String className : availableParsers)
         {
             IParser module = factory.create(className);
-            ConfigGroup config = getDefaultParserModuleConfig().merge(module.getModuleConfig());
-            String usage = config.getUsageString("  - ");
+            ConfigMap config = getDefaultParserModuleConfig().merge(module.getModuleConfig());
+            String usage = config.getDescription("  - ");
 
             System.out.format("* %s - %s%n%s%n", className, module.getModuleDescription(), usage);
         }
