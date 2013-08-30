@@ -247,6 +247,23 @@ To display debug messages use the -Dorg.slf4j.simpleLogger.defaultLogLevel=debug
 $ java -Dorg.slf4j.simpleLogger.defaultLogLevel=debug -jar build/libs/yolo-[version].jar -config /YOURPATH/src/main/config/example.json -file /YOURPATH/foo.log
 ```
 
+## Dependencies
+
+For a detailed dependency list please check the "dependencies" block in [build.gradle](build.gradle).
+
+**Compile dependencies**:
+
+* [Apache Commons CLI](http://commons.apache.org/proper/commons-cli/)
+* [Apache Commons IO](http://commons.apache.org/proper/commons-io/)
+* [Gson](http://code.google.com/p/google-gson/)
+* [java-statsd-client](https://github.com/youdevise/java-statsd-client)
+* [SLF4j](http://www.slf4j.org/)
+
+**Testing dependencies**:
+
+* [JUnit](http://junit.org/)
+* [Mockito](http://code.google.com/p/mockito/)
+
 ## Contributing
 
 Feel free to fork this project and send pull requests if you want to help us improve the tool or add new parsers/processors. But before sending us new modules, please think through if the module serves a general purpose and whether it will be useful for others, not just for you.
