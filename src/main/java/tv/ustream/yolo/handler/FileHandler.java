@@ -19,11 +19,11 @@ public class FileHandler implements TailerListener
 
     private final ILineHandler lineProcessor;
 
-    public FileHandler(ILineHandler lineProcessor, String filePath, Boolean readWhole, Boolean reopen)
+    public FileHandler(ILineHandler lineProcessor, String filePath, long delayMs, Boolean readWhole, Boolean reopen)
     {
         this.lineProcessor = lineProcessor;
 
-        tailer = new Tailer(new File(filePath), this, 1000, !readWhole, reopen);
+        tailer = new Tailer(new File(filePath), this, delayMs, !readWhole, reopen);
     }
 
     public void start()

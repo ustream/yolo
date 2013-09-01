@@ -1,6 +1,6 @@
 package tv.ustream.yolo.module.parser;
 
-import org.junit.Ignore;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -15,60 +15,38 @@ import java.util.Random;
 public class RegexpParserPerformanceTest
 {
 
-    @Test
-    @Ignore
+    int byteCount = 50000000;
+
+    List<String> lines;
+
+    @Before
+    public void setUp()
+    {
+        lines = generateLines(byteCount);
+    }
+
+    @Test(timeout = 1000)
     public void performanceTestWithLotsOfMatches()
     {
-        int byteCount = 50000000;
-
-        List<String> lines = generateLines(byteCount);
-
         RegexpParser parser = new RegexpParser();
         parser.setUpModule(createConfig("(?<first>[a-z])(?<second>[0-9])"));
 
-        Long startTime = System.currentTimeMillis();
-        int found = 0;
         for (String line : lines)
         {
             Map<String, String> result = parser.parse(line);
-            found += (result != null ? 1 : 0);
         }
-        Long elapsed = System.currentTimeMillis() - startTime;
-
-        printStats(lines.size(), byteCount, found, elapsed);
     }
 
-    @Test
-    @Ignore
+    @Test(timeout = 2000)
     public void performanceTestWithFewMatches()
     {
-        int byteCount = 50000000;
-
-        List<String> lines = generateLines(byteCount);
-
         RegexpParser parser = new RegexpParser();
         parser.setUpModule(createConfig("(?<first>[a-z]{5})(?<second>[0-9]{5})"));
 
-
-        Long startTime = System.currentTimeMillis();
-        int found = 0;
         for (String line : lines)
         {
             Map<String, String> result = parser.parse(line);
-            found += (result != null ? 1 : 0);
         }
-        Long elapsed = System.currentTimeMillis() - startTime;
-
-        printStats(lines.size(), byteCount, found, elapsed);
-    }
-
-    private void printStats(int lineCount, int byteCount, int found, long elapsed)
-    {
-        System.out.format("Line count: %d%n", lineCount);
-        System.out.format("Byte count: %d%n", byteCount);
-        System.out.format("Found matches: %d%n", found);
-        System.out.format("Elapsed time: %d ms%n", elapsed);
-        System.out.format("Processing speed: %.02f Mb/s%n", byteCount / 1024.0 / 1024.0 / (elapsed / 1000.0));
     }
 
     private List<String> generateLines(int length)

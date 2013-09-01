@@ -160,7 +160,7 @@ public class Yolo
 
     private void startFileHandler()
     {
-        fileHandler = new FileHandler(moduleChain, filePath, readWholeFile, reopenFile);
+        fileHandler = new FileHandler(moduleChain, filePath, 1000, readWholeFile, reopenFile);
 
         fileHandler.start();
     }

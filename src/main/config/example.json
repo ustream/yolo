@@ -22,7 +22,7 @@
 		"regexp2": {
 			"class": "tv.ustream.yolo.module.parser.RegexpParser",
 			"regex": "(?i:(?<errorName>[a-zA-Z]+)error)",
-			"processor": "composite",
+			"processor": "statsd",
 			"processParams": {
 				"keys": [
 					{
