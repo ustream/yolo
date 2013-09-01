@@ -81,25 +81,19 @@ public class FileHandlerTest implements ILineHandler
         handler = new FileHandler(this, testFile.getAbsolutePath(), 100, true, false);
         handler.start();
 
-        Thread.sleep(100);
+        Thread.sleep(200);
+
+        testFile.delete();
+
+        Thread.sleep(200);
 
         FileWriter out = new FileWriter(testFile, true);
         out.write("l4\nl5\n");
         out.close();
 
-        Thread.sleep(100);
-
-        testFile.delete();
-
-        Thread.sleep(100);
-
-        out = new FileWriter(testFile, true);
-        out.write("l6\nl7\n");
-        out.close();
-
         Thread.sleep(1000);
 
-        Assert.assertEquals("l1\nl2\nl3\nl4\nl5\nl6\nl7\n", handledLines);
+        Assert.assertEquals("l1\nl2\nl3\nl4\nl5\n", handledLines);
     }
 
     @Override
