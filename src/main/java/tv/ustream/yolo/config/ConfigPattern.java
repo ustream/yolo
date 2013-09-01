@@ -28,7 +28,7 @@ public class ConfigPattern
         }
     }
 
-    private static boolean applicable(Object pattern)
+    public static boolean applicable(Object pattern)
     {
         if (!(pattern instanceof String))
         {
@@ -38,14 +38,15 @@ public class ConfigPattern
         return matcher.find();
     }
 
-    public static Object replacePatterns(Object data)
+    @SuppressWarnings("unchecked")
+    public static Object replacePatterns(Object data, List<String> validKeys) throws ConfigException
     {
         if (data instanceof Map)
         {
             Map<String, Object> map = ((Map<String, Object>) data);
             for (Map.Entry<String, Object> entry : map.entrySet())
             {
-                map.put(entry.getKey(), replacePatterns(entry.getValue()));
+                map.put(entry.getKey(), replacePatterns(entry.getValue(), validKeys));
             }
         }
         if (data instanceof List)
@@ -53,12 +54,23 @@ public class ConfigPattern
             List<Object> list = (List<Object>) data;
             for (int i = 0; i < list.size(); i++)
             {
-                list.set(i, replacePatterns(list.get(i)));
+                list.set(i, replacePatterns(list.get(i), validKeys));
             }
         }
         if (applicable(data))
         {
-            return new ConfigPattern((String) data);
+            ConfigPattern pattern = new ConfigPattern((String) data);
+            if (null != validKeys)
+            {
+                for (String key : pattern.getParameters())
+                {
+                    if (!validKeys.contains(key))
+                    {
+                        throw new ConfigException("#" + key + "# parameter is missing from parser output!");
+                    }
+                }
+            }
+            return pattern;
         }
         else
         {
@@ -77,6 +89,11 @@ public class ConfigPattern
             }
         }
         return result;
+    }
+
+    private List<String> getParameters()
+    {
+        return parameters;
     }
 
     @Override

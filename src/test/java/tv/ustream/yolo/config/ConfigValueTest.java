@@ -112,4 +112,24 @@ public class ConfigValueTest
         Assert.assertEquals("c", value.parse("root", "c"));
     }
 
+    @Test
+    public void parseShouldAllowPatternWhenAllowed() throws ConfigException
+    {
+        ConfigValue<String> value = new ConfigValue<String>(String.class);
+        value.allowConfigPattern();
+
+        Assert.assertEquals("xxx #param# xxx", value.parse("root", "xxx #param# xxx"));
+    }
+
+
+    @Test
+    public void parseShouldThrowExceptionWhenPatternIsNotAllowed() throws ConfigException
+    {
+        thrown.expect(ConfigException.class);
+
+        ConfigValue<String> value = new ConfigValue<String>(String.class);
+
+        value.parse("root", "xxx #param# xxx");
+    }
+
 }

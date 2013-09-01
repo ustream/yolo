@@ -21,6 +21,8 @@ public class ConfigValue<T> implements IConfigEntry<T>
 
     private List<Class> allowedTypes = new ArrayList<Class>();
 
+    private boolean configPatternAllowed = false;
+
     public ConfigValue(Class<T> type)
     {
         this(type, true, null);
@@ -44,6 +46,13 @@ public class ConfigValue<T> implements IConfigEntry<T>
     public ConfigValue setAllowedTypes(List<Class> types)
     {
         this.allowedTypes = types;
+
+        return this;
+    }
+
+    public ConfigValue allowConfigPattern()
+    {
+        configPatternAllowed = true;
 
         return this;
     }
@@ -99,6 +108,10 @@ public class ConfigValue<T> implements IConfigEntry<T>
 
     private boolean isTypeAllowed(Object value)
     {
+        if (value instanceof String && ConfigPattern.applicable(value) && !configPatternAllowed)
+        {
+            return false;
+        }
         for (Class clazz : allowedTypes)
         {
             if (clazz.isInstance(value))
@@ -118,12 +131,18 @@ public class ConfigValue<T> implements IConfigEntry<T>
         }
 
         return String.format(
-            "%s%s%s%s%n",
+            "%s%s%s%s%s%n",
             types,
             required ? ", required" : "",
             !required && !isEmpty(defaultValue) ? ", default: " + defaultValue : "",
-            allowedValues != null ? ", allowed values: " + allowedValues : ""
+            allowedValues != null ? ", allowed values: " + allowedValues : "",
+            configPatternAllowed ? ", pattern allowed" : ""
         );
+    }
+
+    public static ConfigValue<String> createString()
+    {
+        return new ConfigValue<String>(String.class);
     }
 
 }

@@ -79,14 +79,12 @@ public class StatsDProcessor implements IProcessor
 
         ConfigMap keyConfig = new ConfigMap();
 
-        ConfigValue<String> typeConfig = new ConfigValue<String>(String.class);
-        typeConfig.setAllowedValues(Types.getStringValues());
-        keyConfig.addConfigEntry("type", typeConfig);
-
-        keyConfig.addConfigValue("key", String.class);
+        keyConfig.addConfigEntry("type", ConfigValue.createString().setAllowedValues(Types.getStringValues()));
+        keyConfig.addConfigEntry("key", ConfigValue.createString().allowConfigPattern());
 
         ConfigValue<Object> valueConfig = new ConfigValue<Object>(Object.class);
         valueConfig.setAllowedTypes(Arrays.<Class>asList(String.class, Number.class));
+        valueConfig.allowConfigPattern();
         keyConfig.addConfigEntry("value", valueConfig);
 
         map.addConfigList("keys", keyConfig);
@@ -103,18 +101,9 @@ public class StatsDProcessor implements IProcessor
     @Override
     public void validateProcessParams(List<String> parserOutputKeys, Map<String, Object> params) throws ConfigException
     {
-        List<Map<String, Object>> keys = (List<Map<String, Object>>) params.get("keys");
-
-        for (Map<String, Object> keyParams : keys)
-        {
-            Object value = keyParams.get("value");
-            if (value instanceof String && !parserOutputKeys.contains(value))
-            {
-                throw new ConfigException("value parameter '" + value + "' is missing from the parser output");
-            }
-        }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void process(Map<String, String> parserOutput, Map<String, Object> processParams)
     {
@@ -143,13 +132,14 @@ public class StatsDProcessor implements IProcessor
 
         Object valueObject = keyParams.get("value");
         Double value;
-        if (valueObject instanceof String)
+        if (valueObject instanceof Double)
         {
-            value = Double.parseDouble(parserOutput.get(valueObject));
+            value = (Double) valueObject;
+
         }
         else
         {
-            value = (Double) valueObject;
+            value = Double.parseDouble(((ConfigPattern) valueObject).applyValues(parserOutput));
         }
 
         send(type, key, value.intValue());

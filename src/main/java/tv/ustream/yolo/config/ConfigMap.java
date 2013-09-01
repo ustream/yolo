@@ -21,10 +21,9 @@ public class ConfigMap implements IConfigEntry<Map<String, Object>>
         addConfigValue(name, type, true, null);
     }
 
-    @SuppressWarnings("unchecked")
     public <T> void addConfigValue(String name, Class<T> type, boolean required, T defaultValue)
     {
-        config.put(name, new ConfigValue(type, required, defaultValue));
+        config.put(name, new ConfigValue<T>(type, required, defaultValue));
     }
 
     public void addConfigList(String name, ConfigMap configMap)

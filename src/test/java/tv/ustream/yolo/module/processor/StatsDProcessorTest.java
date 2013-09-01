@@ -10,10 +10,8 @@ import tv.ustream.yolo.config.ConfigException;
 import tv.ustream.yolo.config.ConfigPattern;
 import tv.ustream.yolo.module.ModuleFactory;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.mockito.Matchers.anyInt;
@@ -69,25 +67,6 @@ public class StatsDProcessorTest
     }
 
     @Test
-    public void validateShouldThrowExceptionWhenValueNameIsMissing() throws Exception
-    {
-        thrown.expect(ConfigException.class);
-
-        processor.validateProcessParams(new ArrayList<String>(), createprocessParams(StatsDProcessor.Types.COUNTER.value, "key", "value"));
-    }
-
-    @Test
-    public void validateValidConfigPattern() throws Exception
-    {
-        ConfigPattern key = new ConfigPattern("some text #p1#");
-
-        List<String> parserOutputKeys = new ArrayList<String>();
-        parserOutputKeys.add("value");
-
-        processor.validateProcessParams(parserOutputKeys, createprocessParams(StatsDProcessor.Types.COUNTER.value, key, "value"));
-    }
-
-    @Test
     public void processShouldSendStatsdCount()
     {
         Map<String, String> parserOutput = new HashMap<String, String>();
@@ -136,7 +115,9 @@ public class StatsDProcessorTest
         Map<String, String> parserOutput = new HashMap<String, String>();
         parserOutput.put("v1", "5");
 
-        processor.process(parserOutput, createprocessParams(StatsDProcessor.Types.COUNTER.value, "key", "v1"));
+        ConfigPattern value = new ConfigPattern("#v1#");
+
+        processor.process(parserOutput, createprocessParams(StatsDProcessor.Types.COUNTER.value, "key", value));
 
         verify(statsDClient).count("key", 5);
     }
@@ -149,8 +130,9 @@ public class StatsDProcessorTest
         parserOutput.put("v1", "5");
 
         ConfigPattern key = new ConfigPattern("some.#p1#.key");
+        ConfigPattern value = new ConfigPattern("#v1#");
 
-        processor.process(parserOutput, createprocessParams(StatsDProcessor.Types.COUNTER.value, key, "v1"));
+        processor.process(parserOutput, createprocessParams(StatsDProcessor.Types.COUNTER.value, key, value));
 
         verify(statsDClient).count("some.v1.key", 5);
     }

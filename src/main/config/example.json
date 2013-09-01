@@ -9,7 +9,7 @@
 					{
 						"type": "gauge",
 						"key": "yolo.gauge.#exceptionName#",
-						"value": "val"
+						"value": "#val#"
 					},
 					{
 						"type": "counter",

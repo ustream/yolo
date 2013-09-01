@@ -15,9 +15,9 @@ import java.util.Random;
 public class RegexpParserPerformanceTest
 {
 
-    int byteCount = 50000000;
+    private int byteCount = 50000000;
 
-    List<String> lines;
+    private List<String> lines;
 
     @Before
     public void setUp()
@@ -33,7 +33,7 @@ public class RegexpParserPerformanceTest
 
         for (String line : lines)
         {
-            Map<String, String> result = parser.parse(line);
+            parser.parse(line);
         }
     }
 
@@ -45,7 +45,7 @@ public class RegexpParserPerformanceTest
 
         for (String line : lines)
         {
-            Map<String, String> result = parser.parse(line);
+            parser.parse(line);
         }
     }
 

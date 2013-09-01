@@ -107,9 +107,9 @@ Available processors
   - processParams: Map {
       keys: List [
         Map {
-          value: String|Number, required
+          value: String|Number, required, pattern allowed
           type: String, required, allowed values: [counter, gauge, timer]
-          key: String, required
+          key: String, required, pattern allowed
         }
       ]
     }
@@ -254,7 +254,18 @@ config.addConfigValue(configValue);
 ConfigValue<String> configValue = new ConfigValue<String>("key4", String.class);
 configValue.setAllowedValues(Arrays.asList("value1", "value2"));
 config.addConfigValue(configValue);
+
+// add "key5" key which allows a config pattern
+ConfigValue<String> configValue = new ConfigValue<String>("key5", String.class);
+configValue.allowConfigPattern();
+config.addConfigValue(configValue);
 ```
+
+### Config patterns
+
+Config pattern means a string value with key placeholders, like 'this is #type#'. This can be used in the process parameters configuration, when you want to substitute values from the parser output in the process config.
+
+If you check the [configuration example](src/main/config/example.json), you can see that the statsd process parameters contain expressions like #exceptionName# or #val#, these values will be substituted from the regexp matches.
 
 ## Logging
 

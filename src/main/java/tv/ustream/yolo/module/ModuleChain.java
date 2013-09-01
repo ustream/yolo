@@ -97,18 +97,27 @@ public class ModuleChain implements ILineHandler
 
         if (params != null)
         {
-            ConfigMap processParamsConfig = processors.get(processorName).getProcessParamsConfig();
-            if (processParamsConfig != null)
-            {
-                processParamsConfig.parse(name + ".processParams", params);
-            }
-
-            processParams.put(name, (Map<String, Object>) ConfigPattern.replacePatterns(params));
-
-            processors.get(processorName).validateProcessParams(parser.getOutputKeys(), params);
+            setProcessorParams(name, processorName, params);
         }
 
         transitions.put(name, processorName);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void setProcessorParams(String parserName, String processorName, Map<String, Object> params) throws ConfigException
+    {
+        ConfigMap processParamsConfig = processors.get(processorName).getProcessParamsConfig();
+        if (processParamsConfig != null)
+        {
+            processParamsConfig.parse(parserName + ".processParams", params);
+        }
+
+        processParams.put(
+            parserName,
+            (Map<String, Object>) ConfigPattern.replacePatterns(params, parsers.get(parserName).getOutputKeys())
+        );
+
+        processors.get(processorName).validateProcessParams(parsers.get(parserName).getOutputKeys(), params);
     }
 
     public void handle(String line)
