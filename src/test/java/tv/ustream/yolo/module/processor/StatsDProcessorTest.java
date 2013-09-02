@@ -146,11 +146,13 @@ public class StatsDProcessorTest
         key1.put("type", "gauge");
         key1.put("key", new ConfigPattern("some.#p1#.key"));
         key1.put("value", 1D);
+        key1.put("multiplier", 1D);
 
         Map<String, Object> key2 = new HashMap<String, Object>();
         key2.put("type", "timer");
         key2.put("key", new ConfigPattern("someother.#p1#.key"));
         key2.put("value", 2D);
+        key2.put("multiplier", 1D);
 
         params.put("keys", Arrays.<Map>asList(key1, key2));
 
@@ -163,13 +165,29 @@ public class StatsDProcessorTest
         verify(statsDClient).time("someother.v1.key", 2);
     }
 
+    @Test
+    public void processShouldUseMultiplier()
+    {
+        Map<String, String> parserOutput = new HashMap<String, String>();
+
+        processor.process(parserOutput, createprocessParams(StatsDProcessor.Types.COUNTER.value, "key", 5D, 10D));
+
+        verify(statsDClient).count("key", 50);
+    }
+
     private Map<String, Object> createprocessParams(String type, Object key, Object value)
+    {
+        return createprocessParams(type, key, value, 1D);
+    }
+
+    private Map<String, Object> createprocessParams(String type, Object key, Object value, Double multiplier)
     {
         Map<String, Object> params = new HashMap<String, Object>();
         Map<String, Object> key1 = new HashMap<String, Object>();
         key1.put("type", type);
         key1.put("key", key);
         key1.put("value", value);
+        key1.put("multiplier", multiplier);
         params.put("keys", Arrays.<Map>asList(key1));
         return params;
     }

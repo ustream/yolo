@@ -87,6 +87,8 @@ public class StatsDProcessor implements IProcessor
         valueConfig.allowConfigPattern();
         keyConfig.addConfigEntry("value", valueConfig);
 
+        keyConfig.addConfigValue("multiplier", Number.class, false, 1);
+
         map.addConfigList("keys", keyConfig);
 
         return map;
@@ -132,15 +134,17 @@ public class StatsDProcessor implements IProcessor
 
         Object valueObject = keyParams.get("value");
         Double value;
-        if (valueObject instanceof Double)
+        if (valueObject instanceof Number)
         {
-            value = (Double) valueObject;
+            value = ((Number) valueObject).doubleValue();
 
         }
         else
         {
             value = Double.parseDouble(((ConfigPattern) valueObject).applyValues(parserOutput));
         }
+
+        value *= ((Number) keyParams.get("multiplier")).doubleValue();
 
         send(type, key, value.intValue());
     }
