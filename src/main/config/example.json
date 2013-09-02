@@ -8,7 +8,7 @@
 				"keys": [
 					{
 						"type": "gauge",
-						"key": "yolo.gauge.#exceptionName#",
+						"key": "yolo.#HOSTNAME#.gauge.#exceptionName#",
 						"value": "#val#",
 						"multiplier": 1000
 					},

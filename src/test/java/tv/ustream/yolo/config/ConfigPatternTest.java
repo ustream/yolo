@@ -47,6 +47,19 @@ public class ConfigPatternTest
     }
 
     @Test
+    public void replacePatternsShouldAllowGlobalKey() throws ConfigException
+    {
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("key1", "string with #GLOBAL_PARAM#");
+
+        ConfigPattern.addGlobalParameter("GLOBAL_PARAM", "value");
+
+        ConfigPattern.replacePatterns(data, Arrays.<String>asList("param"));
+
+        Assert.assertEquals(new ConfigPattern("string with #GLOBAL_PARAM#"), data.get("key1"));
+    }
+
+    @Test
     public void replacePatternsShouldThrowExceptionWhenKeyIsInvalid() throws ConfigException
     {
         thrown.expect(ConfigException.class);

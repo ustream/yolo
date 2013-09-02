@@ -1,6 +1,7 @@
 package tv.ustream.yolo.config;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -17,6 +18,8 @@ public class ConfigPattern
     private final String pattern;
 
     private final List<String> parameters = new ArrayList<String>();
+
+    private final static Map<String, String> globalParameters = new HashMap<String, String>();
 
     public ConfigPattern(String pattern)
     {
@@ -64,7 +67,7 @@ public class ConfigPattern
             {
                 for (String key : pattern.getParameters())
                 {
-                    if (!validKeys.contains(key))
+                    if (!validKeys.contains(key) && !globalParameters.containsKey(key))
                     {
                         throw new ConfigException("#" + key + "# parameter is missing from parser output!");
                     }
@@ -83,7 +86,12 @@ public class ConfigPattern
         String result = pattern;
         for (String parameter : parameters)
         {
-            if (values.containsKey(parameter))
+
+            if (globalParameters.containsKey(parameter))
+            {
+                result = result.replace("#" + parameter + "#", globalParameters.get(parameter));
+            }
+            else if (values.containsKey(parameter))
             {
                 result = result.replace("#" + parameter + "#", values.get(parameter));
             }
@@ -94,6 +102,11 @@ public class ConfigPattern
     private List<String> getParameters()
     {
         return parameters;
+    }
+
+    public static void addGlobalParameter(String key, String value)
+    {
+        globalParameters.put(key, value);
     }
 
     @Override

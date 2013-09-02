@@ -11,12 +11,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tv.ustream.yolo.config.ConfigException;
 import tv.ustream.yolo.config.ConfigMap;
+import tv.ustream.yolo.config.ConfigPattern;
 import tv.ustream.yolo.handler.FileHandler;
 import tv.ustream.yolo.module.ModuleChain;
 import tv.ustream.yolo.module.ModuleFactory;
 
+import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Map;
 
 /**
@@ -133,6 +136,11 @@ public class Yolo
         getMainConfig().parse("[root]", config);
     }
 
+    private void setGlobalParameters() throws Exception
+    {
+        ConfigPattern.addGlobalParameter("HOSTNAME", getHostname());
+    }
+
     @SuppressWarnings("unchecked")
     private void initModuleChain() throws Exception
     {
@@ -158,6 +166,12 @@ public class Yolo
         }
     }
 
+    private String getHostname() throws IOException
+    {
+        Process process = Runtime.getRuntime().exec("hostname -s");
+        return new BufferedReader(new InputStreamReader(process.getInputStream())).readLine();
+    }
+
     private void startFileHandler()
     {
         fileHandler = new FileHandler(moduleChain, filePath, 1000, readWholeFile, reopenFile);
@@ -172,6 +186,8 @@ public class Yolo
             parseCliOptions(args);
 
             readConfig();
+
+            setGlobalParameters();
 
             initModuleChain();
 
