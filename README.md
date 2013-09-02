@@ -43,9 +43,19 @@ The project uses Gradle and it is embedded with a Gradle wrapper.
 ./gradlew jar
 
 # check if it works
-java -jar build/libs/yolo-[version].jar -help
+java -jar build/libs/yolo.jar -help
 ```
- 
+
+### Build Debian package
+
+```bash
+./gradlew debian
+```
+
+The .deb file will be placed in the build/linux-package directory.
+
+The package contains the runnable jar file, which will be copied to /usr/lib/yolo when installed.
+
 ## Sample configuration
 
 An example config file can be found in [example.json](src/main/config/example.json).
@@ -55,7 +65,7 @@ An example config file can be found in [example.json](src/main/config/example.js
 Simply run the jar with "-help" option.
 
 ```bash
-$ java -jar build/libs/yolo-[version].jar -help
+$ java -jar build/libs/yolo.jar -help
 usage: yolo
  -config <path>   path to config file
  -file <path>     path to logfile
@@ -68,7 +78,7 @@ usage: yolo
 ## Example usage
 
 ```bash
-$ java -jar build/libs/yolo-[version].jar -config /YOURPATH/src/main/config/example.json -file /YOURPATH/foo.log
+$ java -jar build/libs/yolo.jar -config /YOURPATH/src/main/config/example.json -file /YOURPATH/foo.log
 ```
 
 ## Available modules
@@ -76,7 +86,7 @@ $ java -jar build/libs/yolo-[version].jar -config /YOURPATH/src/main/config/exam
 Simply run the jar with "-listModules" option.
 
 ```bash
-$ java -jar build/libs/yolo-[version].jar -listModules
+$ java -jar build/libs/yolo.jar -listModules
 
 Available processors
 --------------------
@@ -274,7 +284,7 @@ The tool uses [SLF4J](http://www.slf4j.org/) for logging with the SimpleLogger i
 To display debug messages use the -Dorg.slf4j.simpleLogger.defaultLogLevel=debug option.
 
 ```bash
-$ java -Dorg.slf4j.simpleLogger.defaultLogLevel=debug -jar build/libs/yolo-[version].jar -config /YOURPATH/src/main/config/example.json -file /YOURPATH/foo.log
+$ java -Dorg.slf4j.simpleLogger.defaultLogLevel=debug -jar build/libs/yolo.jar -config /YOURPATH/src/main/config/example.json -file /YOURPATH/foo.log
 ```
 
 ## Dependencies

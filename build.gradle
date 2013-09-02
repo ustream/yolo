@@ -1,9 +1,19 @@
 group='tv.ustream.yolo'
 version='1.0.0'
 
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.kenshoo:gradle-fpm:0.3'
+    }
+}
+
 apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'idea'
+apply plugin: 'fpm-packaging'
 
 sourceCompatibility = '1.7'
 targetCompatibility = '1.7'
@@ -28,6 +38,7 @@ task wrapper(type: Wrapper) {
 }
 
 jar {
+    archiveName = "${baseName}.${extension}"
     from files(project.sourceSets.main.output.classesDir)
     from project.configurations.runtime.collect {
         zipTree(it)
@@ -35,4 +46,19 @@ jar {
     manifest {
         from "manifest.mf"
     }
+}
+
+debian.dependsOn clean
+debian.dependsOn jar
+
+packaging {
+    prefix  = "/usr/lib/${project.name}"
+    baseDir = jar.destinationDir
+    extraOptions = [
+            '-a':               'all',
+            '--vendor':         'Ustream, Inc.',
+            '--maintainer':     'Andras Szabo <bandesz@ustream.tv>',
+            '--url':            'https://github.com/ustream/yolo',
+            '--description':    'Yolo - Log tailing and parsing framework in Java',
+    ]
 }
