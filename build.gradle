@@ -1,5 +1,5 @@
 group='tv.ustream.yolo'
-version='1.0.0'
+version='1.0.1'
 
 buildscript {
     repositories {
@@ -48,7 +48,6 @@ jar {
     }
 }
 
-debian.dependsOn clean
 debian.dependsOn jar
 
 packaging {
