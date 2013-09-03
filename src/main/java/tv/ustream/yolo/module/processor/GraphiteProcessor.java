@@ -19,6 +19,8 @@ public class GraphiteProcessor implements IProcessor
 
     private static final Logger logger = LoggerFactory.getLogger(GraphiteProcessor.class);
 
+    public static GraphiteFactory graphiteFactory = new GraphiteFactory();
+
     private GraphiteClient client;
 
     @Override
@@ -104,7 +106,7 @@ public class GraphiteProcessor implements IProcessor
         Integer port = ((Number) parameters.get("port")).intValue();
         Long flushTimeMs = ((Number) parameters.get("flushTimeMs")).longValue();
 
-        client = new GraphiteClient(host, port, flushTimeMs);
+        client = graphiteFactory.createClient(host, port, flushTimeMs);
     }
 
     @Override

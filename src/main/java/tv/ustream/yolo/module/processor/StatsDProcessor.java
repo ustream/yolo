@@ -45,7 +45,7 @@ public class StatsDProcessor implements IProcessor
 
     }
 
-    private static StatsDFactory statsDFactory = new StatsDFactory();
+    public static StatsDFactory statsDFactory = new StatsDFactory();
 
     private StatsDClient statsDClient;
 
@@ -161,11 +161,6 @@ public class StatsDProcessor implements IProcessor
         {
             statsDClient.time(key, value);
         }
-    }
-
-    public static void setStatsDFactory(StatsDFactory statsDFactory)
-    {
-        StatsDProcessor.statsDFactory = statsDFactory;
     }
 
 }

@@ -1,11 +1,11 @@
 package tv.ustream.yolo.module.processor;
 
-import com.timgroup.statsd.StatsDClient;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import tv.ustream.yolo.client.GraphiteClient;
 import tv.ustream.yolo.config.ConfigException;
 import tv.ustream.yolo.config.ConfigPattern;
 import tv.ustream.yolo.module.ModuleFactory;
@@ -15,47 +15,48 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 /**
  * @author bandesz
  */
-public class StatsDProcessorTest
+public class GraphiteProcessorTest
 {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    private StatsDFactory statsDFactory;
+    private GraphiteFactory graphiteFactory;
 
-    private StatsDClient statsDClient;
+    private GraphiteClient graphiteClient;
 
-    private StatsDProcessor processor;
+    private GraphiteProcessor processor;
 
     @Before
     public void setUp() throws ConfigException
     {
-        statsDFactory = mock(StatsDFactory.class);
-        statsDClient = mock(StatsDClient.class);
+        graphiteFactory = mock(GraphiteFactory.class);
+        graphiteClient = mock(GraphiteClient.class);
 
-        when(statsDFactory.createClient(anyString(), anyString(), anyInt())).thenReturn(statsDClient);
+        when(graphiteFactory.createClient(anyString(), anyInt(), anyLong())).thenReturn(graphiteClient);
 
-        StatsDProcessor.statsDFactory = statsDFactory;
+        GraphiteProcessor.graphiteFactory = graphiteFactory;
 
-        processor = createProcessor("prefix1", "host1", 1234);
+        processor = createProcessor("host1", 1234);
     }
 
     @After
     public void tearDown()
     {
-        StatsDProcessor.statsDFactory = new StatsDFactory();
+        GraphiteProcessor.graphiteFactory = new GraphiteFactory();
     }
 
     @Test
     public void testSetup() throws ConfigException
     {
-        verify(statsDFactory).createClient("prefix1", "host1", 1234);
+        verify(graphiteFactory).createClient("host1", 1234, 1000);
     }
 
     @Test
@@ -63,37 +64,17 @@ public class StatsDProcessorTest
     {
         thrown.expect(ConfigException.class);
 
-        createProcessor("prefix1", null, 1234);
+        createProcessor(null, 1234);
     }
 
     @Test
-    public void processShouldSendStatsdCount()
+    public void processShouldSendMetrics()
     {
         Map<String, String> parserOutput = new HashMap<String, String>();
 
-        processor.process(parserOutput, createprocessParams(StatsDProcessor.Types.COUNTER.value, "key", 5D));
+        processor.process(parserOutput, createProcessParams("key", 5D));
 
-        verify(statsDClient).count("key", 5);
-    }
-
-    @Test
-    public void processShouldSendStatsdGauge()
-    {
-        Map<String, String> parserOutput = new HashMap<String, String>();
-
-        processor.process(parserOutput, createprocessParams(StatsDProcessor.Types.GAUGE.value, "key", 5D));
-
-        verify(statsDClient).gauge("key", 5);
-    }
-
-    @Test
-    public void processShouldSendStatsdTime()
-    {
-        Map<String, String> parserOutput = new HashMap<String, String>();
-
-        processor.process(parserOutput, createprocessParams(StatsDProcessor.Types.TIMER.value, "key", 5D));
-
-        verify(statsDClient).time("key", 5);
+        verify(graphiteClient).sendMetrics("key", 5D);
     }
 
     @Test
@@ -104,9 +85,9 @@ public class StatsDProcessorTest
 
         ConfigPattern key = new ConfigPattern("some.#p1#.key");
 
-        processor.process(parserOutput, createprocessParams(StatsDProcessor.Types.COUNTER.value, key, 5D));
+        processor.process(parserOutput, createProcessParams(key, 5D));
 
-        verify(statsDClient).count("some.v1.key", 5);
+        verify(graphiteClient).sendMetrics("some.v1.key", 5D);
     }
 
     @Test
@@ -117,9 +98,9 @@ public class StatsDProcessorTest
 
         ConfigPattern value = new ConfigPattern("#v1#");
 
-        processor.process(parserOutput, createprocessParams(StatsDProcessor.Types.COUNTER.value, "key", value));
+        processor.process(parserOutput, createProcessParams("key", value));
 
-        verify(statsDClient).count("key", 5);
+        verify(graphiteClient).sendMetrics("key", 5D);
     }
 
     @Test
@@ -132,9 +113,9 @@ public class StatsDProcessorTest
         ConfigPattern key = new ConfigPattern("some.#p1#.key");
         ConfigPattern value = new ConfigPattern("#v1#");
 
-        processor.process(parserOutput, createprocessParams(StatsDProcessor.Types.COUNTER.value, key, value));
+        processor.process(parserOutput, createProcessParams(key, value));
 
-        verify(statsDClient).count("some.v1.key", 5);
+        verify(graphiteClient).sendMetrics("some.v1.key", 5D);
     }
 
     @Test
@@ -161,8 +142,8 @@ public class StatsDProcessorTest
 
         processor.process(parserOutput, params);
 
-        verify(statsDClient).gauge("some.v1.key", 1);
-        verify(statsDClient).time("someother.v1.key", 2);
+        verify(graphiteClient).sendMetrics("some.v1.key", 1D);
+        verify(graphiteClient).sendMetrics("someother.v1.key", 2D);
     }
 
     @Test
@@ -170,38 +151,50 @@ public class StatsDProcessorTest
     {
         Map<String, String> parserOutput = new HashMap<String, String>();
 
-        processor.process(parserOutput, createprocessParams(StatsDProcessor.Types.COUNTER.value, "key", 5D, 10D));
+        processor.process(parserOutput, createProcessParams("key", 5D, 10D, null));
 
-        verify(statsDClient).count("key", 50);
+        verify(graphiteClient).sendMetrics("key", 50D);
     }
 
-    private Map<String, Object> createprocessParams(String type, Object key, Object value)
+    @Test
+    public void processShouldUseCustomTimestamp()
     {
-        return createprocessParams(type, key, value, 1D);
+        Map<String, String> parserOutput = new HashMap<String, String>();
+        parserOutput.put("ts", "1234567890");
+
+        processor.process(parserOutput, createProcessParams("key", 5D, 1D, new ConfigPattern("#ts#")));
+
+        verify(graphiteClient).sendMetrics("key", 5D, 1234567890);
     }
 
-    private Map<String, Object> createprocessParams(String type, Object key, Object value, Double multiplier)
+    private Map<String, Object> createProcessParams(Object key, Object value)
+    {
+        return createProcessParams(key, value, 1D, null);
+    }
+
+    private Map<String, Object> createProcessParams(Object key, Object value, Double multiplier, Object timestamp)
     {
         Map<String, Object> params = new HashMap<String, Object>();
         Map<String, Object> key1 = new HashMap<String, Object>();
-        key1.put("type", type);
         key1.put("key", key);
         key1.put("value", value);
         key1.put("multiplier", multiplier);
+        key1.put("timestamp", timestamp);
         params.put("keys", Arrays.<Map>asList(key1));
         return params;
     }
 
-    private StatsDProcessor createProcessor(String prefix, String host, Integer port) throws ConfigException
+    private GraphiteProcessor createProcessor(String host, Integer port) throws ConfigException
     {
         Map<String, Object> config = new HashMap<String, Object>();
-        config.put("class", StatsDProcessor.class.getCanonicalName());
-        config.put("prefix", prefix);
+        config.put("class", GraphiteProcessor.class.getCanonicalName());
         config.put("host", host);
         config.put("port", port.doubleValue());
+        config.put("flushTimeMs", 1000);
         config.put("processor", "x");
 
-        return (StatsDProcessor) new ModuleFactory().createProcessor("x", config);
+        return (GraphiteProcessor) new ModuleFactory().createProcessor("x", config);
     }
+
 
 }
