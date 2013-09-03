@@ -1,5 +1,6 @@
 package tv.ustream.yolo.module.processor;
 
+import com.timgroup.statsd.NonBlockingStatsDClient;
 import com.timgroup.statsd.StatsDClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,9 +46,12 @@ public class StatsDProcessor implements IProcessor
 
     }
 
-    public static StatsDFactory statsDFactory = new StatsDFactory();
-
     private StatsDClient statsDClient;
+
+    protected StatsDClient createClient(String prefix, String host, int port)
+    {
+        return new NonBlockingStatsDClient(prefix, host, port);
+    }
 
     @Override
     public void setUpModule(Map<String, Object> parameters)
@@ -58,7 +62,7 @@ public class StatsDProcessor implements IProcessor
 
         logger.debug("Initializing StatsD connection: {}:{}", host, port);
 
-        statsDClient = statsDFactory.createClient(prefix != null ? prefix : "", host, port);
+        statsDClient = createClient(prefix != null ? prefix : "", host, port);
     }
 
     @Override

@@ -14,10 +14,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * @author bandesz
@@ -28,8 +26,6 @@ public class GraphiteProcessorTest
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    private GraphiteFactory graphiteFactory;
-
     private GraphiteClient graphiteClient;
 
     private GraphiteProcessor processor;
@@ -37,26 +33,14 @@ public class GraphiteProcessorTest
     @Before
     public void setUp() throws ConfigException
     {
-        graphiteFactory = mock(GraphiteFactory.class);
         graphiteClient = mock(GraphiteClient.class);
 
-        when(graphiteFactory.createClient(anyString(), anyInt(), anyLong())).thenReturn(graphiteClient);
-
-        GraphiteProcessor.graphiteFactory = graphiteFactory;
-
-        processor = createProcessor("host1", 1234);
+        processor = createProcessorMock("host1", 1234);
     }
 
     @After
     public void tearDown()
     {
-        GraphiteProcessor.graphiteFactory = new GraphiteFactory();
-    }
-
-    @Test
-    public void testSetup() throws ConfigException
-    {
-        verify(graphiteFactory).createClient("host1", 1234, 1000);
     }
 
     @Test
@@ -194,6 +178,28 @@ public class GraphiteProcessorTest
         config.put("processor", "x");
 
         return (GraphiteProcessor) new ModuleFactory().createProcessor("x", config);
+    }
+
+    private GraphiteProcessor createProcessorMock(String host, Integer port) throws ConfigException
+    {
+        GraphiteProcessor processor = new GraphiteProcessor()
+        {
+            @Override
+            protected GraphiteClient createClient(String host, int port, long flushTimeMs)
+            {
+                return graphiteClient;
+            }
+        };
+
+        Map<String, Object> config = new HashMap<String, Object>();
+        config.put("class", GraphiteProcessor.class.getCanonicalName());
+        config.put("host", host);
+        config.put("port", port.doubleValue());
+        config.put("flushTimeMs", 1000);
+
+        processor.setUpModule(config);
+
+        return processor;
     }
 
 

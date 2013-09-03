@@ -14,9 +14,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * @author bandesz
@@ -27,8 +26,6 @@ public class StatsDProcessorTest
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    private StatsDFactory statsDFactory;
-
     private StatsDClient statsDClient;
 
     private StatsDProcessor processor;
@@ -36,26 +33,14 @@ public class StatsDProcessorTest
     @Before
     public void setUp() throws ConfigException
     {
-        statsDFactory = mock(StatsDFactory.class);
         statsDClient = mock(StatsDClient.class);
 
-        when(statsDFactory.createClient(anyString(), anyString(), anyInt())).thenReturn(statsDClient);
-
-        StatsDProcessor.statsDFactory = statsDFactory;
-
-        processor = createProcessor("prefix1", "host1", 1234);
+        processor = createProcessorMock("prefix", "host", 1234);
     }
 
     @After
     public void tearDown()
     {
-        StatsDProcessor.statsDFactory = new StatsDFactory();
-    }
-
-    @Test
-    public void testSetup() throws ConfigException
-    {
-        verify(statsDFactory).createClient("prefix1", "host1", 1234);
     }
 
     @Test
@@ -63,7 +48,7 @@ public class StatsDProcessorTest
     {
         thrown.expect(ConfigException.class);
 
-        createProcessor("prefix1", null, 1234);
+        processor = createProcessor("prefix1", null, 1234);
     }
 
     @Test
@@ -202,6 +187,27 @@ public class StatsDProcessorTest
         config.put("processor", "x");
 
         return (StatsDProcessor) new ModuleFactory().createProcessor("x", config);
+    }
+
+    private StatsDProcessor createProcessorMock(String prefix, String host, Integer port) throws ConfigException
+    {
+        StatsDProcessor processor = new StatsDProcessor()
+        {
+            protected StatsDClient createClient(String prefix, String host, int port)
+            {
+                return statsDClient;
+            }
+        };
+
+        Map<String, Object> config = new HashMap<String, Object>();
+        config.put("class", StatsDProcessor.class.getCanonicalName());
+        config.put("prefix", prefix);
+        config.put("host", host);
+        config.put("port", port.doubleValue());
+
+        processor.setUpModule(config);
+
+        return processor;
     }
 
 }

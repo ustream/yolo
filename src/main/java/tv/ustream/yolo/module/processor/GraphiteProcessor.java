@@ -1,7 +1,5 @@
 package tv.ustream.yolo.module.processor;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import tv.ustream.yolo.client.GraphiteClient;
 import tv.ustream.yolo.config.ConfigMap;
 import tv.ustream.yolo.config.ConfigPattern;
@@ -17,11 +15,12 @@ import java.util.Map;
 public class GraphiteProcessor implements IProcessor
 {
 
-    private static final Logger logger = LoggerFactory.getLogger(GraphiteProcessor.class);
-
-    public static GraphiteFactory graphiteFactory = new GraphiteFactory();
-
     private GraphiteClient client;
+
+    protected GraphiteClient createClient(String host, int port, long flushTimeMs)
+    {
+        return new GraphiteClient(host, port, flushTimeMs);
+    }
 
     @Override
     public ConfigMap getProcessParamsConfig()
@@ -106,7 +105,7 @@ public class GraphiteProcessor implements IProcessor
         Integer port = ((Number) parameters.get("port")).intValue();
         Long flushTimeMs = ((Number) parameters.get("flushTimeMs")).longValue();
 
-        client = graphiteFactory.createClient(host, port, flushTimeMs);
+        client = createClient(host, port, flushTimeMs);
     }
 
     @Override
