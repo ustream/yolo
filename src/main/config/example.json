@@ -2,7 +2,7 @@
 	"parsers": {
 		"regexp1": {
 			"class": "tv.ustream.yolo.module.parser.RegexpParser",
-			"regex": "(?i:(?<exceptionName>[a-zA-Z]+)exception value (?<val>\\d+))",
+			"regex": "(?i:(?<exceptionName>[a-zA-Z]+)exception value (?<val>\\d+(?:\\.\\d+)?))",
 			"processor": "composite",
 			"processParams": {
 				"keys": [
@@ -22,14 +22,13 @@
 		},
 		"regexp2": {
 			"class": "tv.ustream.yolo.module.parser.RegexpParser",
-			"regex": "(?i:(?<errorName>[a-zA-Z]+)error)",
-			"processor": "statsd",
+			"regex": "(?i:(?<errorName>[a-zA-Z]+)error value (?<val>\\d+(?:\\.\\d+)?))",
+			"processor": "graphite",
 			"processParams": {
 				"keys": [
 					{
-						"type": "counter",
 						"key": "yolo.error.#errorName#",
-						"value": 1
+						"value": "#val#"
 					}
 				]
 			}
@@ -47,15 +46,17 @@
 			"host": "127.0.0.1",
 			"port": 8125
   		},
+  		"graphite": {
+			"class": "tv.ustream.yolo.module.processor.GraphiteProcessor",
+			"host": "127.0.0.1",
+			"port": 2003
+		},
   		"console": {
   			"class": "tv.ustream.yolo.module.processor.ConsoleProcessor"
   		},
   		"composite": {
   			"class": "tv.ustream.yolo.module.processor.CompositeProcessor",
   			"processors": ["statsd", "console"]
-  		},
-  		"noop": {
-  			"class": "tv.ustream.yolo.module.processor.NoOpProcessor"
   		}
 	}
 }

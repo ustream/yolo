@@ -102,12 +102,25 @@ Available processors
       class: String, required
     }
 
-* tv.ustream.yolo.module.processor.NoOpProcessor - does nothing, use it if you want to disable a parser temporarily
+* tv.ustream.yolo.module.processor.GraphiteProcessor - sends metrics to Graphite
   - params: Map {
+      port: Number, default: 2003
+      host: String, required
       class: String, required
+      flushTimeMs: Number, default: 1000
+    }
+  - processParams: Map {
+      keys: List [
+        Map {
+          timestamp: String, pattern allowed
+          value: String|Number, required, pattern allowed
+          multiplier: Number, default: 1
+          key: String, required, pattern allowed
+        }
+      ]
     }
 
-* tv.ustream.yolo.module.processor.StatsDProcessor - sends metrics to statsd, it handles counter, gauge and timing values
+* tv.ustream.yolo.module.processor.StatsDProcessor - sends metrics to StatsD, handles counter, gauge and timing values
   - params: Map {
       port: Number, default: 8125
       host: String, required
@@ -119,6 +132,7 @@ Available processors
         Map {
           value: String|Number, required, pattern allowed
           type: String, required, allowed values: [counter, gauge, timer]
+          multiplier: Number, default: 1
           key: String, required, pattern allowed
         }
       ]

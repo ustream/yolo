@@ -7,8 +7,8 @@ import org.junit.rules.ExpectedException;
 import tv.ustream.yolo.config.ConfigException;
 import tv.ustream.yolo.module.parser.IParser;
 import tv.ustream.yolo.module.parser.PassThruParser;
+import tv.ustream.yolo.module.processor.ConsoleProcessor;
 import tv.ustream.yolo.module.processor.IProcessor;
-import tv.ustream.yolo.module.processor.NoOpProcessor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,11 +26,11 @@ public class ModuleFactoryTest
     public void createProcessorShouldCreateNewInstance() throws ConfigException
     {
         Map<String, Object> config = new HashMap<String, Object>();
-        config.put("class", NoOpProcessor.class.getCanonicalName());
+        config.put("class", ConsoleProcessor.class.getCanonicalName());
 
         IProcessor processor = new ModuleFactory().createProcessor("x", config);
 
-        Assert.assertEquals(NoOpProcessor.class, processor.getClass());
+        Assert.assertEquals(ConsoleProcessor.class, processor.getClass());
     }
 
     @Test
@@ -42,7 +42,7 @@ public class ModuleFactoryTest
 
         IProcessor processor = new ModuleFactory().createProcessor("x", config);
 
-        Assert.assertEquals(NoOpProcessor.class, processor.getClass());
+        Assert.assertEquals(ConsoleProcessor.class, processor.getClass());
     }
 
     @Test
@@ -66,7 +66,7 @@ public class ModuleFactoryTest
 
         IParser parser = new ModuleFactory().createParser("pr1", config);
 
-        Assert.assertEquals(NoOpProcessor.class, parser.getClass());
+        Assert.assertEquals(ConsoleProcessor.class, parser.getClass());
     }
 
     @Test

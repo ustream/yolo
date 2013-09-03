@@ -7,8 +7,8 @@ import tv.ustream.yolo.module.parser.PassThruParser;
 import tv.ustream.yolo.module.parser.RegexpParser;
 import tv.ustream.yolo.module.processor.CompositeProcessor;
 import tv.ustream.yolo.module.processor.ConsoleProcessor;
+import tv.ustream.yolo.module.processor.GraphiteProcessor;
 import tv.ustream.yolo.module.processor.IProcessor;
-import tv.ustream.yolo.module.processor.NoOpProcessor;
 import tv.ustream.yolo.module.processor.StatsDProcessor;
 
 import java.util.Arrays;
@@ -24,7 +24,7 @@ public class ModuleFactory
     private static final List<String> availableProcessors = Arrays.asList(
         CompositeProcessor.class.getCanonicalName(),
         ConsoleProcessor.class.getCanonicalName(),
-        NoOpProcessor.class.getCanonicalName(),
+        GraphiteProcessor.class.getCanonicalName(),
         StatsDProcessor.class.getCanonicalName()
     );
 

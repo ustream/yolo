@@ -97,7 +97,7 @@ public class StatsDProcessor implements IProcessor
     @Override
     public String getModuleDescription()
     {
-        return "sends metrics to statsd, it handles counter, gauge and timing values";
+        return "sends metrics to StatsD, handles counter, gauge and timing values";
     }
 
     @Override
