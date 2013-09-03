@@ -5,10 +5,8 @@ import org.junit.Test;
 import tv.ustream.yolo.config.ConfigException;
 import tv.ustream.yolo.module.ModuleFactory;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.mockito.Mockito.mock;
@@ -48,25 +46,6 @@ public class CompositeProcessorTest
 
         verify(p1).process(parserOutput, processParams);
         verify(p2).process(parserOutput, processParams);
-    }
-
-    @Test
-    public void validateShouldClassSubProcessors() throws Exception
-    {
-        List<String> parserOutputKeys = new ArrayList<String>();
-        parserOutputKeys.add("key1");
-
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("key2", "value2");
-
-        CompositeProcessor processor = createProcessor();
-        processor.addProcessor(p1);
-        processor.addProcessor(p2);
-
-        processor.validateProcessParams(parserOutputKeys, params);
-
-        verify(p1).validateProcessParams(parserOutputKeys, params);
-        verify(p2).validateProcessParams(parserOutputKeys, params);
     }
 
     private CompositeProcessor createProcessor() throws ConfigException

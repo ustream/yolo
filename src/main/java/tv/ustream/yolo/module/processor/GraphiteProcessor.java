@@ -3,7 +3,6 @@ package tv.ustream.yolo.module.processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tv.ustream.yolo.client.GraphiteClient;
-import tv.ustream.yolo.config.ConfigException;
 import tv.ustream.yolo.config.ConfigMap;
 import tv.ustream.yolo.config.ConfigPattern;
 import tv.ustream.yolo.config.ConfigValue;
@@ -45,11 +44,6 @@ public class GraphiteProcessor implements IProcessor
         map.addConfigList("keys", keyConfig);
 
         return map;
-    }
-
-    @Override
-    public void validateProcessParams(List<String> parserOutputKeys, Map<String, Object> params) throws ConfigException
-    {
     }
 
     @Override

@@ -3,7 +3,6 @@ package tv.ustream.yolo.module.processor;
 import com.timgroup.statsd.StatsDClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tv.ustream.yolo.config.ConfigException;
 import tv.ustream.yolo.config.ConfigMap;
 import tv.ustream.yolo.config.ConfigPattern;
 import tv.ustream.yolo.config.ConfigValue;
@@ -98,11 +97,6 @@ public class StatsDProcessor implements IProcessor
     public String getModuleDescription()
     {
         return "sends metrics to StatsD, handles counter, gauge and timing values";
-    }
-
-    @Override
-    public void validateProcessParams(List<String> parserOutputKeys, Map<String, Object> params) throws ConfigException
-    {
     }
 
     @SuppressWarnings("unchecked")

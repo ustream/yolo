@@ -225,12 +225,6 @@ public class TestProcessor implements IProcessor
     }
 
     @Override
-    public void validateProcessParams(List<String> parserOutputKeys, Map<String, Object> params) throws ConfigException
-    {
-        // you can validate a parser's processParams configuration here
-    }
-
-    @Override
     public void process(Map<String, String> parserOutput, Map<String, Object> processParams)
     {
         // process the parser's output. The processParams map can contain ConfigPattern objects where you can subtitute your own values

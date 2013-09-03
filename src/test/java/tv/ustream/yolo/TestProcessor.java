@@ -1,6 +1,5 @@
 package tv.ustream.yolo;
 
-import tv.ustream.yolo.config.ConfigException;
 import tv.ustream.yolo.config.ConfigMap;
 import tv.ustream.yolo.module.processor.IProcessor;
 
@@ -20,11 +19,6 @@ public class TestProcessor implements IProcessor
     public ConfigMap getProcessParamsConfig()
     {
         return null;
-    }
-
-    @Override
-    public void validateProcessParams(List<String> parserOutputKeys, Map<String, Object> params) throws ConfigException
-    {
     }
 
     @Override

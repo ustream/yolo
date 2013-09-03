@@ -1,6 +1,5 @@
 package tv.ustream.yolo.module.processor;
 
-import tv.ustream.yolo.config.ConfigException;
 import tv.ustream.yolo.config.ConfigMap;
 
 import java.util.ArrayList;
@@ -14,15 +13,6 @@ public class CompositeProcessor implements ICompositeProcessor
 {
 
     private final List<IProcessor> processors = new ArrayList<IProcessor>();
-
-    @Override
-    public void validateProcessParams(List<String> parserOutputKeys, Map<String, Object> params) throws ConfigException
-    {
-        for (IProcessor processor : processors)
-        {
-            processor.validateProcessParams(parserOutputKeys, params);
-        }
-    }
 
     @Override
     public void process(Map<String, String> parserOutput, Map<String, Object> processParams)

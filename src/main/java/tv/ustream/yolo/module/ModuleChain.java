@@ -116,8 +116,6 @@ public class ModuleChain implements ILineHandler
             parserName,
             (Map<String, Object>) ConfigPattern.replacePatterns(params, parsers.get(parserName).getOutputKeys())
         );
-
-        processors.get(processorName).validateProcessParams(parsers.get(parserName).getOutputKeys(), params);
     }
 
     public void handle(String line)
