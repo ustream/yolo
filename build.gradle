@@ -1,5 +1,5 @@
-group='tv.ustream.yolo'
-version='1.0.3'
+group = 'tv.ustream.yolo'
+version = '1.0.4'
 
 buildscript {
     repositories {
@@ -48,16 +48,23 @@ jar {
     }
 }
 
-debian.dependsOn jar
+ext.distDir = "${buildDir}/dist"
+
+task buildDist(dependsOn: jar) << {
+    ant.copy(file: "${jar.archivePath}", todir: "${distDir}/usr/lib/yolo")
+    ant.copy(file: "yolo", todir: "${distDir}/usr/bin/")
+    ant.chmod(file: "${distDir}/usr/bin/yolo", perm: "755")
+}
+
+debian.dependsOn buildDist
 
 packaging {
-    prefix  = "/usr/lib/${project.name}"
-    baseDir = jar.destinationDir
+    baseDir = distDir
     extraOptions = [
-            '-a':               'all',
-            '--vendor':         'Ustream, Inc.',
-            '--maintainer':     'Andras Szabo <bandesz@ustream.tv>',
-            '--url':            'https://github.com/ustream/yolo',
-            '--description':    'Yolo - Log tailing and parsing framework in Java',
+            '-a': 'all',
+            '--vendor': 'Ustream, Inc.',
+            '--maintainer': 'Andras Szabo <bandesz@ustream.tv>',
+            '--url': 'https://github.com/ustream/yolo',
+            '--description': 'Yolo - Log tailing and parsing framework in Java',
     ]
 }
