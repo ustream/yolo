@@ -167,4 +167,9 @@ public class StatsDProcessor implements IProcessor
         }
     }
 
+    @Override
+    public void stop()
+    {
+    }
+
 }

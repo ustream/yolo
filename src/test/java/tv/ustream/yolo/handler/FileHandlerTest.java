@@ -1,6 +1,5 @@
 package tv.ustream.yolo.handler;
 
-import junit.framework.Assert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -9,6 +8,10 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
+
+import static com.jayway.awaitility.Awaitility.await;
 
 /**
  * @author bandesz
@@ -55,7 +58,7 @@ public class FileHandlerTest implements ILineHandler
 
         Thread.sleep(200);
 
-        Assert.assertEquals("l4\nl5\n", handledLines);
+        await().atMost(5000, TimeUnit.MILLISECONDS).until(equalsHandledLines("l4\nl5\n"));
     }
 
     @Test
@@ -70,9 +73,7 @@ public class FileHandlerTest implements ILineHandler
         out.write("l4\nl5\n");
         out.close();
 
-        Thread.sleep(200);
-
-        Assert.assertEquals("l1\nl2\nl3\nl4\nl5\n", handledLines);
+        await().atMost(5000, TimeUnit.MILLISECONDS).until(equalsHandledLines("l1\nl2\nl3\nl4\nl5\n"));
     }
 
     @Test
@@ -85,21 +86,29 @@ public class FileHandlerTest implements ILineHandler
 
         testFile.delete();
 
-        Thread.sleep(200);
-
         FileWriter out = new FileWriter(testFile, true);
         out.write("l4\nl5\n");
         out.close();
 
-        Thread.sleep(1000);
-
-        Assert.assertEquals("l1\nl2\nl3\nl4\nl5\n", handledLines);
+        await().atMost(5000, TimeUnit.MILLISECONDS).until(equalsHandledLines("l1\nl2\nl3\nl4\nl5\n"));
     }
 
     @Override
     public void handle(String line)
     {
         handledLines += line + "\n";
+    }
+
+    public Callable<Boolean> equalsHandledLines(final String lines)
+    {
+        return new Callable<Boolean>()
+        {
+            @Override
+            public Boolean call() throws Exception
+            {
+                return lines.equals(handledLines);
+            }
+        };
     }
 
 }

@@ -15,4 +15,6 @@ public interface IProcessor extends IModule
 
     public void process(Map<String, String> parserOutput, Map<String, Object> processParams);
 
+    public void stop();
+
 }

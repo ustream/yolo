@@ -32,13 +32,66 @@ public class ModuleChain implements ILineHandler
 
     private final Map<String, String> transitions = new HashMap<String, String>();
 
+    private Map<String, Object> config = null;
+
     public ModuleChain(ModuleFactory moduleFactory)
     {
         this.moduleFactory = moduleFactory;
     }
 
+    private ConfigMap getMainConfig()
+    {
+        ConfigMap config = new ConfigMap();
+        config.addConfigValue("processors", Map.class);
+        config.addConfigValue("parsers", Map.class);
+        return config;
+    }
+
+    public void updateConfig(Map<String, Object> config, boolean instant) throws ConfigException
+    {
+        this.config = config;
+
+        getMainConfig().parse("[root]", config);
+
+        if (instant)
+        {
+            update();
+        }
+    }
+
+    private void update() throws ConfigException
+    {
+        if (config == null)
+        {
+            return;
+        }
+
+        stop();
+
+        reset();
+
+        Map<String, Object> processorsEntry = (Map<String, Object>) config.get("processors");
+        for (Map.Entry<String, Object> processor : processorsEntry.entrySet())
+        {
+            addProcessor(processor.getKey(), (Map<String, Object>) processor.getValue());
+        }
+
+        for (Map.Entry<String, Object> processor : processorsEntry.entrySet())
+        {
+            setupCompositeProcessor(processors.get(processor.getKey()), (Map<String, Object>) processor.getValue());
+        }
+
+        Map<String, Object> parsersEntry = (Map<String, Object>) config.get("parsers");
+        for (Map.Entry<String, Object> parser : parsersEntry.entrySet())
+        {
+            addParser(parser.getKey(), (Map<String, Object>) parser.getValue());
+        }
+
+        config = null;
+    }
+
     @SuppressWarnings("unchecked")
-    public void addProcessor(String name, Map<String, Object> config) throws Exception
+    private void addProcessor(String name, Map<String, Object> config) throws ConfigException
     {
         logger.debug("Adding {} processor {}", name, config);
 
@@ -50,20 +103,20 @@ public class ModuleChain implements ILineHandler
         }
 
         processors.put(name, processor);
-
-        if (processor instanceof ICompositeProcessor)
-        {
-            setupCompositeProcessor((ICompositeProcessor) processor, (List<String>) config.get("processors"));
-        }
     }
 
-    private void setupCompositeProcessor(ICompositeProcessor processor, List<String> subProcessors) throws Exception
+    private void setupCompositeProcessor(IProcessor processor, Map<String, Object> config) throws ConfigException
     {
-        for (String subProcessor : subProcessors)
+        if (!(processor instanceof ICompositeProcessor))
+        {
+            return;
+        }
+
+        for (String subProcessor : (List<String>) config.get("processors"))
         {
             if (processors.containsKey(subProcessor))
             {
-                processor.addProcessor(processors.get(subProcessor));
+                ((ICompositeProcessor) processor).addProcessor(processors.get(subProcessor));
             }
             else
             {
@@ -73,7 +126,7 @@ public class ModuleChain implements ILineHandler
     }
 
     @SuppressWarnings("unchecked")
-    public void addParser(String name, Map<String, Object> config) throws Exception
+    private void addParser(String name, Map<String, Object> config) throws ConfigException
     {
         logger.debug("Adding {} parser {}", name, config);
 
@@ -120,6 +173,15 @@ public class ModuleChain implements ILineHandler
 
     public void handle(String line)
     {
+        try
+        {
+            update();
+        }
+        catch (ConfigException e)
+        {
+            throw new RuntimeException("Updating module chain failed: " + e.getMessage());
+        }
+
         Boolean match = false;
         for (String parserName : parsers.keySet())
         {
@@ -133,6 +195,22 @@ public class ModuleChain implements ILineHandler
                 }
             }
         }
+    }
+
+    public void stop()
+    {
+        for (IProcessor processor : processors.values())
+        {
+            processor.stop();
+        }
+    }
+
+    private void reset()
+    {
+        parsers.clear();
+        processParams.clear();
+        transitions.clear();
+        processors.clear();
     }
 
 }

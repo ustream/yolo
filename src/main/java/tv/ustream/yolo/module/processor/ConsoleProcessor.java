@@ -39,4 +39,9 @@ public class ConsoleProcessor implements IProcessor
         return "writes parameters to console, use it for debug purposes";
     }
 
+    @Override
+    public void stop()
+    {
+    }
+
 }

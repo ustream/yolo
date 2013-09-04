@@ -43,4 +43,10 @@ public class TestProcessor implements IProcessor
     {
         return null;
     }
+
+    @Override
+    public void stop()
+    {
+    }
+
 }

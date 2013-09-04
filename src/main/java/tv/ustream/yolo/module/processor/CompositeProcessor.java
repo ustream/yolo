@@ -59,4 +59,9 @@ public class CompositeProcessor implements ICompositeProcessor
         processors.add(processor);
     }
 
+    @Override
+    public void stop()
+    {
+    }
+
 }

@@ -63,8 +63,12 @@ public class ModuleChainTest
     @Test
     public void parserAndProcessorShouldBeAdded() throws Exception
     {
-        moduleChain.addProcessor("pr1", createProcessorConfig("processor1"));
-        moduleChain.addParser("pa1", createParserConfig("parser1", "pr1", new HashMap<String, Object>()));
+        Map<String, Object> config = new HashMap<String, Object>();
+
+        addModule(config, "processors", "pr1", createProcessorConfig("processor1"));
+        addModule(config, "parsers", "pa1", createParserConfig("parser1", "pr1", new HashMap<String, Object>()));
+
+        moduleChain.updateConfig(config, true);
 
         when(parser1.parse(anyString())).thenReturn(new HashMap<String, String>());
 
@@ -76,8 +80,12 @@ public class ModuleChainTest
     @Test
     public void disabledParserShouldNotBeAdded() throws Exception
     {
-        moduleChain.addProcessor("pr1", createProcessorConfig("processor1"));
-        moduleChain.addParser("pa3", createParserConfig("parser3", "pr3", new HashMap<String, Object>()));
+        Map<String, Object> config = new HashMap<String, Object>();
+
+        addModule(config, "processors", "pr1", createProcessorConfig("processor1"));
+        addModule(config, "parsers", "pa3", createParserConfig("parser3", "pr3", new HashMap<String, Object>()));
+
+        moduleChain.updateConfig(config, true);
 
         when(parser1.parse(anyString())).thenReturn(new HashMap<String, String>());
 
@@ -89,10 +97,14 @@ public class ModuleChainTest
     @Test
     public void lineShouldBeParsedWithTheFirstApplicableParserProcessor() throws Exception
     {
-        moduleChain.addProcessor("pr1", createProcessorConfig("processor1"));
-        moduleChain.addProcessor("pr2", createProcessorConfig("processor2"));
-        moduleChain.addParser("pa1", createParserConfig("parser1", "pr1", new HashMap<String, Object>()));
-        moduleChain.addParser("pa2", createParserConfig("parser2", "pr2", new HashMap<String, Object>()));
+        Map<String, Object> config = new HashMap<String, Object>();
+
+        addModule(config, "processors", "pr1", createProcessorConfig("processor1"));
+        addModule(config, "processors", "pr2", createProcessorConfig("processor2"));
+        addModule(config, "parsers", "pa1", createParserConfig("parser1", "pr1", new HashMap<String, Object>()));
+        addModule(config, "parsers", "pa2", createParserConfig("parser2", "pr2", new HashMap<String, Object>()));
+
+        moduleChain.updateConfig(config, true);
 
         when(parser1.parse(anyString())).thenReturn(null);
         when(parser2.parse(anyString())).thenReturn(new HashMap<String, String>());
@@ -107,10 +119,14 @@ public class ModuleChainTest
     @Test
     public void multipleHandleShouldWorkCorrectly() throws Exception
     {
-        moduleChain.addProcessor("pr1", createProcessorConfig("processor1"));
-        moduleChain.addProcessor("pr2", createProcessorConfig("processor2"));
-        moduleChain.addParser("pa1", createParserConfig("parser1", "pr1", new HashMap<String, Object>()));
-        moduleChain.addParser("pa2", createParserConfig("parser2", "pr2", new HashMap<String, Object>()));
+        Map<String, Object> config = new HashMap<String, Object>();
+
+        addModule(config, "processors", "pr1", createProcessorConfig("processor1"));
+        addModule(config, "processors", "pr2", createProcessorConfig("processor2"));
+        addModule(config, "parsers", "pa1", createParserConfig("parser1", "pr1", new HashMap<String, Object>()));
+        addModule(config, "parsers", "pa2", createParserConfig("parser2", "pr2", new HashMap<String, Object>()));
+
+        moduleChain.updateConfig(config, true);
 
         when(parser1.parse("t1")).thenReturn(null);
         when(parser2.parse("t1")).thenReturn(new HashMap<String, String>());
@@ -129,10 +145,14 @@ public class ModuleChainTest
     {
         when(parser2.runAlways()).thenReturn(true);
 
-        moduleChain.addProcessor("pr1", createProcessorConfig("processor1"));
-        moduleChain.addProcessor("pr2", createProcessorConfig("processor2"));
-        moduleChain.addParser("pa1", createParserConfig("parser1", "pr1", new HashMap<String, Object>()));
-        moduleChain.addParser("pa2", createParserConfig("parser2", "pr2", new HashMap<String, Object>()));
+        Map<String, Object> config = new HashMap<String, Object>();
+
+        addModule(config, "processors", "pr1", createProcessorConfig("processor1"));
+        addModule(config, "processors", "pr2", createProcessorConfig("processor2"));
+        addModule(config, "parsers", "pa1", createParserConfig("parser1", "pr1", new HashMap<String, Object>()));
+        addModule(config, "parsers", "pa2", createParserConfig("parser2", "pr2", new HashMap<String, Object>()));
+
+        moduleChain.updateConfig(config, true);
 
         when(parser1.parse(anyString())).thenReturn(new HashMap<String, String>());
         when(parser2.parse(anyString())).thenReturn(new HashMap<String, String>());
@@ -150,8 +170,12 @@ public class ModuleChainTest
         Map<String, Object> processParams = new HashMap<String, Object>();
         processParams.put("key1", "value1");
 
-        moduleChain.addProcessor("pr1", createProcessorConfig("processor1"));
-        moduleChain.addParser("pa1", createParserConfig("parser1", "pr1", processParams));
+        Map<String, Object> config = new HashMap<String, Object>();
+
+        addModule(config, "processors", "pr1", createProcessorConfig("processor1"));
+        addModule(config, "parsers", "pa1", createParserConfig("parser1", "pr1", processParams));
+
+        moduleChain.updateConfig(config, true);
 
         Map<String, String> parserOut = new HashMap<String, String>();
         parserOut.put("key2", "value2");
@@ -168,7 +192,12 @@ public class ModuleChainTest
     {
         thrown.expect(ConfigException.class);
 
-        moduleChain.addParser("pa1", createParserConfig("parser1", "pr1", new HashMap<String, Object>()));
+        Map<String, Object> config = new HashMap<String, Object>();
+
+        addModule(config, "processors", "pr1", createProcessorConfig("processor1"));
+        addModule(config, "parsers", "pa1", createParserConfig("parser1", "prX", new HashMap<String, Object>()));
+
+        moduleChain.updateConfig(config, true);
     }
 
     @Test
@@ -177,10 +206,14 @@ public class ModuleChainTest
         Map<String, Object> pr3Config = new HashMap<String, Object>();
         pr3Config.put("processors", Arrays.asList("pr1", "pr2"));
 
-        moduleChain.addProcessor("pr1", createProcessorConfig("processor1"));
-        moduleChain.addProcessor("pr2", createProcessorConfig("processor2"));
-        moduleChain.addProcessor("pr3", pr3Config);
-        moduleChain.addParser("pa1", createParserConfig("parser1", "pr3", new HashMap<String, Object>()));
+        Map<String, Object> config = new HashMap<String, Object>();
+
+        addModule(config, "processors", "pr1", createProcessorConfig("processor1"));
+        addModule(config, "processors", "pr2", createProcessorConfig("processor2"));
+        addModule(config, "processors", "pr3", pr3Config);
+        addModule(config, "parsers", "pa1", createParserConfig("parser1", "pr3", new HashMap<String, Object>()));
+
+        moduleChain.updateConfig(config, true);
 
         when(parser1.parse(anyString())).thenReturn(new HashMap<String, String>());
 
@@ -189,6 +222,38 @@ public class ModuleChainTest
         verify(processor1).process(anyMap(), anyMap());
 
         verify(processor2).process(anyMap(), anyMap());
+    }
+
+    @Test
+    public void configShouldBeUpdated() throws Exception
+    {
+        Map<String, Object> config = new HashMap<String, Object>();
+
+        addModule(config, "processors", "pr1", createProcessorConfig("processor1"));
+        addModule(config, "parsers", "pa1", createParserConfig("parser1", "pr1", new HashMap<String, Object>()));
+
+        moduleChain.updateConfig(config, true);
+
+        when(parser1.parse("some text")).thenReturn(new HashMap<String, String>());
+
+        moduleChain.handle("some text");
+
+        verify(processor1, times(1)).process(anyMap(), anyMap());
+
+        Map<String, Object> config2 = new HashMap<String, Object>();
+
+        addModule(config2, "processors", "pr2", createProcessorConfig("processor2"));
+        addModule(config2, "parsers", "pa2", createParserConfig("parser2", "pr2", new HashMap<String, Object>()));
+
+        moduleChain.updateConfig(config2, true);
+
+        verify(processor1).stop();
+
+        when(parser2.parse("some text")).thenReturn(new HashMap<String, String>());
+
+        moduleChain.handle("some text");
+
+        verify(processor2, times(1)).process(anyMap(), anyMap());
     }
 
     private Map<String, Object> createProcessorConfig(String clazz)
@@ -205,6 +270,16 @@ public class ModuleChainTest
         config.put("processor", processor);
         config.put("processParams", processParams);
         return config;
+    }
+
+    private void addModule(Map config, String type, String name, Map<String, Object> moduleConfig)
+    {
+        if (!config.containsKey(type))
+        {
+            config.put(type, new HashMap<String, Object>());
+        }
+
+        ((Map<String, Object>) config.get(type)).put(name, moduleConfig);
     }
 
 }

@@ -123,4 +123,11 @@ public class GraphiteProcessor implements IProcessor
     {
         return "sends metrics to Graphite";
     }
+
+    @Override
+    public void stop()
+    {
+        client.stop();
+    }
+
 }

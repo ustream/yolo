@@ -27,11 +27,14 @@ public class GraphiteClient
 
     private int metricsCount = 0;
 
+    private final Timer flushTimer = new Timer();
+
     public GraphiteClient(String host, int port, long flushTimeMs)
     {
         this.host = host;
         this.port = port;
-        new Timer().schedule(createTimerTask(), flushTimeMs, flushTimeMs);
+
+        flushTimer.schedule(createTimerTask(), flushTimeMs, flushTimeMs);
     }
 
     public void sendMetrics(String key, Double value)
@@ -100,6 +103,11 @@ public class GraphiteClient
                 socket.close();
             }
         }
+    }
+
+    public void stop()
+    {
+        flushTimer.cancel();
     }
 
 }

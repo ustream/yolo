@@ -247,6 +247,13 @@ public class TestProcessor implements IProcessor
     {
         // return with a simple description for your module
     }
+
+	@Override
+	public void stop()
+	{
+		// here you can stop your processor gracefully
+	}
+
 }
 ```
 

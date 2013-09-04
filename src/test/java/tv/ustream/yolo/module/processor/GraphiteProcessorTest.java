@@ -151,6 +151,14 @@ public class GraphiteProcessorTest
         verify(graphiteClient).sendMetrics("key", 5D, 1234567890);
     }
 
+    @Test
+    public void stopShouldStopClient()
+    {
+        processor.stop();
+
+        verify(graphiteClient).stop();
+    }
+
     private Map<String, Object> createProcessParams(Object key, Object value)
     {
         return createProcessParams(key, value, 1D, null);
@@ -201,6 +209,5 @@ public class GraphiteProcessorTest
 
         return processor;
     }
-
 
 }

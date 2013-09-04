@@ -7,16 +7,20 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
+import org.apache.commons.io.monitor.FileAlterationMonitor;
+import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tv.ustream.yolo.config.ConfigException;
-import tv.ustream.yolo.config.ConfigMap;
 import tv.ustream.yolo.config.ConfigPattern;
 import tv.ustream.yolo.handler.FileHandler;
 import tv.ustream.yolo.module.ModuleChain;
 import tv.ustream.yolo.module.ModuleFactory;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -42,7 +46,9 @@ public class Yolo
 
     private Boolean reopenFile;
 
-    private ModuleChain moduleChain;
+    private long watchConfigInterval;
+
+    private ModuleChain moduleChain = new ModuleChain(new ModuleFactory());
 
     private FileHandler fileHandler;
 
@@ -68,6 +74,10 @@ public class Yolo
         cliOptions.addOption("reopen", false, "reopen file between reading the chunks");
 
         cliOptions.addOption("listModules", false, "list available modules");
+
+        Option watchConfigInterval = new Option("watchConfigInterval", true, "check config file periodically and update without stopping, default: 5 sec");
+        watchConfigInterval.setArgName("second");
+        cliOptions.addOption(watchConfigInterval);
     }
 
     private void parseCliOptions(String[] args) throws Exception
@@ -111,59 +121,64 @@ public class Yolo
         readWholeFile = cli.hasOption("whole");
 
         reopenFile = cli.hasOption("reopen");
-    }
 
-    private ConfigMap getMainConfig()
-    {
-        ConfigMap config = new ConfigMap();
-        config.addConfigValue("processors", Map.class);
-        config.addConfigValue("parsers", Map.class);
-        return config;
+        watchConfigInterval = Integer.parseInt(cli.getOptionValue("watchConfigInterval", "5")) * 1000;
     }
 
     @SuppressWarnings("unchecked")
-    private void readConfig() throws ConfigException
+    private void readConfig(boolean update) throws ConfigException
     {
         try
         {
             config = (Map<String, Object>) new Gson().fromJson(new FileReader(configPath), Map.class);
         }
-        catch (IOException e)
+        catch (Exception e)
         {
             exitWithError("Failed to open configuration file: " + e.getMessage(), false);
         }
 
-        getMainConfig().parse("[root]", config);
+        moduleChain.updateConfig(config, !update);
+    }
+
+    private void observeConfigChanges() throws Exception
+    {
+        if (watchConfigInterval < 0)
+        {
+            return;
+        }
+
+        FileAlterationListenerAdaptor listener = new FileAlterationListenerAdaptor()
+        {
+            @Override
+            public void onFileChange(File file)
+            {
+                logger.debug("Config file changed: {}", configPath);
+                try
+                {
+                    readConfig(true);
+                }
+                catch (ConfigException e)
+                {
+                    exitWithError("Failed to refresh config: " + e.getMessage(), false);
+                }
+            }
+        };
+
+        String filename = configPath.substring(configPath.lastIndexOf('/') + 1);
+        String directory = configPath.substring(0, configPath.lastIndexOf('/'));
+
+        FileAlterationObserver observer = new FileAlterationObserver(new File(directory), FileFilterUtils.nameFileFilter(filename));
+        observer.addListener(listener);
+
+        FileAlterationMonitor monitor = new FileAlterationMonitor(watchConfigInterval);
+        monitor.addObserver(observer);
+
+        monitor.start();
     }
 
     private void setGlobalParameters() throws Exception
     {
         ConfigPattern.addGlobalParameter("HOSTNAME", getHostname());
-    }
-
-    @SuppressWarnings("unchecked")
-    private void initModuleChain() throws Exception
-    {
-        moduleChain = new ModuleChain(new ModuleFactory());
-
-        try
-        {
-            Map<String, Object> processors = (Map<String, Object>) config.get("processors");
-            for (Map.Entry<String, Object> processor : processors.entrySet())
-            {
-                moduleChain.addProcessor(processor.getKey(), (Map<String, Object>) processor.getValue());
-            }
-
-            Map<String, Object> parsers = (Map<String, Object>) config.get("parsers");
-            for (Map.Entry<String, Object> parser : parsers.entrySet())
-            {
-                moduleChain.addParser(parser.getKey(), (Map<String, Object>) parser.getValue());
-            }
-        }
-        catch (ConfigException e)
-        {
-            exitWithError(e.getMessage(), false);
-        }
     }
 
     private String getHostname() throws IOException
@@ -183,15 +198,17 @@ public class Yolo
     {
         try
         {
-            parseCliOptions(args);
-
-            readConfig();
-
             setGlobalParameters();
 
-            initModuleChain();
+            parseCliOptions(args);
+
+            readConfig(false);
+
+            observeConfigChanges();
 
             startFileHandler();
+
+            addShutdownHook();
         }
         catch (ConfigException e)
         {
@@ -210,12 +227,26 @@ public class Yolo
         }
     }
 
+    public void addShutdownHook()
+    {
+        Runtime.getRuntime().addShutdownHook(new Thread()
+        {
+            @Override
+            public void run()
+            {
+                logger.debug("Shutting down..");
+                Yolo.this.stop();
+            }
+        });
+    }
+
     public void stop()
     {
         if (null != fileHandler)
         {
             fileHandler.stop();
         }
+        moduleChain.stop();
     }
 
     private void printHelp()
