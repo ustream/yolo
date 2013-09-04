@@ -9,6 +9,7 @@ A general log tailer and parser tool written in Java, inspired by [Parsible](htt
 * **Flexible configuration**: the configuration is in JSON format for easier management. You can define your parsers and processors and bind them as you want.
 * **Real time**: the tool tails the log file realtime
 * **Whole file reading**: with a cli parameter you can read your logfile from the beginning
+* **Handle dynamic filenames**: you can use wildcards in filename (but only the first match will be used)
 * **Logrotate friendly**: works easily with logrotate or other log rotating tools
 * **Easily debuggable**: debug mode writes verbose logs, and you can use built-in parsers and processors for debugging purposes
 
@@ -68,7 +69,7 @@ Simply run the jar with "-help" option.
 $ java -jar build/libs/yolo.jar -help
 usage: yolo
  -config <path>   path to config file
- -file <path>     path to logfile
+ -file <path>     path to logfile, , wildcards are accepted
  -help            print this message
  -listModules     list available modules
  -reopen          reopen file between reading the chunks

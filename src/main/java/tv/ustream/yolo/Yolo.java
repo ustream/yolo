@@ -61,7 +61,7 @@ public class Yolo
     {
         cliOptions.addOption("help", false, "print this message");
 
-        Option file = new Option("file", true, "path to logfile");
+        Option file = new Option("file", true, "path to logfile, wildcards are accepted");
         file.setArgName("path");
         cliOptions.addOption(file);
 

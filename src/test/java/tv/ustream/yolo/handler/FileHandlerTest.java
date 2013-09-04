@@ -93,6 +93,24 @@ public class FileHandlerTest implements ILineHandler
         await().atMost(5000, TimeUnit.MILLISECONDS).until(equalsHandledLines("l1\nl2\nl3\nl4\nl5\n"));
     }
 
+    @Test
+    public void shouldHandleFileNameChange() throws Exception
+    {
+        handler = new FileHandler(this, testFile.getAbsolutePath() + "*", 100, true, false);
+        handler.start();
+
+        Thread.sleep(200);
+
+        testFile.delete();
+
+        File testFile2 = tmpFolder.newFile(testFile.getName() + "X");
+        FileWriter out = new FileWriter(testFile2);
+        out.write("l4\nl5\n");
+        out.close();
+
+        await().atMost(5000, TimeUnit.MILLISECONDS).until(equalsHandledLines("l1\nl2\nl3\nl4\nl5\n"));
+    }
+
     @Override
     public void handle(String line)
     {
