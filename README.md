@@ -4,6 +4,8 @@
 
 A general log tailer and parser tool written in Java, inspired by [Parsible](https://github.com/Yipit/parsible) and [Logster](https://github.com/etsy/logster). It is easily extensible with new parsers and processors. The main purpose was to build a simple tool to get metrics values and errors from log files and report to [StatsD](https://github.com/etsy/statsd/) (and [Graphite](http://graphite.wikidot.com/)), but everyone can write custom modules in minutes.
 
+[GitHub Page](http://ustream.github.io/yolo/)
+
 ## Main concepts
 
 * **Flexible configuration**: the configuration is in JSON format for easier management. You can define your parsers and processors and bind them as you want.
