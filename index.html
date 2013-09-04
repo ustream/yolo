@@ -1,0 +1,406 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Yolo by ustream</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header">Yolo</h1>
+        <p class="header">Log tailing and parsing framework in Java</p>
+
+        <ul>
+          <li class="download"><a class="buttons" href="https://github.com/ustream/yolo/zipball/master">Download ZIP</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/ustream/yolo/tarball/master">Download TAR</a></li>
+          <li><a class="buttons github" href="https://github.com/ustream/yolo">View On GitHub</a></li>
+        </ul>
+
+        <p class="header">This project is maintained by <a class="header name" href="https://github.com/ustream">ustream</a></p>
+
+
+      </header>
+      <section>
+        <h1>
+<a name="yolo-" class="anchor" href="#yolo-"><span class="octicon octicon-link"></span></a>Yolo <a href="https://travis-ci.org/ustream/yolo"><img src="https://travis-ci.org/ustream/yolo.png?branch=master" alt="Build Status"></a>
+</h1>
+
+<p><strong>You only log once but you can easily parse your data as many ways as you want.</strong></p>
+
+<p>A general log tailer and parser tool written in Java, inspired by <a href="https://github.com/Yipit/parsible">Parsible</a> and <a href="https://github.com/etsy/logster">Logster</a>. It is easily extensible with new parsers and processors. The main purpose was to build a simple tool to get metrics values and errors from log files and report to <a href="https://github.com/etsy/statsd/">StatsD</a> (and <a href="http://graphite.wikidot.com/">Graphite</a>), but everyone can write custom modules in minutes.</p>
+
+<h2>
+<a name="main-concepts" class="anchor" href="#main-concepts"><span class="octicon octicon-link"></span></a>Main concepts</h2>
+
+<ul>
+<li>
+<strong>Flexible configuration</strong>: the configuration is in JSON format for easier management. You can define your parsers and processors and bind them as you want.</li>
+<li>
+<strong>Real time</strong>: the tool tails the log file realtime</li>
+<li>
+<strong>Whole file reading</strong>: with a cli parameter you can read your logfile from the beginning</li>
+<li>
+<strong>Handle dynamic filenames</strong>: you can use wildcards in filename (but only the first match will be used)</li>
+<li>
+<strong>Logrotate friendly</strong>: works easily with logrotate or other log rotating tools</li>
+<li>
+<strong>Easily debuggable</strong>: debug mode writes verbose logs, and you can use built-in parsers and processors for debugging purposes</li>
+</ul><h2>
+<a name="notice" class="anchor" href="#notice"><span class="octicon octicon-link"></span></a>Notice</h2>
+
+<p>Because we tail the log file and the application can stop anytime therefore it is not guaranteed that the tool will parse all the lines. In the near future we plan to implement a secure reader which stores the read offset and handles even log rotate events.</p>
+
+<h2>
+<a name="modules" class="anchor" href="#modules"><span class="octicon octicon-link"></span></a>Modules</h2>
+
+<p>Each module is stateless, has a description and predefined configuration.</p>
+
+<ul>
+<li>
+<strong>Parser</strong>: the parser parses a log line and returns with parameters (a map).</li>
+<li>
+<strong>Processor</strong>: the processor gets the parser's parameters and does anything with them, like send key/values to StatsD</li>
+</ul><h2>
+<a name="process" class="anchor" href="#process"><span class="octicon octicon-link"></span></a>Process</h2>
+
+<ul>
+<li>the file tailer reads a new line from the file</li>
+<li>the handler iterates through all the parsers and finds the first which returns with a non-null value</li>
+<li>the output value is passed to the given processor with the "processParams" configuration given in the config</li>
+<li>the processor processes the data</li>
+<li>the handler runs all the parsers (regardless the first match) which runs always. (currently it is only the passthru parser)</li>
+</ul><h2>
+<a name="build" class="anchor" href="#build"><span class="octicon octicon-link"></span></a>Build</h2>
+
+<p>The project uses Gradle and it is embedded with a Gradle wrapper.</p>
+
+<div class="highlight"><pre><span class="c"># run tests, if you want</span>
+./gradlew <span class="nb">test</span>
+
+<span class="c"># create runnable jar file</span>
+./gradlew jar
+
+<span class="c"># check if it works</span>
+java -jar build/libs/yolo.jar -help
+</pre></div>
+
+<h3>
+<a name="build-debian-package" class="anchor" href="#build-debian-package"><span class="octicon octicon-link"></span></a>Build Debian package</h3>
+
+<div class="highlight"><pre>./gradlew debian
+</pre></div>
+
+<p>The .deb file will be placed in the build/linux-package directory.</p>
+
+<p>The package contains the runnable jar file, which will be copied to /usr/lib/yolo when installed.</p>
+
+<h2>
+<a name="sample-configuration" class="anchor" href="#sample-configuration"><span class="octicon octicon-link"></span></a>Sample configuration</h2>
+
+<p>An example config file can be found in <a href="src/main/config/example.json">example.json</a>.</p>
+
+<h2>
+<a name="command-line-parameters" class="anchor" href="#command-line-parameters"><span class="octicon octicon-link"></span></a>Command line parameters</h2>
+
+<p>Simply run the jar with "-help" option.</p>
+
+<div class="highlight"><pre><span class="nv">$ </span>java -jar build/libs/yolo.jar -help
+usage: yolo
+ -config &lt;path&gt;   path to config file
+ -file &lt;path&gt;     path to logfile, , wildcards are accepted
+ -help            print this message
+ -listModules     list available modules
+ -reopen          reopen file between reading the chunks
+ -whole           tail file from the beginning
+</pre></div>
+
+<h2>
+<a name="example-usage" class="anchor" href="#example-usage"><span class="octicon octicon-link"></span></a>Example usage</h2>
+
+<div class="highlight"><pre><span class="nv">$ </span>java -jar build/libs/yolo.jar -config /YOURPATH/src/main/config/example.json -file /YOURPATH/foo.log
+</pre></div>
+
+<h2>
+<a name="available-modules" class="anchor" href="#available-modules"><span class="octicon octicon-link"></span></a>Available modules</h2>
+
+<p>Simply run the jar with "-listModules" option.</p>
+
+<div class="highlight"><pre><span class="nv">$ </span>java -jar build/libs/yolo.jar -listModules
+
+Available processors
+--------------------
+
+* tv.ustream.yolo.module.processor.CompositeProcessor - runs multiple processors
+  - params: Map <span class="o">{</span>
+      class: String, required
+      processors: List, required
+    <span class="o">}</span>
+
+* tv.ustream.yolo.module.processor.ConsoleProcessor - writes parameters to console, use it <span class="k">for </span>debug purposes
+  - params: Map <span class="o">{</span>
+      class: String, required
+    <span class="o">}</span>
+
+* tv.ustream.yolo.module.processor.GraphiteProcessor - sends metrics to Graphite
+  - params: Map <span class="o">{</span>
+      port: Number, default: 2003
+      host: String, required
+      class: String, required
+      flushTimeMs: Number, default: 1000
+    <span class="o">}</span>
+  - processParams: Map <span class="o">{</span>
+      keys: List <span class="o">[</span>
+        Map <span class="o">{</span>
+          timestamp: String, pattern allowed
+          value: String|Number, required, pattern allowed
+          multiplier: Number, default: 1
+          key: String, required, pattern allowed
+        <span class="o">}</span>
+      <span class="o">]</span>
+    <span class="o">}</span>
+
+* tv.ustream.yolo.module.processor.StatsDProcessor - sends metrics to StatsD, handles counter, gauge and timing values
+  - params: Map <span class="o">{</span>
+      port: Number, default: 8125
+      host: String, required
+      prefix: String, required
+      class: String, required
+    <span class="o">}</span>
+  - processParams: Map <span class="o">{</span>
+      keys: List <span class="o">[</span>
+        Map <span class="o">{</span>
+          value: String|Number, required, pattern allowed
+          <span class="nb">type</span>: String, required, allowed values: <span class="o">[</span>counter, gauge, timer<span class="o">]</span>
+          multiplier: Number, default: 1
+          key: String, required, pattern allowed
+        <span class="o">}</span>
+      <span class="o">]</span>
+    <span class="o">}</span>
+
+Available parsers
+-----------------
+
+* tv.ustream.yolo.module.parser.PassThruParser - forwards all lines to processor, runs always
+  - params: Map <span class="o">{</span>
+      enabled: Boolean, default: <span class="nb">true</span>
+<span class="nb">      </span>class: String, required
+      processor: String, required
+      processParams: Map
+    <span class="o">}</span>
+
+* tv.ustream.yolo.module.parser.RegexpParser - parses line via regular expression and returns with matches
+  - params: Map <span class="o">{</span>
+      enabled: Boolean, default: <span class="nb">true</span>
+<span class="nb">      </span>regex: String, required
+      class: String, required
+      processor: String, required
+      processParams: Map
+    <span class="o">}</span>
+
+</pre></div>
+
+<h2>
+<a name="create-your-own-parser" class="anchor" href="#create-your-own-parser"><span class="octicon octicon-link"></span></a>Create your own parser</h2>
+
+<p>Check <a href="src/main/java/tv/ustream/yolo/module/parser/RegexpParser.java">RegexpParser</a> for a compact example.</p>
+
+<p>If you are ready, add your parser class to ModuleFactory.availableParsers.</p>
+
+<div class="highlight"><pre><span class="kd">public</span> <span class="kd">class</span> <span class="nc">TestParser</span> <span class="kd">implements</span> <span class="n">IParser</span>
+<span class="o">{</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">parse</span><span class="o">(</span><span class="n">String</span> <span class="n">line</span><span class="o">)</span>
+    <span class="o">{</span>
+        <span class="c1">// parse a line here and return with null if no match happened or with a Map if you want to process it</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">runAlways</span><span class="o">()</span>
+    <span class="o">{</span>
+        <span class="c1">// return with true if you want the module to always run for every line regardless of the first match</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">getOutputKeys</span><span class="o">()</span>
+    <span class="o">{</span>
+        <span class="c1">// return with the keys you will return in parse</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setUpModule</span><span class="o">(</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">parameters</span><span class="o">)</span>
+    <span class="o">{</span>
+        <span class="c1">// read the config and set up your parser</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">ConfigMap</span> <span class="nf">getModuleConfig</span><span class="o">()</span>
+    <span class="o">{</span>
+        <span class="c1">// build your module's config</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getModuleDescription</span><span class="o">()</span>
+    <span class="o">{</span>
+        <span class="c1">// return with a simple description for your module</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+
+<h2>
+<a name="create-your-own-processor" class="anchor" href="#create-your-own-processor"><span class="octicon octicon-link"></span></a>Create your own processor</h2>
+
+<p>Check <a href="src/main/java/tv/ustream/yolo/module/processor/StatsDProcessor.java">StatsDProcessor</a> for a compact example.</p>
+
+<p>If you are ready, add your processor class to ModuleFactory.availableProcessors.</p>
+
+<div class="highlight"><pre><span class="kd">public</span> <span class="kd">class</span> <span class="nc">TestProcessor</span> <span class="kd">implements</span> <span class="n">IProcessor</span>
+<span class="o">{</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">ConfigMap</span> <span class="nf">getProcessParamsConfig</span><span class="o">()</span>
+    <span class="o">{</span>
+        <span class="c1">// build the processParams config for parsers</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">process</span><span class="o">(</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">parserOutput</span><span class="o">,</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">processParams</span><span class="o">)</span>
+    <span class="o">{</span>
+        <span class="c1">// process the parser's output. The processParams map can contain ConfigPattern objects where you can subtitute your own values</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setUpModule</span><span class="o">(</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">parameters</span><span class="o">)</span>
+    <span class="o">{</span>
+        <span class="c1">// read configuration and set up your processor</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">ConfigMap</span> <span class="nf">getModuleConfig</span><span class="o">()</span>
+    <span class="o">{</span>
+        <span class="c1">// build your module's config</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getModuleDescription</span><span class="o">()</span>
+    <span class="o">{</span>
+        <span class="c1">// return with a simple description for your module</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">stop</span><span class="o">()</span>
+    <span class="o">{</span>
+        <span class="c1">// here you can stop your processor gracefully</span>
+    <span class="o">}</span>
+
+<span class="o">}</span>
+</pre></div>
+
+<h2>
+<a name="module-configuration-handling" class="anchor" href="#module-configuration-handling"><span class="octicon octicon-link"></span></a>Module configuration handling</h2>
+
+<p>The configuration is validated with ConfigMap objects which can be built the following way.</p>
+
+<div class="highlight"><pre><span class="n">ConfigMap</span> <span class="n">config</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ConfigMap</span><span class="o">();</span>
+
+<span class="c1">// add "key1" key with string type, the value will be required</span>
+<span class="n">config</span><span class="o">.</span><span class="na">addConfigValue</span><span class="o">(</span><span class="s">"key1"</span><span class="o">,</span> <span class="n">String</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+
+<span class="c1">// add "key2" key with number type, the value will be optional, and the default value will be 5</span>
+<span class="n">config</span><span class="o">.</span><span class="na">addConfigValue</span><span class="o">(</span><span class="s">"key1"</span><span class="o">,</span> <span class="n">Number</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="kc">false</span><span class="o">,</span> <span class="mi">5</span><span class="o">);</span>
+
+<span class="c1">// add "key3" key with string|number type</span>
+<span class="n">ConfigValue</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span> <span class="n">configValue</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ConfigValue</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;(</span><span class="s">"key3"</span><span class="o">,</span> <span class="n">Object</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+<span class="n">configValue</span><span class="o">.</span><span class="na">setAllowedTypes</span><span class="o">(</span><span class="n">Arrays</span><span class="o">.&lt;</span><span class="n">Class</span><span class="o">&gt;</span><span class="n">asList</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">Number</span><span class="o">.</span><span class="na">class</span><span class="o">));</span>
+<span class="n">config</span><span class="o">.</span><span class="na">addConfigValue</span><span class="o">(</span><span class="n">configValue</span><span class="o">);</span>
+
+<span class="c1">// add "key4" key as an enumeration</span>
+<span class="n">ConfigValue</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">configValue</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ConfigValue</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;(</span><span class="s">"key4"</span><span class="o">,</span> <span class="n">String</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+<span class="n">configValue</span><span class="o">.</span><span class="na">setAllowedValues</span><span class="o">(</span><span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="s">"value1"</span><span class="o">,</span> <span class="s">"value2"</span><span class="o">));</span>
+<span class="n">config</span><span class="o">.</span><span class="na">addConfigValue</span><span class="o">(</span><span class="n">configValue</span><span class="o">);</span>
+
+<span class="c1">// add "key5" key which allows a config pattern</span>
+<span class="n">ConfigValue</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">configValue</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ConfigValue</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;(</span><span class="s">"key5"</span><span class="o">,</span> <span class="n">String</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+<span class="n">configValue</span><span class="o">.</span><span class="na">allowConfigPattern</span><span class="o">();</span>
+<span class="n">config</span><span class="o">.</span><span class="na">addConfigValue</span><span class="o">(</span><span class="n">configValue</span><span class="o">);</span>
+</pre></div>
+
+<h3>
+<a name="config-patterns" class="anchor" href="#config-patterns"><span class="octicon octicon-link"></span></a>Config patterns</h3>
+
+<p>Config pattern means a string value with key placeholders, like 'this is #type#'. This can be used in the process parameters configuration, when you want to substitute values from the parser output in the process config.</p>
+
+<p>If you check the <a href="src/main/config/example.json">configuration example</a>, you can see that the statsd process parameters contain expressions like #exceptionName# or #val#, these values will be substituted from the regexp matches.</p>
+
+<h2>
+<a name="logging" class="anchor" href="#logging"><span class="octicon octicon-link"></span></a>Logging</h2>
+
+<p>The tool uses <a href="http://www.slf4j.org/">SLF4J</a> for logging with the SimpleLogger implementation. The minimum log level is INFO and all the logs are written to the standard error output.</p>
+
+<p>To display debug messages use the -Dorg.slf4j.simpleLogger.defaultLogLevel=debug option.</p>
+
+<div class="highlight"><pre><span class="nv">$ </span>java -Dorg.slf4j.simpleLogger.defaultLogLevel<span class="o">=</span>debug -jar build/libs/yolo.jar -config /YOURPATH/src/main/config/example.json -file /YOURPATH/foo.log
+</pre></div>
+
+<h2>
+<a name="dependencies" class="anchor" href="#dependencies"><span class="octicon octicon-link"></span></a>Dependencies</h2>
+
+<p>For a detailed dependency list please check the "dependencies" block in <a href="build.gradle">build.gradle</a>.</p>
+
+<p><strong>Compile dependencies</strong>:</p>
+
+<ul>
+<li><a href="http://commons.apache.org/proper/commons-cli/">Apache Commons CLI</a></li>
+<li><a href="http://commons.apache.org/proper/commons-io/">Apache Commons IO</a></li>
+<li><a href="http://code.google.com/p/google-gson/">Gson</a></li>
+<li><a href="https://github.com/youdevise/java-statsd-client">java-statsd-client</a></li>
+<li><a href="http://www.slf4j.org/">SLF4j</a></li>
+</ul><p><strong>Testing dependencies</strong>:</p>
+
+<ul>
+<li><a href="http://junit.org/">JUnit</a></li>
+<li><a href="http://code.google.com/p/mockito/">Mockito</a></li>
+</ul><h2>
+<a name="contributing" class="anchor" href="#contributing"><span class="octicon octicon-link"></span></a>Contributing</h2>
+
+<p>Feel free to fork this project and send pull requests if you want to help us improve the tool or add new parsers/processors. But before sending us new modules, please think through if the module serves a general purpose and whether it will be useful for others, not just for you.</p>
+
+<h2>
+<a name="licence" class="anchor" href="#licence"><span class="octicon octicon-link"></span></a>Licence</h2>
+
+<p>This project is licensed under the terms of the <a href="LICENCE.md">MIT License (MIT)</a>.</p>
+
+<h2>
+<a name="authors" class="anchor" href="#authors"><span class="octicon octicon-link"></span></a>Authors</h2>
+
+<ul>
+<li><a href="https://github.com/bandesz">bandesz</a></li>
+</ul>
+      </section>
+      <footer>
+        <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+		          <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-43771276-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
