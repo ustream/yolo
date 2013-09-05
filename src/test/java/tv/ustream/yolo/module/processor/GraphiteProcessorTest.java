@@ -152,6 +152,19 @@ public class GraphiteProcessorTest
     }
 
     @Test
+    public void processShouldHandleByteValues()
+    {
+        Map<String, String> parserOutput = new HashMap<String, String>();
+        parserOutput.put("v1", "5M");
+
+        ConfigPattern value = new ConfigPattern("#v1#");
+
+        processor.process(parserOutput, createProcessParams("key", value));
+
+        verify(graphiteClient).sendMetrics("key", 5D * 1024 * 1024);
+    }
+
+    @Test
     public void stopShouldStopClient()
     {
         processor.stop();

@@ -160,6 +160,19 @@ public class StatsDProcessorTest
         verify(statsDClient).count("key", 50);
     }
 
+    @Test
+    public void processShouldHandleByteValues()
+    {
+        Map<String, String> parserOutput = new HashMap<String, String>();
+        parserOutput.put("v1", "5M");
+
+        ConfigPattern value = new ConfigPattern("#v1#");
+
+        processor.process(parserOutput, createprocessParams(StatsDProcessor.Types.COUNTER.value, "key", value));
+
+        verify(statsDClient).count("key", 5 * 1024 * 1024);
+    }
+
     private Map<String, Object> createprocessParams(String type, Object key, Object value)
     {
         return createprocessParams(type, key, value, 1D);
