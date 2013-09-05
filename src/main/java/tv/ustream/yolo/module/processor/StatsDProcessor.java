@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import tv.ustream.yolo.config.ConfigMap;
 import tv.ustream.yolo.config.ConfigPattern;
 import tv.ustream.yolo.config.ConfigValue;
+import tv.ustream.yolo.util.NumberConverter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -139,7 +140,7 @@ public class StatsDProcessor implements IProcessor
         }
         else
         {
-            value = Double.parseDouble(((ConfigPattern) valueObject).applyValues(parserOutput));
+            value = NumberConverter.convertByteValue(((ConfigPattern) valueObject).applyValues(parserOutput));
         }
 
         value *= ((Number) keyParams.get("multiplier")).doubleValue();

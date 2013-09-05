@@ -4,6 +4,7 @@ import tv.ustream.yolo.client.GraphiteClient;
 import tv.ustream.yolo.config.ConfigMap;
 import tv.ustream.yolo.config.ConfigPattern;
 import tv.ustream.yolo.config.ConfigValue;
+import tv.ustream.yolo.util.NumberConverter;
 
 import java.util.Arrays;
 import java.util.List;
@@ -80,7 +81,7 @@ public class GraphiteProcessor implements IProcessor
         }
         else
         {
-            value = Double.parseDouble(((ConfigPattern) valueObject).applyValues(parserOutput));
+            value = NumberConverter.convertByteValue(((ConfigPattern) valueObject).applyValues(parserOutput));
         }
 
         value *= ((Number) keyParams.get("multiplier")).doubleValue();
