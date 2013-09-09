@@ -332,3 +332,7 @@ This project is licensed under the terms of the [MIT License (MIT)](LICENCE.md).
 ## Authors
 
 * [bandesz](https://github.com/bandesz)
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/ustream/yolo/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
