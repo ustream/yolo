@@ -225,6 +225,37 @@ public class ModuleChainTest
     }
 
     @Test
+    public void multipleProcessorsShouldBeCalled() throws Exception
+    {
+        Map<String, Object> pr3Config = new HashMap<String, Object>();
+        pr3Config.put("processors", Arrays.asList("pr1", "pr2"));
+
+        Map<String, Object> processors = new HashMap<String, Object>();
+        processors.put("pr1", new HashMap<String, Object>());
+        processors.put("pr2", new HashMap<String, Object>());
+
+        Map<String, Object> parserConfig = new HashMap<String, Object>();
+        parserConfig.put("class", "parser1");
+        parserConfig.put("processors", processors);
+
+        Map<String, Object> config = new HashMap<String, Object>();
+
+        addModule(config, "processors", "pr1", createProcessorConfig("processor1"));
+        addModule(config, "processors", "pr2", createProcessorConfig("processor2"));
+        addModule(config, "parsers", "pa1", parserConfig);
+
+        moduleChain.updateConfig(config, true);
+
+        when(parser1.parse(anyString())).thenReturn(new HashMap<String, String>());
+
+        moduleChain.handle("some text");
+
+        verify(processor1).process(anyMap(), anyMap());
+
+        verify(processor2).process(anyMap(), anyMap());
+    }
+
+    @Test
     public void configShouldBeUpdated() throws Exception
     {
         Map<String, Object> config = new HashMap<String, Object>();
@@ -265,10 +296,12 @@ public class ModuleChainTest
 
     private Map<String, Object> createParserConfig(String clazz, String processor, Map<String, Object> processParams)
     {
+        Map<String, Object> processors = new HashMap<String, Object>();
+        processors.put(processor, processParams);
+
         Map<String, Object> config = new HashMap<String, Object>();
         config.put("class", clazz);
-        config.put("processor", processor);
-        config.put("processParams", processParams);
+        config.put("processors", processors);
         return config;
     }
 

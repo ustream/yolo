@@ -43,7 +43,7 @@ public class YoloTest
         out = new FileWriter(configFile);
 
         out.write("{" +
-            "\"parsers\":{\"passthru\": {\"class\": \"tv.ustream.yolo.module.parser.PassThruParser\", \"processor\": \"test\"}}," +
+            "\"parsers\":{\"passthru\": {\"class\": \"tv.ustream.yolo.module.parser.PassThruParser\", \"processors\": {\"test\": {}}}}," +
             "\"processors\":{\"test\": { \"class\": \"tv.ustream.yolo.TestProcessor\"}}" +
             "}");
         out.close();
@@ -62,19 +62,19 @@ public class YoloTest
     }
 
     @Test
-    public void shouldReadConfigAndReadFileAndWriteToConsole() throws Exception
+    public void shouldReadAndProcessFile() throws Exception
     {
         yolo = new Yolo();
         String params[] = {"-config", configFile.getAbsolutePath(), "-file", testFile.getAbsolutePath(), "-whole"};
         yolo.start(params);
 
-        await().atMost(5000, TimeUnit.MILLISECONDS).until(containsLine("{line=l1}|null", "{line=l2}|null", "{line=l3}|null"));
+        await().atMost(5000, TimeUnit.MILLISECONDS).until(containsLine("{line=l1}|{}", "{line=l2}|{}", "{line=l3}|{}"));
 
         FileWriter out = new FileWriter(testFile, true);
         out.write("l4\nl5\n");
         out.close();
 
-        await().atMost(5000, TimeUnit.MILLISECONDS).until(containsLine("{line=l4}|null", "{line=l5}|null"));
+        await().atMost(5000, TimeUnit.MILLISECONDS).until(containsLine("{line=l4}|{}", "{line=l5}|{}"));
     }
 
     @Test
@@ -83,7 +83,7 @@ public class YoloTest
         FileWriter out = new FileWriter(configFile);
 
         out.write("{" +
-            "\"parsers\":{\"passthru\": {\"class\": \"tv.ustream.yolo.module.parser.PassThruParser\", \"processor\": \"test\", \"enabled\": false}}," +
+            "\"parsers\":{\"passthru\": {\"class\": \"tv.ustream.yolo.module.parser.PassThruParser\", \"processors\": {\"test\":{}}, \"enabled\": false}}," +
             "\"processors\":{\"test\": { \"class\": \"tv.ustream.yolo.TestProcessor\"}}" +
             "}");
         out.close();
@@ -99,7 +99,7 @@ public class YoloTest
         out = new FileWriter(configFile);
 
         out.write("{" +
-            "\"parsers\":{\"passthru\": {\"class\": \"tv.ustream.yolo.module.parser.PassThruParser\", \"processor\": \"test\"}}," +
+            "\"parsers\":{\"passthru\": {\"class\": \"tv.ustream.yolo.module.parser.PassThruParser\", \"processors\": {\"test\":{}}}}," +
             "\"processors\":{\"test\": { \"class\": \"tv.ustream.yolo.TestProcessor\"}}" +
             "}");
         out.close();
@@ -110,11 +110,11 @@ public class YoloTest
         out.write("l4\nl5\n");
         out.close();
 
-        await().atMost(5000, TimeUnit.MILLISECONDS).until(containsLine("{line=l4}|null", "{line=l5}|null"));
+        await().atMost(5000, TimeUnit.MILLISECONDS).until(containsLine("{line=l4}|{}", "{line=l5}|{}"));
 
-        Assert.assertFalse(TestProcessor.data.contains("{line=l1}|null"));
-        Assert.assertFalse(TestProcessor.data.contains("{line=l2}|null"));
-        Assert.assertFalse(TestProcessor.data.contains("{line=l3}|null"));
+        Assert.assertFalse(TestProcessor.data.contains("{line=l1}|{}"));
+        Assert.assertFalse(TestProcessor.data.contains("{line=l2}|{}"));
+        Assert.assertFalse(TestProcessor.data.contains("{line=l3}|{}"));
     }
 
     public Callable<Boolean> containsLine(final String... lines)

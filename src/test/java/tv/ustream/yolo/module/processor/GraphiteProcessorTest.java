@@ -196,7 +196,6 @@ public class GraphiteProcessorTest
         config.put("host", host);
         config.put("port", port.doubleValue());
         config.put("flushTimeMs", 1000);
-        config.put("processor", "x");
 
         return (GraphiteProcessor) new ModuleFactory().createProcessor("x", config);
     }

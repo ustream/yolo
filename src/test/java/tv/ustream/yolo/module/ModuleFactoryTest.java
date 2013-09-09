@@ -48,9 +48,12 @@ public class ModuleFactoryTest
     @Test
     public void createParserShouldCreateNewInstance() throws ConfigException
     {
+        Map<String, Object> processors = new HashMap<String, Object>();
+        processors.put("processor1", new HashMap<String, Object>());
+
         Map<String, Object> config = new HashMap<String, Object>();
         config.put("class", PassThruParser.class.getCanonicalName());
-        config.put("processor", "processor1");
+        config.put("processors", processors);
 
         IParser parser = new ModuleFactory().createParser("x", config);
 
@@ -72,9 +75,12 @@ public class ModuleFactoryTest
     @Test
     public void createParserShouldReturnNullWhenNotEnabled() throws ConfigException
     {
+        Map<String, Object> processors = new HashMap<String, Object>();
+        processors.put("processor1", new HashMap<String, Object>());
+
         Map<String, Object> config = new HashMap<String, Object>();
         config.put("class", PassThruParser.class.getCanonicalName());
-        config.put("processor", "processor1");
+        config.put("processors", processors);
         config.put("enabled", false);
 
         IParser parser = new ModuleFactory().createParser("x", config);

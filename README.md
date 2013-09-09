@@ -24,14 +24,14 @@ Because we tail the log file and the application can stop anytime therefore it i
 Each module is stateless, has a description and predefined configuration.
 
 * **Parser**: the parser parses a log line and returns with parameters (a map).
-* **Processor**: the processor gets the parser's parameters and does anything with them, like send key/values to StatsD
+* **Processor**: the processor gets the parser's parameters and process them, like send key/values to StatsD
 
 ## Process
 
 * the file tailer reads a new line from the file
 * the handler iterates through all the parsers and finds the first which returns with a non-null value
-* the output value is passed to the given processor with the "processParams" configuration given in the config
-* the processor processes the data
+* the output value is passed to the given processors with the separate configs for each processor
+* the processors process the data
 * the handler runs all the parsers (regardless the first match) which runs always. (currently it is only the passthru parser)
 
 ## Build
@@ -112,7 +112,7 @@ Available processors
       class: String, required
       flushTimeMs: Number, default: 1000
     }
-  - processParams: Map {
+  - parser params: Map {
       keys: List [
         Map {
           timestamp: String, pattern allowed
@@ -130,7 +130,7 @@ Available processors
       prefix: String, required
       class: String, required
     }
-  - processParams: Map {
+  - parser params: Map {
       keys: List [
         Map {
           value: String|Number, required, pattern allowed
@@ -148,8 +148,7 @@ Available parsers
   - params: Map {
       enabled: Boolean, default: true
       class: String, required
-      processor: String, required
-      processParams: Map
+      processors: Map, required
     }
 
 * tv.ustream.yolo.module.parser.RegexpParser - parses line via regular expression and returns with matches
@@ -157,8 +156,7 @@ Available parsers
       enabled: Boolean, default: true
       regex: String, required
       class: String, required
-      processor: String, required
-      processParams: Map
+      processors: Map, required
     }
 
 ```
@@ -321,6 +319,7 @@ For a detailed dependency list please check the "dependencies" block in [build.g
 
 * [JUnit](http://junit.org/)
 * [Mockito](http://code.google.com/p/mockito/)
+* [Awaitility] (http://code.google.com/p/awaitility/)
 
 ## Contributing
 

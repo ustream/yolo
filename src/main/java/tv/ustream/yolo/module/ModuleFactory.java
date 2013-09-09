@@ -49,8 +49,7 @@ public class ModuleFactory
         ConfigMap config = new ConfigMap();
         config.addConfigValue("class", String.class);
         config.addConfigValue("enabled", Boolean.class, false, true);
-        config.addConfigValue("processor", String.class);
-        config.addConfigValue("processParams", Map.class, false, null);
+        config.addConfigValue("processors", Map.class);
         return config;
     }
 
@@ -121,7 +120,7 @@ public class ModuleFactory
             String usage2 = "";
             if (processParamsConfig != null && !processParamsConfig.isEmpty())
             {
-                usage2 = "  - processParams: " + processParamsConfig.getDescription("    ");
+                usage2 = "  - parser params: " + processParamsConfig.getDescription("    ");
             }
 
             System.out.format("* %s - %s%n%s%s%n", className, module.getModuleDescription(), usage, usage2);

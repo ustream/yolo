@@ -3,39 +3,47 @@
 		"regexp1": {
 			"class": "tv.ustream.yolo.module.parser.RegexpParser",
 			"regex": "(?i:(?<exceptionName>[a-zA-Z]+)exception value (?<val>\\d+(?:\\.\\d+)?))",
-			"processor": "composite",
-			"processParams": {
-				"keys": [
-					{
-						"type": "gauge",
-						"key": "yolo.#HOSTNAME#.gauge.#exceptionName#",
-						"value": "#val#",
-						"multiplier": 1000
-					},
-					{
-						"type": "counter",
-						"key": "yolo.counter.#exceptionName#",
-						"value": 1
-					}
-				]
+			"processors": {
+				"console": {},
+				"graphite": {
+					"keys": [
+						{
+							"key": "yolo.#HOSTNAME#.#exceptionName#",
+							"value": "#val#",
+							"multiplier": 1000
+						}
+					]
+				},
+				"statsd": {
+					"keys": [
+						{
+							"type": "counter",
+							"key": "yolo.#HOSTNAME#.exceptionCount",
+							"value": 1
+						}
+					]
+				}
 			}
 		},
 		"regexp2": {
 			"class": "tv.ustream.yolo.module.parser.RegexpParser",
 			"regex": "(?i:(?<errorName>[a-zA-Z]+)error value (?<val>\\d+(?:\\.\\d+)?))",
-			"processor": "graphite",
-			"processParams": {
-				"keys": [
-					{
-						"key": "yolo.error.#errorName#",
-						"value": "#val#"
-					}
-				]
+			"processors": {
+				"graphite": {
+					"keys": [
+						{
+							"key": "yolo.error.#errorName#",
+							"value": "#val#"
+						}
+					]
+				}
 			}
 		},
 		"passthru": {
 			"class": "tv.ustream.yolo.module.parser.PassThruParser",
-			"processor": "console",
+			"processors": {
+				"console": {}
+			},
 			"enabled": false
 		}
 	},

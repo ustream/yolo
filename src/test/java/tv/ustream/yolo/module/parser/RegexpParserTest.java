@@ -123,10 +123,13 @@ public class RegexpParserTest
 
     private IParser createParser(String regex) throws ConfigException
     {
+        Map<String, Object> processors = new HashMap<String, Object>();
+        processors.put("processor1", new HashMap<String, Object>());
+
         Map<String, Object> config = new HashMap<String, Object>();
         config.put("class", RegexpParser.class.getCanonicalName());
         config.put("regex", regex);
-        config.put("processor", "p");
+        config.put("processors", processors);
         return new ModuleFactory().createParser("x", config);
     }
 

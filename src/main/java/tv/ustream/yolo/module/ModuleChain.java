@@ -26,11 +26,9 @@ public class ModuleChain implements ILineHandler
 
     private final Map<String, IParser> parsers = new HashMap<String, IParser>();
 
-    private final Map<String, Map<String, Object>> processParams = new HashMap<String, Map<String, Object>>();
-
     private final Map<String, IProcessor> processors = new HashMap<String, IProcessor>();
 
-    private final Map<String, String> transitions = new HashMap<String, String>();
+    private final Map<String, Map<String, Map<String, Object>>> transitions = new HashMap<String, Map<String, Map<String, Object>>>();
 
     private Map<String, Object> config = null;
 
@@ -139,34 +137,32 @@ public class ModuleChain implements ILineHandler
 
         parsers.put(name, parser);
 
-        String processorName = (String) config.get("processor");
+        Map<String, Object> parserProcessors = (Map<String, Object>) config.get("processors");
 
-        if (!processors.containsKey(processorName))
+        transitions.put(name, new HashMap<String, Map<String, Object>>());
+
+        for (Map.Entry<String, Object> parserProcessor : parserProcessors.entrySet())
         {
-            throw new ConfigException(processorName + " processor does not exist");
+            if (!processors.containsKey(parserProcessor.getKey()))
+            {
+                throw new ConfigException(parserProcessor.getKey() + " processor does not exist");
+            }
+
+            addTransition(name, parserProcessor.getKey(), parserProcessor.getValue());
         }
-
-        Map<String, Object> params = (Map<String, Object>) config.get("processParams");
-
-        if (params != null)
-        {
-            setProcessorParams(name, processorName, params);
-        }
-
-        transitions.put(name, processorName);
     }
 
     @SuppressWarnings("unchecked")
-    private void setProcessorParams(String parserName, String processorName, Map<String, Object> params) throws ConfigException
+    private void addTransition(String parserName, String processorName, Object params) throws ConfigException
     {
         ConfigMap processParamsConfig = processors.get(processorName).getProcessParamsConfig();
         if (processParamsConfig != null)
         {
-            processParamsConfig.parse(parserName + ".processParams", params);
+            processParamsConfig.parse(parserName + ".processors." + processorName, params);
         }
 
-        processParams.put(
-            parserName,
+        transitions.get(parserName).put(
+            processorName,
             (Map<String, Object>) ConfigPattern.replacePatterns(params, parsers.get(parserName).getOutputKeys())
         );
     }
@@ -191,7 +187,11 @@ public class ModuleChain implements ILineHandler
                 if (parserOutput != null)
                 {
                     match = true;
-                    processors.get(transitions.get(parserName)).process(parserOutput, processParams.get(parserName));
+
+                    for (Map.Entry<String, Map<String, Object>> processor : transitions.get(parserName).entrySet())
+                    {
+                        processors.get(processor.getKey()).process(parserOutput, processor.getValue());
+                    }
                 }
             }
         }
@@ -208,7 +208,6 @@ public class ModuleChain implements ILineHandler
     private void reset()
     {
         parsers.clear();
-        processParams.clear();
         transitions.clear();
         processors.clear();
     }
