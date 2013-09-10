@@ -25,6 +25,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author bandesz
@@ -32,7 +33,7 @@ import java.util.Map;
 public class Yolo
 {
 
-    private static final Logger logger = LoggerFactory.getLogger(Yolo.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Yolo.class);
 
     private final Options cliOptions = new Options();
 
@@ -61,13 +62,13 @@ public class Yolo
     {
         cliOptions.addOption("help", false, "print this message");
 
-        Option file = new Option("file", true, "path to logfile, wildcards are accepted");
-        file.setArgName("path");
-        cliOptions.addOption(file);
+        Option fileOption = new Option("file", true, "path to logfile, wildcards are accepted");
+        fileOption.setArgName("path");
+        cliOptions.addOption(fileOption);
 
-        Option config = new Option("config", true, "path to config file");
-        config.setArgName("path");
-        cliOptions.addOption(config);
+        Option configOption = new Option("config", true, "path to config file");
+        configOption.setArgName("path");
+        cliOptions.addOption(configOption);
 
         cliOptions.addOption("whole", false, "tail file from the beginning");
 
@@ -75,12 +76,16 @@ public class Yolo
 
         cliOptions.addOption("listModules", false, "list available modules");
 
-        Option watchConfigInterval = new Option("watchConfigInterval", true, "check config file periodically and update without stopping, default: 5 sec");
-        watchConfigInterval.setArgName("second");
-        cliOptions.addOption(watchConfigInterval);
+        Option watchConfigIntervalOption = new Option(
+                "watchConfigInterval",
+                true,
+                "check config file periodically and update without stopping, default: 5 sec"
+        );
+        watchConfigIntervalOption.setArgName("second");
+        cliOptions.addOption(watchConfigIntervalOption);
     }
 
-    private void parseCliOptions(String[] args) throws Exception
+    private void parseCliOptions(final String[] args) throws Exception
     {
         CommandLine cli;
         try
@@ -122,11 +127,13 @@ public class Yolo
 
         reopenFile = cli.hasOption("reopen");
 
-        watchConfigInterval = Integer.parseInt(cli.getOptionValue("watchConfigInterval", "5")) * 1000;
+        watchConfigInterval = TimeUnit.SECONDS.toMillis(
+                Integer.parseInt(cli.getOptionValue("watchConfigInterval", "5"))
+        );
     }
 
     @SuppressWarnings("unchecked")
-    private void readConfig(boolean update) throws ConfigException
+    private void readConfig(final boolean update) throws ConfigException
     {
         try
         {
@@ -152,7 +159,7 @@ public class Yolo
             @Override
             public void onFileChange(File file)
             {
-                logger.debug("Config file changed: {}", configPath);
+                LOG.debug("Config file changed: {}", configPath);
                 try
                 {
                     readConfig(true);
@@ -167,7 +174,10 @@ public class Yolo
         String filename = configPath.substring(configPath.lastIndexOf('/') + 1);
         String directory = configPath.substring(0, configPath.lastIndexOf('/'));
 
-        FileAlterationObserver observer = new FileAlterationObserver(new File(directory), FileFilterUtils.nameFileFilter(filename));
+        FileAlterationObserver observer = new FileAlterationObserver(
+                new File(directory),
+                FileFilterUtils.nameFileFilter(filename)
+        );
         observer.addListener(listener);
 
         FileAlterationMonitor monitor = new FileAlterationMonitor(watchConfigInterval);
@@ -218,7 +228,7 @@ public class Yolo
         {
             if (!e.getMessage().isEmpty())
             {
-                logger.error(e.getMessage());
+                LOG.error(e.getMessage());
             }
             else
             {
@@ -234,7 +244,7 @@ public class Yolo
             @Override
             public void run()
             {
-                logger.debug("Shutting down..");
+                LOG.debug("Shutting down..");
                 Yolo.this.stop();
             }
         });

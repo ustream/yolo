@@ -6,7 +6,7 @@ package tv.ustream.yolo.config;
 public interface IConfigEntry<T>
 {
 
-    public T parse(String name, Object data) throws ConfigException;
+    T parse(String name, Object data) throws ConfigException;
 
     public String getDescription(String indent);
 

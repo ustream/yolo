@@ -21,21 +21,21 @@ import java.util.Map;
 public class ModuleFactory
 {
 
-    private static final List<String> availableProcessors = Arrays.asList(
-        CompositeProcessor.class.getCanonicalName(),
-        ConsoleProcessor.class.getCanonicalName(),
-        GraphiteProcessor.class.getCanonicalName(),
-        StatsDProcessor.class.getCanonicalName()
+    private static final List<String> AVAILABLE_PROCESSORS = Arrays.asList(
+            CompositeProcessor.class.getCanonicalName(),
+            ConsoleProcessor.class.getCanonicalName(),
+            GraphiteProcessor.class.getCanonicalName(),
+            StatsDProcessor.class.getCanonicalName()
     );
 
-    private static final List<String> availableParsers = Arrays.asList(
-        PassThruParser.class.getCanonicalName(),
-        RegexpParser.class.getCanonicalName()
+    private static final List<String> AVAILABLE_PARSERS = Arrays.asList(
+            PassThruParser.class.getCanonicalName(),
+            RegexpParser.class.getCanonicalName()
     );
 
-    private static final ConfigMap processorModuleConfig = getDefaultProcessorModuleConfig();
+    private static final ConfigMap PROCESSOR_MODULE_CONFIG = getDefaultProcessorModuleConfig();
 
-    private static final ConfigMap parserModuleConfig = getDefaultParserModuleConfig();
+    private static final ConfigMap PARSER_MODULE_CONFIG = getDefaultParserModuleConfig();
 
     private static ConfigMap getDefaultProcessorModuleConfig()
     {
@@ -54,7 +54,7 @@ public class ModuleFactory
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends IModule> T create(String className) throws ConfigException
+    private <T extends IModule> T create(final String className) throws ConfigException
     {
         try
         {
@@ -79,7 +79,7 @@ public class ModuleFactory
 
     public IProcessor createProcessor(String name, Map<String, Object> rawConfig) throws ConfigException
     {
-        processorModuleConfig.parse(name, rawConfig);
+        PROCESSOR_MODULE_CONFIG.parse(name, rawConfig);
 
         IProcessor processor = create((String) rawConfig.get("class"));
 
@@ -90,7 +90,7 @@ public class ModuleFactory
 
     public IParser createParser(String name, Map<String, Object> rawConfig) throws ConfigException
     {
-        parserModuleConfig.parse(name, rawConfig);
+        PARSER_MODULE_CONFIG.parse(name, rawConfig);
 
         if (!(Boolean) rawConfig.get("enabled"))
         {
@@ -110,7 +110,7 @@ public class ModuleFactory
         System.out.println("Available processors");
         System.out.println("--------------------");
         System.out.println();
-        for (String className : availableProcessors)
+        for (String className : AVAILABLE_PROCESSORS)
         {
             IProcessor module = factory.create(className);
             ConfigMap config = getDefaultProcessorModuleConfig().merge(module.getModuleConfig());
@@ -129,7 +129,7 @@ public class ModuleFactory
         System.out.println("Available parsers");
         System.out.println("-----------------");
         System.out.println();
-        for (String className : availableParsers)
+        for (String className : AVAILABLE_PARSERS)
         {
             IParser module = factory.create(className);
             ConfigMap config = getDefaultParserModuleConfig().merge(module.getModuleConfig());

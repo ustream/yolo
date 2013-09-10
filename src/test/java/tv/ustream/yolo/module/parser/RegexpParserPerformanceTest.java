@@ -49,7 +49,7 @@ public class RegexpParserPerformanceTest
         }
     }
 
-    private List<String> generateLines(int length)
+    private List<String> generateLines(final int length)
     {
         List<String> result = new ArrayList<String>();
 
@@ -71,7 +71,7 @@ public class RegexpParserPerformanceTest
         return result;
     }
 
-    private Map<String, Object> createConfig(String regex)
+    private Map<String, Object> createConfig(final String regex)
     {
         Map<String, Object> config = new HashMap<String, Object>();
         config.put("regex", regex);

@@ -23,12 +23,12 @@ public class ConfigValue<T> implements IConfigEntry<T>
 
     private boolean configPatternAllowed = false;
 
-    public ConfigValue(Class<T> type)
+    public ConfigValue(final Class<T> type)
     {
         this(type, true, null);
     }
 
-    public ConfigValue(Class<T> type, boolean required, T defaultValue)
+    public ConfigValue(final Class<T> type, final boolean required, final T defaultValue)
     {
         this.type = type;
         this.required = required;
@@ -36,14 +36,14 @@ public class ConfigValue<T> implements IConfigEntry<T>
         this.allowedTypes.add(type);
     }
 
-    public ConfigValue setAllowedValues(List<T> allowedValues)
+    public ConfigValue setAllowedValues(final List<T> allowedValues)
     {
         this.allowedValues = allowedValues;
 
         return this;
     }
 
-    public ConfigValue setAllowedTypes(List<Class> types)
+    public ConfigValue setAllowedTypes(final List<Class> types)
     {
         this.allowedTypes = types;
 
@@ -57,12 +57,12 @@ public class ConfigValue<T> implements IConfigEntry<T>
         return this;
     }
 
-    public T parse(String name, Object value) throws ConfigException
+    public T parse(final String name, final Object value) throws ConfigException
     {
         if (!isValueValid(value))
         {
             throw new ConfigException(
-                name + " field is missing or invalid, value definition: " + this.getDescription("") + ""
+                    name + " field is missing or invalid, value definition: " + this.getDescription("") + ""
             );
         }
 
@@ -131,12 +131,12 @@ public class ConfigValue<T> implements IConfigEntry<T>
         }
 
         return String.format(
-            "%s%s%s%s%s%n",
-            types,
-            required ? ", required" : "",
-            !required && !isEmpty(defaultValue) ? ", default: " + defaultValue : "",
-            allowedValues != null ? ", allowed values: " + allowedValues : "",
-            configPatternAllowed ? ", pattern allowed" : ""
+                "%s%s%s%s%s%n",
+                types,
+                required ? ", required" : "",
+                !required && !isEmpty(defaultValue) ? ", default: " + defaultValue : "",
+                allowedValues != null ? ", allowed values: " + allowedValues : "",
+                configPatternAllowed ? ", pattern allowed" : ""
         );
     }
 

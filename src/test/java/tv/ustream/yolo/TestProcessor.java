@@ -13,7 +13,17 @@ import java.util.Map;
 public class TestProcessor implements IProcessor
 {
 
-    public static List<String> data = new ArrayList<String>();
+    private static List<String> data = new ArrayList<String>();
+
+    public static List<String> getData()
+    {
+        return data;
+    }
+
+    public static void reset()
+    {
+        data = new ArrayList<String>();
+    }
 
     @Override
     public ConfigMap getProcessParamsConfig()
@@ -22,13 +32,13 @@ public class TestProcessor implements IProcessor
     }
 
     @Override
-    public void process(Map<String, String> parserOutput, Map<String, Object> processParams)
+    public void process(final Map<String, String> parserOutput, final Map<String, Object> processParams)
     {
-        data.add(String.valueOf(parserOutput) + "|" + String.valueOf(processParams));
+        getData().add(String.valueOf(parserOutput) + "|" + String.valueOf(processParams));
     }
 
     @Override
-    public void setUpModule(Map<String, Object> parameters)
+    public void setUpModule(final Map<String, Object> parameters)
     {
     }
 

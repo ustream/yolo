@@ -20,7 +20,7 @@ public class RegexpParser implements IParser
     private final List<String> namedGroups = new ArrayList<String>();
 
     @Override
-    public void setUpModule(Map<String, Object> parameters)
+    public void setUpModule(final Map<String, Object> parameters)
     {
         String regex = (String) parameters.get("regex");
         matcher = Pattern.compile(regex).matcher("");
@@ -42,7 +42,7 @@ public class RegexpParser implements IParser
     }
 
     @Override
-    public Map<String, String> parse(String line)
+    public Map<String, String> parse(final String line)
     {
         matcher.reset(line);
 
@@ -85,7 +85,7 @@ public class RegexpParser implements IParser
         return namedGroups;
     }
 
-    private void setNamedGroups(String regex)
+    private void setNamedGroups(final String regex)
     {
         Matcher m = Pattern.compile("\\(\\?<([a-zA-Z][a-zA-Z0-9]*)>").matcher(regex);
 

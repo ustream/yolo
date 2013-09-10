@@ -16,9 +16,13 @@ import java.util.Map;
 public class GraphiteProcessor implements IProcessor
 {
 
+    private static final int DEFAULT_PORT = 2003;
+
+    private static final long DEFAULT_FLUSH_TIME_MS = 1000;
+
     private GraphiteClient client;
 
-    protected GraphiteClient createClient(String host, int port, long flushTimeMs)
+    protected GraphiteClient createClient(final String host, final int port, final long flushTimeMs)
     {
         return new GraphiteClient(host, port, flushTimeMs);
     }
@@ -49,7 +53,7 @@ public class GraphiteProcessor implements IProcessor
     }
 
     @Override
-    public void process(Map<String, String> parserOutput, Map<String, Object> processParams)
+    public void process(final Map<String, String> parserOutput, final Map<String, Object> processParams)
     {
         List<Map<String, Object>> keys = (List<Map<String, Object>>) processParams.get("keys");
 
@@ -59,7 +63,7 @@ public class GraphiteProcessor implements IProcessor
         }
     }
 
-    private void sendKey(Map<String, String> parserOutput, Map<String, Object> keyParams)
+    private void sendKey(final Map<String, String> parserOutput, final Map<String, Object> keyParams)
     {
         Object keyObject = keyParams.get("key");
         String key;
@@ -100,7 +104,7 @@ public class GraphiteProcessor implements IProcessor
     }
 
     @Override
-    public void setUpModule(Map<String, Object> parameters)
+    public void setUpModule(final Map<String, Object> parameters)
     {
         String host = (String) parameters.get("host");
         Integer port = ((Number) parameters.get("port")).intValue();
@@ -114,8 +118,8 @@ public class GraphiteProcessor implements IProcessor
     {
         ConfigMap config = new ConfigMap();
         config.addConfigValue("host", String.class);
-        config.addConfigValue("port", Number.class, false, 2003);
-        config.addConfigValue("flushTimeMs", Number.class, false, 1000);
+        config.addConfigValue("port", Number.class, false, DEFAULT_PORT);
+        config.addConfigValue("flushTimeMs", Number.class, false, DEFAULT_FLUSH_TIME_MS);
         return config;
     }
 

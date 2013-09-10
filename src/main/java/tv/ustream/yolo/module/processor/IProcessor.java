@@ -11,10 +11,10 @@ import java.util.Map;
 public interface IProcessor extends IModule
 {
 
-    public ConfigMap getProcessParamsConfig();
+    ConfigMap getProcessParamsConfig();
 
-    public void process(Map<String, String> parserOutput, Map<String, Object> processParams);
+    void process(Map<String, String> parserOutput, Map<String, Object> processParams);
 
-    public void stop();
+    void stop();
 
 }

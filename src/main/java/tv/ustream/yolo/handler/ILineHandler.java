@@ -6,6 +6,6 @@ package tv.ustream.yolo.handler;
 public interface ILineHandler
 {
 
-    public void handle(String line);
+    void handle(String line);
 
 }

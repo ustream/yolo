@@ -2,7 +2,6 @@ package tv.ustream.yolo.module.processor;
 
 import org.junit.Before;
 import org.junit.Test;
-import tv.ustream.yolo.config.ConfigException;
 import tv.ustream.yolo.module.ModuleFactory;
 
 import java.util.Arrays;
@@ -48,7 +47,7 @@ public class CompositeProcessorTest
         verify(p2).process(parserOutput, processParams);
     }
 
-    private CompositeProcessor createProcessor() throws ConfigException
+    private CompositeProcessor createProcessor() throws Exception
     {
         Map<String, Object> config = new HashMap<String, Object>();
         config.put("class", CompositeProcessor.class.getCanonicalName());

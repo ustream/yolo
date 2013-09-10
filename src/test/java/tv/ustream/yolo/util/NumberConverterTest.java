@@ -14,13 +14,13 @@ public class NumberConverterTest
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    private final static long KB_FACTOR = 1024;
+    private static final long KB_FACTOR = 1024;
 
-    private final static long MB_FACTOR = KB_FACTOR * KB_FACTOR;
+    private static final long MB_FACTOR = KB_FACTOR * KB_FACTOR;
 
-    private final static long GB_FACTOR = KB_FACTOR * MB_FACTOR;
+    private static final long GB_FACTOR = KB_FACTOR * MB_FACTOR;
 
-    private final static long TB_FACTOR = KB_FACTOR * GB_FACTOR;
+    private static final long TB_FACTOR = KB_FACTOR * GB_FACTOR;
 
     @Test
     public void shouldLeaveNumberAsIs()
@@ -64,7 +64,7 @@ public class NumberConverterTest
         assertConvertByteValue(5.5D * TB_FACTOR, "5.5", "T");
     }
 
-    public void assertConvertByteValue(Double expected, String value, String factor)
+    public void assertConvertByteValue(final Double expected, final String value, final String factor)
     {
         Assert.assertEquals(expected, NumberConverter.convertByteValue(value + factor.toLowerCase()));
         Assert.assertEquals(expected, NumberConverter.convertByteValue(value + factor.toUpperCase()));

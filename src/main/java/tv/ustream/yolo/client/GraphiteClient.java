@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author bandesz
@@ -15,9 +16,9 @@ import java.util.TimerTask;
 public class GraphiteClient
 {
 
-    private static final Logger logger = LoggerFactory.getLogger(GraphiteClient.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GraphiteClient.class);
 
-    private final static int BUFFER_SIZE = 64000;
+    private static final int BUFFER_SIZE = 64000;
 
     private final String host;
 
@@ -29,7 +30,7 @@ public class GraphiteClient
 
     private final Timer flushTimer = new Timer();
 
-    public GraphiteClient(String host, int port, long flushTimeMs)
+    public GraphiteClient(final String host, final int port, final long flushTimeMs)
     {
         this.host = host;
         this.port = port;
@@ -37,14 +38,14 @@ public class GraphiteClient
         flushTimer.schedule(createTimerTask(), flushTimeMs, flushTimeMs);
     }
 
-    public void sendMetrics(String key, Double value)
+    public void sendMetrics(final String key, final Double value)
     {
-        sendMetrics(key, value, System.currentTimeMillis() / 1000);
+        sendMetrics(key, value, TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()));
     }
 
-    public void sendMetrics(String key, Double value, long timestamp)
+    public void sendMetrics(final String key, final Double value, final long timestamp)
     {
-        logger.debug("graphite: {} {} {}", key, value, timestamp);
+        LOG.debug("graphite: {} {} {}", key, value, timestamp);
 
         buffer.append(String.format("%s %f %d\n", key, value, timestamp));
 
@@ -64,7 +65,7 @@ public class GraphiteClient
                 }
                 catch (IOException e)
                 {
-                    logger.debug("Failed to send graphite data: {}", e.getMessage());
+                    LOG.debug("Failed to send graphite data: {}", e.getMessage());
                 }
             }
         };
@@ -86,7 +87,7 @@ public class GraphiteClient
 
             synchronized (buffer)
             {
-                logger.debug("Flushing {} metrics", metricsCount);
+                LOG.debug("Flushing {} metrics", metricsCount);
                 out.write(buffer.toString());
                 buffer.delete(0, buffer.length());
                 metricsCount = 0;

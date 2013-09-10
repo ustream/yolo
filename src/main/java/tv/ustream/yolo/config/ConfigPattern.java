@@ -13,36 +13,36 @@ import java.util.regex.Pattern;
 public class ConfigPattern
 {
 
-    private static final Pattern parametersPattern = Pattern.compile("#([a-zA-Z0-9_-]+)#");
+    private static final Pattern PARAMS_PATTERN = Pattern.compile("#([a-zA-Z0-9_-]+)#");
 
     private final String pattern;
 
     private final List<String> parameters = new ArrayList<String>();
 
-    private final static Map<String, String> globalParameters = new HashMap<String, String>();
+    private static Map<String, String> globalParameters = new HashMap<String, String>();
 
-    public ConfigPattern(String pattern)
+    public ConfigPattern(final String pattern)
     {
         this.pattern = pattern;
-        Matcher matcher = parametersPattern.matcher(pattern);
+        Matcher matcher = PARAMS_PATTERN.matcher(pattern);
         while (matcher.find())
         {
             parameters.add(matcher.group(1));
         }
     }
 
-    public static boolean applicable(Object pattern)
+    public static boolean applicable(final Object pattern)
     {
         if (!(pattern instanceof String))
         {
             return false;
         }
-        Matcher matcher = parametersPattern.matcher((String) pattern);
+        Matcher matcher = PARAMS_PATTERN.matcher((String) pattern);
         return matcher.find();
     }
 
     @SuppressWarnings("unchecked")
-    public static Object replacePatterns(Object data, List<String> validKeys) throws ConfigException
+    public static Object replacePatterns(final Object data, final List<String> validKeys) throws ConfigException
     {
         if (data instanceof Map)
         {

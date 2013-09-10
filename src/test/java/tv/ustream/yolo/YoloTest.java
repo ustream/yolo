@@ -9,7 +9,6 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
@@ -34,18 +33,17 @@ public class YoloTest
     @Before
     public void setUp() throws Exception
     {
-        TestProcessor.data = new ArrayList<String>();
-
         FileWriter out;
 
         configFile = tmpFolder.newFile();
 
         out = new FileWriter(configFile);
 
-        out.write("{" +
-            "\"parsers\":{\"passthru\": {\"class\": \"tv.ustream.yolo.module.parser.PassThruParser\", \"processors\": {\"test\": {}}}}," +
-            "\"processors\":{\"test\": { \"class\": \"tv.ustream.yolo.TestProcessor\"}}" +
-            "}");
+        out.write("{"
+                +
+                "\"parsers\":{\"passthru\": {\"class\": \"tv.ustream.yolo.module.parser.PassThruParser\", \"processors\": {\"test\": {}}}},"
+                + "\"processors\":{\"test\": { \"class\": \"tv.ustream.yolo.TestProcessor\"}}"
+                + "}");
         out.close();
 
         testFile = tmpFolder.newFile();
@@ -58,6 +56,8 @@ public class YoloTest
     @After
     public void tearDown()
     {
+        TestProcessor.reset();
+
         yolo.stop();
     }
 
@@ -65,7 +65,7 @@ public class YoloTest
     public void shouldReadAndProcessFile() throws Exception
     {
         yolo = new Yolo();
-        String params[] = {"-config", configFile.getAbsolutePath(), "-file", testFile.getAbsolutePath(), "-whole"};
+        String[] params = {"-config", configFile.getAbsolutePath(), "-file", testFile.getAbsolutePath(), "-whole"};
         yolo.start(params);
 
         await().atMost(5000, TimeUnit.MILLISECONDS).until(containsLine("{line=l1}|{}", "{line=l2}|{}", "{line=l3}|{}"));
@@ -82,26 +82,28 @@ public class YoloTest
     {
         FileWriter out = new FileWriter(configFile);
 
-        out.write("{" +
-            "\"parsers\":{\"passthru\": {\"class\": \"tv.ustream.yolo.module.parser.PassThruParser\", \"processors\": {\"test\":{}}, \"enabled\": false}}," +
-            "\"processors\":{\"test\": { \"class\": \"tv.ustream.yolo.TestProcessor\"}}" +
-            "}");
+        out.write("{"
+                +
+                "\"parsers\":{\"passthru\": {\"class\": \"tv.ustream.yolo.module.parser.PassThruParser\", \"processors\": {\"test\":{}}, \"enabled\": false}},"
+                + "\"processors\":{\"test\": { \"class\": \"tv.ustream.yolo.TestProcessor\"}}"
+                + "}");
         out.close();
 
         yolo = new Yolo();
-        String params[] = {"-config", configFile.getAbsolutePath(), "-file", testFile.getAbsolutePath(), "-whole", "-watchConfigInterval", "1"};
+        String[] params = {"-config", configFile.getAbsolutePath(), "-file", testFile.getAbsolutePath(), "-whole",
+                "-watchConfigInterval", "1"
+        };
         yolo.start(params);
-
-        Thread.sleep(500);
 
         // First lines will be read
 
         out = new FileWriter(configFile);
 
-        out.write("{" +
-            "\"parsers\":{\"passthru\": {\"class\": \"tv.ustream.yolo.module.parser.PassThruParser\", \"processors\": {\"test\":{}}}}," +
-            "\"processors\":{\"test\": { \"class\": \"tv.ustream.yolo.TestProcessor\"}}" +
-            "}");
+        out.write("{"
+                +
+                "\"parsers\":{\"passthru\": {\"class\": \"tv.ustream.yolo.module.parser.PassThruParser\", \"processors\": {\"test\":{}}}},"
+                + "\"processors\":{\"test\": { \"class\": \"tv.ustream.yolo.TestProcessor\"}}"
+                + "}");
         out.close();
 
         Thread.sleep(1500);
@@ -112,9 +114,9 @@ public class YoloTest
 
         await().atMost(5000, TimeUnit.MILLISECONDS).until(containsLine("{line=l4}|{}", "{line=l5}|{}"));
 
-        Assert.assertFalse(TestProcessor.data.contains("{line=l1}|{}"));
-        Assert.assertFalse(TestProcessor.data.contains("{line=l2}|{}"));
-        Assert.assertFalse(TestProcessor.data.contains("{line=l3}|{}"));
+        Assert.assertFalse(TestProcessor.getData().contains("{line=l1}|{}"));
+        Assert.assertFalse(TestProcessor.getData().contains("{line=l2}|{}"));
+        Assert.assertFalse(TestProcessor.getData().contains("{line=l3}|{}"));
     }
 
     public Callable<Boolean> containsLine(final String... lines)
@@ -126,7 +128,7 @@ public class YoloTest
             {
                 for (String line : Arrays.asList(lines))
                 {
-                    if (!TestProcessor.data.contains(line))
+                    if (!TestProcessor.getData().contains(line))
                     {
                         return false;
                     }

@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 /**
@@ -19,9 +20,9 @@ import java.util.regex.Pattern;
 public class FileHandler implements TailerListener
 {
 
-    private static final Logger logger = LoggerFactory.getLogger(FileHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FileHandler.class);
 
-    private static final Pattern wildCardPattern = Pattern.compile("[\\?\\*]+");
+    private static final Pattern WILDCARD_PATTERN = Pattern.compile("[\\?\\*]+");
 
     private final String filePath;
 
@@ -37,11 +38,17 @@ public class FileHandler implements TailerListener
 
     private final ILineHandler lineProcessor;
 
-    public FileHandler(ILineHandler lineProcessor, String filePath, long delayMs, boolean readWhole, boolean reopen)
+    public FileHandler(
+            final ILineHandler lineProcessor,
+            final String filePath,
+            final long delayMs,
+            final boolean readWhole,
+            final boolean reopen
+    )
     {
         this.lineProcessor = lineProcessor;
         this.filePath = filePath;
-        this.dynamicFilename = wildCardPattern.matcher(filePath).find();
+        this.dynamicFilename = WILDCARD_PATTERN.matcher(filePath).find();
         this.delayMs = delayMs;
         this.readWhole = readWhole;
         this.reopen = reopen;
@@ -53,9 +60,20 @@ public class FileHandler implements TailerListener
 
         File directory = new File(filePath.substring(0, filePath.lastIndexOf('/')));
 
-        Collection<File> files = FileUtils.listFiles(directory, new WildcardFileFilter(filename), FalseFileFilter.INSTANCE);
+        Collection<File> files = FileUtils.listFiles(
+                directory,
+                new WildcardFileFilter(filename),
+                FalseFileFilter.INSTANCE
+        );
 
-        return !files.isEmpty() ? files.iterator().next() : null;
+        if (!files.isEmpty())
+        {
+            return files.iterator().next();
+        }
+        else
+        {
+            return null;
+        }
     }
 
     public void start()
@@ -68,16 +86,18 @@ public class FileHandler implements TailerListener
             {
                 try
                 {
-                    Thread.sleep(1000);
+                    TimeUnit.SECONDS.sleep(1);
                 }
                 catch (InterruptedException ignored)
                 {
+                    Thread.currentThread().interrupt();
+                    return;
                 }
             }
         }
         while (file == null);
 
-        logger.debug("Tailing file {}", file.getAbsolutePath());
+        LOG.debug("Tailing file {}", file.getAbsolutePath());
 
         tailer = new Tailer(file, this, delayMs, !readWhole, reopen);
 
@@ -97,7 +117,7 @@ public class FileHandler implements TailerListener
     }
 
     @Override
-    public void init(Tailer tailer)
+    public void init(final Tailer tailer)
     {
     }
 
@@ -110,33 +130,35 @@ public class FileHandler implements TailerListener
             return;
         }
 
-        logger.error("Tailer error: file not found: {}", tailer.getFile().getAbsolutePath());
+        LOG.error("Tailer error: file not found: {}", tailer.getFile().getAbsolutePath());
 
         try
         {
-            Thread.sleep(1000);
+            TimeUnit.SECONDS.sleep(1);
         }
         catch (InterruptedException ignored)
         {
+            Thread.currentThread().interrupt();
         }
     }
 
     @Override
     public void fileRotated()
     {
-        logger.debug("Tailer: file was rotated: {}", tailer.getFile().getAbsolutePath());
+        LOG.debug("Tailer: file was rotated: {}", tailer.getFile().getAbsolutePath());
 
         try
         {
-            Thread.sleep(1000);
+            TimeUnit.SECONDS.sleep(1);
         }
         catch (InterruptedException ignored)
         {
+            Thread.currentThread().interrupt();
         }
     }
 
     @Override
-    public void handle(String line)
+    public void handle(final String line)
     {
         try
         {
@@ -144,12 +166,12 @@ public class FileHandler implements TailerListener
         }
         catch (Exception e)
         {
-            logger.error("Line processing error: " + e.getMessage());
+            LOG.error("Line processing error: " + e.getMessage());
         }
     }
 
     @Override
-    public void handle(Exception ex)
+    public void handle(final Exception ex)
     {
         if (ex instanceof FileNotFoundException && dynamicFilename)
         {
@@ -157,14 +179,15 @@ public class FileHandler implements TailerListener
             return;
         }
 
-        logger.error("Tailer error: {}", ex.getMessage());
+        LOG.error("Tailer error: {}", ex.getMessage());
 
         try
         {
-            Thread.sleep(1000);
+            TimeUnit.SECONDS.sleep(1);
         }
         catch (InterruptedException ignored)
         {
+            Thread.currentThread().interrupt();
         }
     }
 }

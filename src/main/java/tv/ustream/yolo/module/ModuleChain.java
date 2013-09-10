@@ -20,7 +20,7 @@ import java.util.Map;
 public class ModuleChain implements ILineHandler
 {
 
-    private static final Logger logger = LoggerFactory.getLogger(ModuleChain.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ModuleChain.class);
 
     private final ModuleFactory moduleFactory;
 
@@ -28,24 +28,25 @@ public class ModuleChain implements ILineHandler
 
     private final Map<String, IProcessor> processors = new HashMap<String, IProcessor>();
 
-    private final Map<String, Map<String, Map<String, Object>>> transitions = new HashMap<String, Map<String, Map<String, Object>>>();
+    private final Map<String, Map<String, Map<String, Object>>> transitions =
+            new HashMap<String, Map<String, Map<String, Object>>>();
 
     private Map<String, Object> config = null;
 
-    public ModuleChain(ModuleFactory moduleFactory)
+    public ModuleChain(final ModuleFactory moduleFactory)
     {
         this.moduleFactory = moduleFactory;
     }
 
     private ConfigMap getMainConfig()
     {
-        ConfigMap config = new ConfigMap();
-        config.addConfigValue("processors", Map.class);
-        config.addConfigValue("parsers", Map.class);
-        return config;
+        ConfigMap mainConfig = new ConfigMap();
+        mainConfig.addConfigValue("processors", Map.class);
+        mainConfig.addConfigValue("parsers", Map.class);
+        return mainConfig;
     }
 
-    public void updateConfig(Map<String, Object> config, boolean instant) throws ConfigException
+    public void updateConfig(final Map<String, Object> config, final boolean instant) throws ConfigException
     {
         this.config = config;
 
@@ -91,7 +92,7 @@ public class ModuleChain implements ILineHandler
     @SuppressWarnings("unchecked")
     private void addProcessor(String name, Map<String, Object> config) throws ConfigException
     {
-        logger.debug("Adding {} processor {}", name, config);
+        LOG.debug("Adding {} processor {}", name, config);
 
         IProcessor processor = moduleFactory.createProcessor(name, config);
 
@@ -126,7 +127,7 @@ public class ModuleChain implements ILineHandler
     @SuppressWarnings("unchecked")
     private void addParser(String name, Map<String, Object> config) throws ConfigException
     {
-        logger.debug("Adding {} parser {}", name, config);
+        LOG.debug("Adding {} parser {}", name, config);
 
         IParser parser = moduleFactory.createParser(name, config);
 
@@ -162,8 +163,8 @@ public class ModuleChain implements ILineHandler
         }
 
         transitions.get(parserName).put(
-            processorName,
-            (Map<String, Object>) ConfigPattern.replacePatterns(params, parsers.get(parserName).getOutputKeys())
+                processorName,
+                (Map<String, Object>) ConfigPattern.replacePatterns(params, parsers.get(parserName).getOutputKeys())
         );
     }
 

@@ -20,7 +20,9 @@ import java.util.Map;
 public class StatsDProcessor implements IProcessor
 {
 
-    private static final Logger logger = LoggerFactory.getLogger(StatsDProcessor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(StatsDProcessor.class);
+
+    private static final int DEFAULT_PORT = 8125;
 
     public static enum Types
     {
@@ -28,7 +30,7 @@ public class StatsDProcessor implements IProcessor
         GAUGE,
         TIMER;
 
-        public final String value;
+        private final String value;
 
         private Types()
         {
@@ -40,30 +42,39 @@ public class StatsDProcessor implements IProcessor
             List<String> values = new ArrayList<String>();
             for (Types type : Types.values())
             {
-                values.add(type.value);
+                values.add(type.getValue());
             }
             return values;
         }
 
+        public String getValue()
+        {
+            return value;
+        }
     }
 
     private StatsDClient statsDClient;
 
-    protected StatsDClient createClient(String prefix, String host, int port)
+    protected StatsDClient createClient(final String prefix, final String host, final int port)
     {
         return new NonBlockingStatsDClient(prefix, host, port);
     }
 
     @Override
-    public void setUpModule(Map<String, Object> parameters)
+    public void setUpModule(final Map<String, Object> parameters)
     {
         String prefix = (String) parameters.get("prefix");
+        if (null == prefix)
+        {
+            prefix = "";
+        }
+
         String host = (String) parameters.get("host");
         Integer port = ((Number) parameters.get("port")).intValue();
 
-        logger.debug("Initializing StatsD connection: {}:{}", host, port);
+        LOG.debug("Initializing StatsD connection: {}:{}", host, port);
 
-        statsDClient = createClient(prefix != null ? prefix : "", host, port);
+        statsDClient = createClient(prefix, host, port);
     }
 
     @Override
@@ -72,7 +83,7 @@ public class StatsDProcessor implements IProcessor
         ConfigMap config = new ConfigMap();
         config.addConfigValue("prefix", String.class);
         config.addConfigValue("host", String.class);
-        config.addConfigValue("port", Number.class, false, 8125);
+        config.addConfigValue("port", Number.class, false, DEFAULT_PORT);
         return config;
     }
 
@@ -106,7 +117,7 @@ public class StatsDProcessor implements IProcessor
 
     @SuppressWarnings("unchecked")
     @Override
-    public void process(Map<String, String> parserOutput, Map<String, Object> processParams)
+    public void process(final Map<String, String> parserOutput, final Map<String, Object> processParams)
     {
         List<Map<String, Object>> keys = (List<Map<String, Object>>) processParams.get("keys");
 
@@ -116,7 +127,7 @@ public class StatsDProcessor implements IProcessor
         }
     }
 
-    private void sendKey(Map<String, String> parserOutput, Map<String, Object> keyParams)
+    private void sendKey(final Map<String, String> parserOutput, final Map<String, Object> keyParams)
     {
         String type = (String) keyParams.get("type");
 
@@ -148,21 +159,19 @@ public class StatsDProcessor implements IProcessor
         send(type, key, value.intValue());
     }
 
-    private void send(String type, String key, int value)
+    private void send(final String type, final String key, final int value)
     {
-        key = key.toLowerCase();
+        LOG.debug("statsd: {} {} {}", type, key, String.valueOf(value));
 
-        logger.debug("statsd: {} {} {}", type, key, String.valueOf(value));
-
-        if (Types.COUNTER.value.equals(type))
+        if (Types.COUNTER.getValue().equals(type))
         {
             statsDClient.count(key, value);
         }
-        else if (Types.GAUGE.value.equals(type))
+        else if (Types.GAUGE.getValue().equals(type))
         {
             statsDClient.gauge(key, value);
         }
-        else if (Types.TIMER.value.equals(type))
+        else if (Types.TIMER.getValue().equals(type))
         {
             statsDClient.time(key, value);
         }

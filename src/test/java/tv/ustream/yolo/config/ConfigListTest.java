@@ -34,7 +34,7 @@ public class ConfigListTest
     }
 
     @Test
-    public void parseShouldThrowExceptionWhenListIsInvalid() throws ConfigException
+    public void parseShouldThrowExceptionWhenListIsInvalid() throws Exception
     {
         thrown.expect(ConfigException.class);
 
@@ -42,7 +42,7 @@ public class ConfigListTest
     }
 
     @Test
-    public void parseShouldParseAllConfigEntriesAndReturnList() throws ConfigException
+    public void parseShouldParseAllConfigEntriesAndReturnList() throws Exception
     {
         ConfigList list = new ConfigList(configEntry);
 
@@ -68,7 +68,7 @@ public class ConfigListTest
     }
 
     @Test
-    public void parseShouldThrowExceptionWhenEntryIsInvalid() throws ConfigException
+    public void parseShouldThrowExceptionWhenEntryIsInvalid() throws Exception
     {
         thrown.expect(ConfigException.class);
 

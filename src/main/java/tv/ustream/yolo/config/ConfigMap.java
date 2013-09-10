@@ -11,27 +11,27 @@ public class ConfigMap implements IConfigEntry<Map<String, Object>>
 
     private final Map<String, IConfigEntry> config = new HashMap<String, IConfigEntry>();
 
-    public void addConfigEntry(String name, IConfigEntry configValue)
+    public void addConfigEntry(final String name, final IConfigEntry configValue)
     {
         config.put(name, configValue);
     }
 
-    public <T> void addConfigValue(String name, Class<T> type)
+    public <T> void addConfigValue(final String name, final Class<T> type)
     {
         addConfigValue(name, type, true, null);
     }
 
-    public <T> void addConfigValue(String name, Class<T> type, boolean required, T defaultValue)
+    public <T> void addConfigValue(final String name, final Class<T> type, final boolean required, final T defaultValue)
     {
         config.put(name, new ConfigValue<T>(type, required, defaultValue));
     }
 
-    public void addConfigList(String name, ConfigMap configMap)
+    public void addConfigList(final String name, final ConfigMap configMap)
     {
         config.put(name, new ConfigList(configMap));
     }
 
-    public ConfigMap merge(ConfigMap configMap)
+    public ConfigMap merge(final ConfigMap configMap)
     {
         if (null != configMap)
         {
@@ -50,7 +50,7 @@ public class ConfigMap implements IConfigEntry<Map<String, Object>>
 
     @SuppressWarnings("unchecked")
     @Override
-    public Map<String, Object> parse(String name, Object data) throws ConfigException
+    public Map<String, Object> parse(final String name, final Object data) throws ConfigException
     {
         if (!(data instanceof Map))
         {
@@ -70,7 +70,11 @@ public class ConfigMap implements IConfigEntry<Map<String, Object>>
         String result = String.format("Map {%n");
         for (Map.Entry<String, IConfigEntry> configEntry : config.entrySet())
         {
-            result += String.format("%s%s: %s", indent + "  ", configEntry.getKey(), configEntry.getValue().getDescription(indent + "  "));
+            result += String.format(
+                    "%s%s: %s",
+                    indent + "  ", configEntry.getKey(),
+                    configEntry.getValue().getDescription(indent + "  ")
+            );
         }
         result += String.format("%s}%n", indent);
         return result;

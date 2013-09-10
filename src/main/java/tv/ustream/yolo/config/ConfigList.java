@@ -10,13 +10,13 @@ public class ConfigList implements IConfigEntry<List>
 
     private final IConfigEntry configEntry;
 
-    public ConfigList(IConfigEntry configEntry)
+    public ConfigList(final IConfigEntry configEntry)
     {
         this.configEntry = configEntry;
     }
 
     @SuppressWarnings("unchecked")
-    public List parse(String name, Object data) throws ConfigException
+    public List parse(final String name, final Object data) throws ConfigException
     {
         if (!(data instanceof List))
         {
@@ -30,7 +30,7 @@ public class ConfigList implements IConfigEntry<List>
         return list;
     }
 
-    public String getDescription(String indent)
+    public String getDescription(final String indent)
     {
         return String.format("List [%n%s%s%s]%n", indent + "  ", configEntry.getDescription(indent + "  "), indent);
     }

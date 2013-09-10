@@ -11,7 +11,7 @@ public class ConsoleProcessor implements IProcessor
 {
 
     @Override
-    public void process(Map<String, String> parserOutput, Map<String, Object> processParams)
+    public void process(final Map<String, String> parserOutput, final Map<String, Object> processParams)
     {
         System.out.format("[console] Parser output: %s, process parameters: %s%n", parserOutput, processParams);
     }
@@ -23,7 +23,7 @@ public class ConsoleProcessor implements IProcessor
     }
 
     @Override
-    public void setUpModule(Map<String, Object> parameters)
+    public void setUpModule(final Map<String, Object> parameters)
     {
     }
 

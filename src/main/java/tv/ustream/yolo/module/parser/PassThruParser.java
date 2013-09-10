@@ -14,7 +14,7 @@ public class PassThruParser implements IParser
 {
 
     @Override
-    public Map<String, String> parse(String line)
+    public Map<String, String> parse(final String line)
     {
         Map<String, String> result = new HashMap<String, String>();
         result.put("line", line);
@@ -34,7 +34,7 @@ public class PassThruParser implements IParser
     }
 
     @Override
-    public void setUpModule(Map<String, Object> parameters)
+    public void setUpModule(final Map<String, Object> parameters)
     {
     }
 

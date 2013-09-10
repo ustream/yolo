@@ -13,7 +13,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyMap;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * @author bandesz
@@ -287,14 +294,15 @@ public class ModuleChainTest
         verify(processor2, times(1)).process(anyMap(), anyMap());
     }
 
-    private Map<String, Object> createProcessorConfig(String clazz)
+    private Map<String, Object> createProcessorConfig(final String clazz)
     {
         Map<String, Object> config = new HashMap<String, Object>();
         config.put("class", clazz);
         return config;
     }
 
-    private Map<String, Object> createParserConfig(String clazz, String processor, Map<String, Object> processParams)
+    private Map<String, Object> createParserConfig(final String clazz, final String processor,
+                                                   final Map<String, Object> processParams)
     {
         Map<String, Object> processors = new HashMap<String, Object>();
         processors.put(processor, processParams);
@@ -305,7 +313,8 @@ public class ModuleChainTest
         return config;
     }
 
-    private void addModule(Map config, String type, String name, Map<String, Object> moduleConfig)
+    private void addModule(final Map config, final String type, final String name,
+                           final Map<String, Object> moduleConfig)
     {
         if (!config.containsKey(type))
         {

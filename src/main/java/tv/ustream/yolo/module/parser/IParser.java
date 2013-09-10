@@ -11,10 +11,10 @@ import java.util.Map;
 public interface IParser extends IModule
 {
 
-    public Map<String, String> parse(String line);
+    Map<String, String> parse(String line);
 
-    public boolean runAlways();
+    boolean runAlways();
 
-    public List<String> getOutputKeys();
+    List<String> getOutputKeys();
 
 }

@@ -112,7 +112,7 @@ public class FileHandlerTest implements ILineHandler
     }
 
     @Override
-    public void handle(String line)
+    public void handle(final String line)
     {
         handledLines += line + "\n";
     }

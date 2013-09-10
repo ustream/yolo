@@ -6,7 +6,7 @@ package tv.ustream.yolo.config;
 public class ConfigException extends Exception
 {
 
-    public ConfigException(String message)
+    public ConfigException(final String message)
     {
         super("Configuration error: " + message);
     }

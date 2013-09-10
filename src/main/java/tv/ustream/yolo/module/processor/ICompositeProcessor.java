@@ -6,6 +6,6 @@ package tv.ustream.yolo.module.processor;
 public interface ICompositeProcessor extends IProcessor
 {
 
-    public void addProcessor(IProcessor processor);
+    void addProcessor(IProcessor processor);
 
 }

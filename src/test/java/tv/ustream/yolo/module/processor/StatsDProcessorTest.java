@@ -56,7 +56,7 @@ public class StatsDProcessorTest
     {
         Map<String, String> parserOutput = new HashMap<String, String>();
 
-        processor.process(parserOutput, createprocessParams(StatsDProcessor.Types.COUNTER.value, "key", 5D));
+        processor.process(parserOutput, createprocessParams(StatsDProcessor.Types.COUNTER.getValue(), "key", 5D));
 
         verify(statsDClient).count("key", 5);
     }
@@ -66,7 +66,7 @@ public class StatsDProcessorTest
     {
         Map<String, String> parserOutput = new HashMap<String, String>();
 
-        processor.process(parserOutput, createprocessParams(StatsDProcessor.Types.GAUGE.value, "key", 5D));
+        processor.process(parserOutput, createprocessParams(StatsDProcessor.Types.GAUGE.getValue(), "key", 5D));
 
         verify(statsDClient).gauge("key", 5);
     }
@@ -76,7 +76,7 @@ public class StatsDProcessorTest
     {
         Map<String, String> parserOutput = new HashMap<String, String>();
 
-        processor.process(parserOutput, createprocessParams(StatsDProcessor.Types.TIMER.value, "key", 5D));
+        processor.process(parserOutput, createprocessParams(StatsDProcessor.Types.TIMER.getValue(), "key", 5D));
 
         verify(statsDClient).time("key", 5);
     }
@@ -89,7 +89,7 @@ public class StatsDProcessorTest
 
         ConfigPattern key = new ConfigPattern("some.#p1#.key");
 
-        processor.process(parserOutput, createprocessParams(StatsDProcessor.Types.COUNTER.value, key, 5D));
+        processor.process(parserOutput, createprocessParams(StatsDProcessor.Types.COUNTER.getValue(), key, 5D));
 
         verify(statsDClient).count("some.v1.key", 5);
     }
@@ -102,7 +102,7 @@ public class StatsDProcessorTest
 
         ConfigPattern value = new ConfigPattern("#v1#");
 
-        processor.process(parserOutput, createprocessParams(StatsDProcessor.Types.COUNTER.value, "key", value));
+        processor.process(parserOutput, createprocessParams(StatsDProcessor.Types.COUNTER.getValue(), "key", value));
 
         verify(statsDClient).count("key", 5);
     }
@@ -117,7 +117,7 @@ public class StatsDProcessorTest
         ConfigPattern key = new ConfigPattern("some.#p1#.key");
         ConfigPattern value = new ConfigPattern("#v1#");
 
-        processor.process(parserOutput, createprocessParams(StatsDProcessor.Types.COUNTER.value, key, value));
+        processor.process(parserOutput, createprocessParams(StatsDProcessor.Types.COUNTER.getValue(), key, value));
 
         verify(statsDClient).count("some.v1.key", 5);
     }
@@ -155,7 +155,7 @@ public class StatsDProcessorTest
     {
         Map<String, String> parserOutput = new HashMap<String, String>();
 
-        processor.process(parserOutput, createprocessParams(StatsDProcessor.Types.COUNTER.value, "key", 5D, 10D));
+        processor.process(parserOutput, createprocessParams(StatsDProcessor.Types.COUNTER.getValue(), "key", 5D, 10D));
 
         verify(statsDClient).count("key", 50);
     }
@@ -168,7 +168,7 @@ public class StatsDProcessorTest
 
         ConfigPattern value = new ConfigPattern("#v1#");
 
-        processor.process(parserOutput, createprocessParams(StatsDProcessor.Types.COUNTER.value, "key", value));
+        processor.process(parserOutput, createprocessParams(StatsDProcessor.Types.COUNTER.getValue(), "key", value));
 
         verify(statsDClient).count("key", 5 * 1024 * 1024);
     }
