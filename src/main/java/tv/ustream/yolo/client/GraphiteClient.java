@@ -24,16 +24,22 @@ public class GraphiteClient
 
     private final int port;
 
+    private String prefix = "";
+
     private final StringBuffer buffer = new StringBuffer(BUFFER_SIZE);
 
     private int metricsCount = 0;
 
     private final Timer flushTimer = new Timer();
 
-    public GraphiteClient(final String host, final int port, final long flushTimeMs)
+    public GraphiteClient(final String host, final int port, final long flushTimeMs, final String prefix)
     {
         this.host = host;
         this.port = port;
+        if (prefix != null && !prefix.isEmpty())
+        {
+            this.prefix = prefix + ".";
+        }
 
         flushTimer.schedule(createTimerTask(), flushTimeMs, flushTimeMs);
     }
@@ -45,9 +51,9 @@ public class GraphiteClient
 
     public void sendMetrics(final String key, final Double value, final long timestamp)
     {
-        LOG.debug("graphite: {} {} {}", key, value, timestamp);
+        LOG.debug("graphite: {}{} {} {}", prefix, key, value, timestamp);
 
-        buffer.append(String.format("%s %f %d\n", key, value, timestamp));
+        buffer.append(String.format("%s%s %f %d\n", prefix, key, value, timestamp));
 
         metricsCount++;
     }
@@ -82,7 +88,7 @@ public class GraphiteClient
         PrintWriter out = null;
         try
         {
-            socket = new Socket(host, port);
+            socket = createSocket(host, port);
             out = new PrintWriter(socket.getOutputStream(), true);
 
             synchronized (buffer)
@@ -109,6 +115,11 @@ public class GraphiteClient
     public void stop()
     {
         flushTimer.cancel();
+    }
+
+    protected Socket createSocket(final String host, final int port) throws IOException
+    {
+        return new Socket(host, port);
     }
 
 }

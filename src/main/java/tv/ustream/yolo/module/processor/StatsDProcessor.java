@@ -24,6 +24,8 @@ public class StatsDProcessor implements IProcessor
 
     private static final int DEFAULT_PORT = 8125;
 
+    private String prefix;
+
     public static enum Types
     {
         COUNTER,
@@ -63,11 +65,7 @@ public class StatsDProcessor implements IProcessor
     @Override
     public void setUpModule(final Map<String, Object> parameters)
     {
-        String prefix = (String) parameters.get("prefix");
-        if (null == prefix)
-        {
-            prefix = "";
-        }
+        prefix = (String) parameters.get("prefix");
 
         String host = (String) parameters.get("host");
         Integer port = ((Number) parameters.get("port")).intValue();
@@ -161,7 +159,7 @@ public class StatsDProcessor implements IProcessor
 
     private void send(final String type, final String key, final int value)
     {
-        LOG.debug("statsd: {} {} {}", type, key, String.valueOf(value));
+        LOG.debug("statsd: {} {}.{} {}", type, prefix, key, String.valueOf(value));
 
         if (Types.COUNTER.getValue().equals(type))
         {

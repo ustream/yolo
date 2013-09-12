@@ -35,7 +35,7 @@ public class GraphiteProcessorTest
     {
         graphiteClient = mock(GraphiteClient.class);
 
-        processor = createProcessorMock("host1", 1234);
+        processor = createProcessorMock("host1", 1234, "");
     }
 
     @After
@@ -200,12 +200,12 @@ public class GraphiteProcessorTest
         return (GraphiteProcessor) new ModuleFactory().createProcessor("x", config);
     }
 
-    private GraphiteProcessor createProcessorMock(String host, Integer port) throws ConfigException
+    private GraphiteProcessor createProcessorMock(String host, Integer port, String prefix) throws ConfigException
     {
         GraphiteProcessor processor = new GraphiteProcessor()
         {
             @Override
-            protected GraphiteClient createClient(String host, int port, long flushTimeMs)
+            protected GraphiteClient createClient(String host, int port, long flushTimeMs, String prefix)
             {
                 return graphiteClient;
             }
@@ -216,6 +216,7 @@ public class GraphiteProcessorTest
         config.put("host", host);
         config.put("port", port.doubleValue());
         config.put("flushTimeMs", 1000);
+        config.put("prefix", prefix);
 
         processor.setUpModule(config);
 

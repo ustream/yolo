@@ -109,6 +109,7 @@ Available processors
   - params: Map {
       port: Number, default: 2003
       host: String, required
+      prefix: String
       class: String, required
       flushTimeMs: Number, default: 1000
     }

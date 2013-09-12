@@ -22,9 +22,10 @@ public class GraphiteProcessor implements IProcessor
 
     private GraphiteClient client;
 
-    protected GraphiteClient createClient(final String host, final int port, final long flushTimeMs)
+    protected GraphiteClient createClient(final String host, final int port, final long flushTimeMs,
+                                          final String prefix)
     {
-        return new GraphiteClient(host, port, flushTimeMs);
+        return new GraphiteClient(host, port, flushTimeMs, prefix);
     }
 
     @Override
@@ -109,8 +110,9 @@ public class GraphiteProcessor implements IProcessor
         String host = (String) parameters.get("host");
         Integer port = ((Number) parameters.get("port")).intValue();
         Long flushTimeMs = ((Number) parameters.get("flushTimeMs")).longValue();
+        String prefix = (String) parameters.get("prefix");
 
-        client = createClient(host, port, flushTimeMs);
+        client = createClient(host, port, flushTimeMs, prefix);
     }
 
     @Override
@@ -120,6 +122,7 @@ public class GraphiteProcessor implements IProcessor
         config.addConfigValue("host", String.class);
         config.addConfigValue("port", Number.class, false, DEFAULT_PORT);
         config.addConfigValue("flushTimeMs", Number.class, false, DEFAULT_FLUSH_TIME_MS);
+        config.addConfigValue("prefix", String.class, false, "");
         return config;
     }
 
