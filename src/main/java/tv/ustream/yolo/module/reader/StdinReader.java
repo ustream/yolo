@@ -12,7 +12,7 @@ import java.util.Map;
 /**
  * @author bandesz
  */
-public class StdinReader implements IReader, Runnable
+public class StdinReader implements IReader
 {
 
     private static final Logger LOG = LoggerFactory.getLogger(StdinReader.class);
@@ -25,9 +25,6 @@ public class StdinReader implements IReader, Runnable
     public void start()
     {
         running = true;
-        Thread thread = new Thread(this);
-        thread.setDaemon(true);
-        thread.start();
     }
 
     @Override

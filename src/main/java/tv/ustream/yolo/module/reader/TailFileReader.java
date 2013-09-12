@@ -113,10 +113,6 @@ public class TailFileReader implements IReader, TailerListener
         LOG.info("Tailing file {}", file.getAbsolutePath());
 
         tailer = new Tailer(TailerFile.create(file), this, delayMs, !readWhole, reopen);
-
-        Thread thread = new Thread(tailer);
-        thread.setName("Tailer");
-        thread.start();
     }
 
     public void stop()
@@ -213,5 +209,11 @@ public class TailFileReader implements IReader, TailerListener
         {
             Thread.currentThread().interrupt();
         }
+    }
+
+    @Override
+    public void run()
+    {
+        tailer.run();
     }
 }

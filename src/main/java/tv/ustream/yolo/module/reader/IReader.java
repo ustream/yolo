@@ -5,7 +5,7 @@ import tv.ustream.yolo.module.IModule;
 /**
  * @author bandesz
  */
-public interface IReader extends IModule
+public interface IReader extends IModule, Runnable
 {
 
     void start();

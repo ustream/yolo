@@ -242,6 +242,9 @@ public class ModuleChain implements IReaderListener
         for (IReader reader : readers.values())
         {
             reader.start();
+            Thread thread = new Thread(reader);
+            thread.setDaemon(true);
+            thread.start();
         }
     }
 
