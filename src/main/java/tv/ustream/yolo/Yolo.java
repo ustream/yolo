@@ -21,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tv.ustream.yolo.config.ConfigException;
 import tv.ustream.yolo.config.ConfigPattern;
-import tv.ustream.yolo.handler.FileHandler;
 import tv.ustream.yolo.module.ModuleChain;
 import tv.ustream.yolo.module.ModuleFactory;
 
@@ -58,17 +57,9 @@ public class Yolo
 
     private String configPath;
 
-    private String filePath;
-
-    private Boolean readWholeFile;
-
-    private Boolean reopenFile;
-
     private long watchConfigInterval;
 
     private ModuleChain moduleChain = new ModuleChain(new ModuleFactory());
-
-    private FileHandler fileHandler;
 
     private String hostname;
 
@@ -98,10 +89,6 @@ public class Yolo
         Option configOption = new Option("config", true, "path to config file");
         configOption.setArgName("path");
         cliOptions.addOption(configOption);
-
-        cliOptions.addOption("whole", false, "tail file from the beginning");
-
-        cliOptions.addOption("reopen", false, "reopen file between reading the chunks");
 
         cliOptions.addOption("listModules", false, "list available modules");
 
@@ -184,23 +171,6 @@ public class Yolo
             exitWithError("config path must be absolute!", false);
             return;
         }
-
-        filePath = cli.getOptionValue("file");
-        if (null == filePath || filePath.isEmpty())
-        {
-            exitWithError("file parameter is missing!", true);
-            return;
-        }
-
-        if (!new File(filePath).isAbsolute())
-        {
-            exitWithError("file path must be absolute!", false);
-            return;
-        }
-
-        readWholeFile = cli.hasOption("whole");
-
-        reopenFile = cli.hasOption("reopen");
 
         watchConfigInterval = TimeUnit.SECONDS.toMillis(
                 Integer.parseInt(cli.getOptionValue("watchConfigInterval", "5"))
@@ -310,11 +280,14 @@ public class Yolo
         return new BufferedReader(new InputStreamReader(process.getInputStream())).readLine();
     }
 
-    private void startFileHandler()
+    private void start()
     {
-        fileHandler = new FileHandler(moduleChain, filePath, 1000, readWholeFile, reopenFile);
+        moduleChain.start();
+    }
 
-        fileHandler.start();
+    public void stop()
+    {
+        moduleChain.stop();
     }
 
     public void start(String[] args)
@@ -331,7 +304,7 @@ public class Yolo
 
             observeConfigChanges();
 
-            startFileHandler();
+            start();
 
             addShutdownHook();
         }
@@ -363,15 +336,6 @@ public class Yolo
                 Yolo.this.stop();
             }
         });
-    }
-
-    public void stop()
-    {
-        if (null != fileHandler)
-        {
-            fileHandler.stop();
-        }
-        moduleChain.stop();
     }
 
     private void printHelp()

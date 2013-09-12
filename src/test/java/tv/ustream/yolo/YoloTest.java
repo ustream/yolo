@@ -35,22 +35,25 @@ public class YoloTest
     {
         FileWriter out;
 
+        testFile = tmpFolder.newFile();
+
+        out = new FileWriter(testFile);
+        out.write("l1\nl2\nl3\n");
+        out.close();
+
         configFile = tmpFolder.newFile();
 
         out = new FileWriter(configFile);
 
         out.write("{"
+                + "\"readers\":{\"file\": {\"class\": \"tv.ustream.yolo.module.reader.TailFileReader\", \"file\": \""
+                + testFile.getAbsolutePath() + "\", \"readWhole\": true}},"
                 +
                 "\"parsers\":{\"passthru\": {\"class\": \"tv.ustream.yolo.module.parser.PassThruParser\", \"processors\": {\"test\": {}}}},"
                 + "\"processors\":{\"test\": { \"class\": \"tv.ustream.yolo.TestProcessor\"}}"
                 + "}");
         out.close();
 
-        testFile = tmpFolder.newFile();
-
-        out = new FileWriter(testFile);
-        out.write("l1\nl2\nl3\n");
-        out.close();
     }
 
     @After
@@ -65,7 +68,7 @@ public class YoloTest
     public void shouldReadAndProcessFile() throws Exception
     {
         yolo = new Yolo();
-        String[] params = {"-config", configFile.getAbsolutePath(), "-file", testFile.getAbsolutePath(), "-whole"};
+        String[] params = {"-config", configFile.getAbsolutePath()};
         yolo.start(params);
 
         await().atMost(5000, TimeUnit.MILLISECONDS).until(containsLine("{line=l1}|{}", "{line=l2}|{}", "{line=l3}|{}"));
@@ -83,6 +86,8 @@ public class YoloTest
         FileWriter out = new FileWriter(configFile);
 
         out.write("{"
+                + "\"readers\":{\"file\": {\"class\": \"tv.ustream.yolo.module.reader.TailFileReader\", \"file\": \""
+                + testFile.getAbsolutePath() + "\", \"readWhole\": true}},"
                 +
                 "\"parsers\":{\"passthru\": {\"class\": \"tv.ustream.yolo.module.parser.PassThruParser\", \"processors\": {\"test\":{}}, \"enabled\": false}},"
                 + "\"processors\":{\"test\": { \"class\": \"tv.ustream.yolo.TestProcessor\"}}"
@@ -90,8 +95,7 @@ public class YoloTest
         out.close();
 
         yolo = new Yolo();
-        String[] params = {"-config", configFile.getAbsolutePath(), "-file", testFile.getAbsolutePath(), "-whole",
-                "-watchConfigInterval", "1"
+        String[] params = {"-config", configFile.getAbsolutePath(), "-watchConfigInterval", "1"
         };
         yolo.start(params);
 
@@ -100,6 +104,8 @@ public class YoloTest
         out = new FileWriter(configFile);
 
         out.write("{"
+                + "\"readers\":{\"file\": {\"class\": \"tv.ustream.yolo.module.reader.TailFileReader\", \"file\": \""
+                + testFile.getAbsolutePath() + "\", \"readWhole\": true}},"
                 +
                 "\"parsers\":{\"passthru\": {\"class\": \"tv.ustream.yolo.module.parser.PassThruParser\", \"processors\": {\"test\":{}}}},"
                 + "\"processors\":{\"test\": { \"class\": \"tv.ustream.yolo.TestProcessor\"}}"

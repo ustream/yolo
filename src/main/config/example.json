@@ -1,4 +1,14 @@
 {
+    "readers": {
+        "tailfile": {
+            "class": "tv.ustream.yolo.module.reader.TailFileReader",
+            "file": "/tmp/tailtest*.txt",
+            "readWhole": true
+        },
+        "stdin": {
+            "class": "tv.ustream.yolo.module.reader.StdinReader"
+        }
+    },
     "parsers": {
         "regexp1": {
             "class": "tv.ustream.yolo.module.parser.RegexpParser",
@@ -44,7 +54,7 @@
             "processors": {
                 "console": {}
             },
-            "enabled": false
+            "enabled": true
         }
     },
     "processors": {

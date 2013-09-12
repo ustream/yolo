@@ -12,6 +12,9 @@ import tv.ustream.yolo.module.processor.ConsoleProcessor;
 import tv.ustream.yolo.module.processor.GraphiteProcessor;
 import tv.ustream.yolo.module.processor.IProcessor;
 import tv.ustream.yolo.module.processor.StatsDProcessor;
+import tv.ustream.yolo.module.reader.IReader;
+import tv.ustream.yolo.module.reader.StdinReader;
+import tv.ustream.yolo.module.reader.TailFileReader;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,6 +25,11 @@ import java.util.Map;
  */
 public class ModuleFactory
 {
+
+    private static final List<String> AVAILABLE_READERS = Arrays.asList(
+            StdinReader.class.getCanonicalName(),
+            TailFileReader.class.getCanonicalName()
+    );
 
     private static final List<String> AVAILABLE_PROCESSORS = Arrays.asList(
             CompositeProcessor.class.getCanonicalName(),
@@ -37,9 +45,18 @@ public class ModuleFactory
             ScriptEngineParser.class.getCanonicalName()
     );
 
+    private static final ConfigMap READER_MODULE_CONFIG = getDefaultReaderModuleConfig();
+
     private static final ConfigMap PROCESSOR_MODULE_CONFIG = getDefaultProcessorModuleConfig();
 
     private static final ConfigMap PARSER_MODULE_CONFIG = getDefaultParserModuleConfig();
+
+    private static ConfigMap getDefaultReaderModuleConfig()
+    {
+        ConfigMap config = new ConfigMap();
+        config.addConfigValue("class", String.class);
+        return config;
+    }
 
     private static ConfigMap getDefaultProcessorModuleConfig()
     {
@@ -81,6 +98,17 @@ public class ModuleFactory
         module.setUpModule(rawConfig);
     }
 
+    public IReader createReader(String name, Map<String, Object> rawConfig) throws ConfigException
+    {
+        READER_MODULE_CONFIG.parse(name, rawConfig);
+
+        IReader reader = create((String) rawConfig.get("class"));
+
+        setupModule(name, reader, rawConfig);
+
+        return reader;
+    }
+
     public IProcessor createProcessor(String name, Map<String, Object> rawConfig) throws ConfigException
     {
         PROCESSOR_MODULE_CONFIG.parse(name, rawConfig);
@@ -111,6 +139,19 @@ public class ModuleFactory
     public static void printAvailableModules() throws ConfigException
     {
         ModuleFactory factory = new ModuleFactory();
+
+        System.out.println("Available readers");
+        System.out.println("--------------------");
+        System.out.println();
+        for (String className : AVAILABLE_READERS)
+        {
+            IReader module = factory.create(className);
+            ConfigMap config = getDefaultReaderModuleConfig().merge(module.getModuleConfig());
+            String usage = "  - params: " + config.getDescription("    ");
+
+            System.out.format("* %s - %s%n%s%n", className, module.getModuleDescription(), usage);
+        }
+
         System.out.println("Available processors");
         System.out.println("--------------------");
         System.out.println();

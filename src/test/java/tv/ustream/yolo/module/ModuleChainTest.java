@@ -8,6 +8,7 @@ import tv.ustream.yolo.config.ConfigException;
 import tv.ustream.yolo.module.parser.IParser;
 import tv.ustream.yolo.module.processor.CompositeProcessor;
 import tv.ustream.yolo.module.processor.IProcessor;
+import tv.ustream.yolo.module.reader.IReader;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -32,6 +33,8 @@ public class ModuleChainTest
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
+    private IReader reader1;
+
     private IParser parser1;
 
     private IParser parser2;
@@ -46,6 +49,7 @@ public class ModuleChainTest
     public void setUp() throws Exception
     {
         ModuleFactory moduleFactory = mock(ModuleFactory.class);
+        reader1 = mock(IReader.class);
         parser1 = mock(IParser.class);
         parser2 = mock(IParser.class);
         processor1 = mock(IProcessor.class);
@@ -57,6 +61,7 @@ public class ModuleChainTest
 
         IProcessor processor3 = new ModuleFactory().createProcessor("pr3", pr3Config);
 
+        when(moduleFactory.createReader(eq("r1"), anyMap())).thenReturn(reader1);
         when(moduleFactory.createParser(eq("pa1"), anyMap())).thenReturn(parser1);
         when(moduleFactory.createParser(eq("pa2"), anyMap())).thenReturn(parser2);
         when(moduleFactory.createParser(eq("pa3"), anyMap())).thenReturn(null);
@@ -72,6 +77,7 @@ public class ModuleChainTest
     {
         Map<String, Object> config = new HashMap<String, Object>();
 
+        addModule(config, "readers", "r1", createReaderConfig("reader1"));
         addModule(config, "processors", "pr1", createProcessorConfig("processor1"));
         addModule(config, "parsers", "pa1", createParserConfig("parser1", "pr1", new HashMap<String, Object>()));
 
@@ -89,6 +95,7 @@ public class ModuleChainTest
     {
         Map<String, Object> config = new HashMap<String, Object>();
 
+        addModule(config, "readers", "r1", createReaderConfig("reader1"));
         addModule(config, "processors", "pr1", createProcessorConfig("processor1"));
         addModule(config, "parsers", "pa3", createParserConfig("parser3", "pr3", new HashMap<String, Object>()));
 
@@ -106,6 +113,7 @@ public class ModuleChainTest
     {
         Map<String, Object> config = new HashMap<String, Object>();
 
+        addModule(config, "readers", "r1", createReaderConfig("reader1"));
         addModule(config, "processors", "pr1", createProcessorConfig("processor1"));
         addModule(config, "processors", "pr2", createProcessorConfig("processor2"));
         addModule(config, "parsers", "pa1", createParserConfig("parser1", "pr1", new HashMap<String, Object>()));
@@ -128,6 +136,7 @@ public class ModuleChainTest
     {
         Map<String, Object> config = new HashMap<String, Object>();
 
+        addModule(config, "readers", "r1", createReaderConfig("reader1"));
         addModule(config, "processors", "pr1", createProcessorConfig("processor1"));
         addModule(config, "processors", "pr2", createProcessorConfig("processor2"));
         addModule(config, "parsers", "pa1", createParserConfig("parser1", "pr1", new HashMap<String, Object>()));
@@ -154,6 +163,7 @@ public class ModuleChainTest
 
         Map<String, Object> config = new HashMap<String, Object>();
 
+        addModule(config, "readers", "r1", createReaderConfig("reader1"));
         addModule(config, "processors", "pr1", createProcessorConfig("processor1"));
         addModule(config, "processors", "pr2", createProcessorConfig("processor2"));
         addModule(config, "parsers", "pa1", createParserConfig("parser1", "pr1", new HashMap<String, Object>()));
@@ -179,6 +189,7 @@ public class ModuleChainTest
 
         Map<String, Object> config = new HashMap<String, Object>();
 
+        addModule(config, "readers", "r1", createReaderConfig("reader1"));
         addModule(config, "processors", "pr1", createProcessorConfig("processor1"));
         addModule(config, "parsers", "pa1", createParserConfig("parser1", "pr1", processParams));
 
@@ -201,6 +212,7 @@ public class ModuleChainTest
 
         Map<String, Object> config = new HashMap<String, Object>();
 
+        addModule(config, "readers", "r1", createReaderConfig("reader1"));
         addModule(config, "processors", "pr1", createProcessorConfig("processor1"));
         addModule(config, "parsers", "pa1", createParserConfig("parser1", "prX", new HashMap<String, Object>()));
 
@@ -215,6 +227,7 @@ public class ModuleChainTest
 
         Map<String, Object> config = new HashMap<String, Object>();
 
+        addModule(config, "readers", "r1", createReaderConfig("reader1"));
         addModule(config, "processors", "pr1", createProcessorConfig("processor1"));
         addModule(config, "processors", "pr2", createProcessorConfig("processor2"));
         addModule(config, "processors", "pr3", pr3Config);
@@ -247,6 +260,7 @@ public class ModuleChainTest
 
         Map<String, Object> config = new HashMap<String, Object>();
 
+        addModule(config, "readers", "r1", createReaderConfig("reader1"));
         addModule(config, "processors", "pr1", createProcessorConfig("processor1"));
         addModule(config, "processors", "pr2", createProcessorConfig("processor2"));
         addModule(config, "parsers", "pa1", parserConfig);
@@ -267,6 +281,7 @@ public class ModuleChainTest
     {
         Map<String, Object> config = new HashMap<String, Object>();
 
+        addModule(config, "readers", "r1", createReaderConfig("reader1"));
         addModule(config, "processors", "pr1", createProcessorConfig("processor1"));
         addModule(config, "parsers", "pa1", createParserConfig("parser1", "pr1", new HashMap<String, Object>()));
 
@@ -280,6 +295,7 @@ public class ModuleChainTest
 
         Map<String, Object> config2 = new HashMap<String, Object>();
 
+        addModule(config2, "readers", "r1", createReaderConfig("reader1"));
         addModule(config2, "processors", "pr2", createProcessorConfig("processor2"));
         addModule(config2, "parsers", "pa2", createParserConfig("parser2", "pr2", new HashMap<String, Object>()));
 
@@ -292,6 +308,13 @@ public class ModuleChainTest
         moduleChain.handle("some text");
 
         verify(processor2, times(1)).process(anyMap(), anyMap());
+    }
+
+    private Map<String, Object> createReaderConfig(final String clazz)
+    {
+        Map<String, Object> config = new HashMap<String, Object>();
+        config.put("class", clazz);
+        return config;
     }
 
     private Map<String, Object> createProcessorConfig(final String clazz)

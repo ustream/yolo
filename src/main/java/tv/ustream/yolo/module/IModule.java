@@ -10,7 +10,7 @@ import java.util.Map;
 public interface IModule
 {
 
-    void setUpModule(Map<String, Object> parameters);
+    void setUpModule(final Map<String, Object> parameters);
 
     ConfigMap getModuleConfig();
 

@@ -1,4 +1,4 @@
-package tv.ustream.yolo.handler;
+package tv.ustream.yolo.module.reader;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FalseFileFilter;
@@ -8,51 +8,63 @@ import org.apache.commons.io.input.TailerListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tv.ustream.yolo.io.TailerFile;
-
+import tv.ustream.yolo.config.ConfigMap;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Collection;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 /**
  * @author bandesz
  */
-public class FileHandler implements TailerListener
+public class TailFileReader implements IReader, TailerListener
 {
 
-    private static final Logger LOG = LoggerFactory.getLogger(FileHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TailFileReader.class);
 
     private static final Pattern WILDCARD_PATTERN = Pattern.compile("[\\?\\*]+");
 
-    private final String filePath;
+    private String filePath;
 
     private boolean dynamicFilename;
 
-    private final long delayMs;
+    private long delayMs;
 
-    private final boolean readWhole;
+    private boolean readWhole;
 
-    private final boolean reopen;
+    private boolean reopen;
 
     private Tailer tailer;
 
-    private final ILineHandler lineProcessor;
+    private IReaderListener listener;
 
-    public FileHandler(
-            final ILineHandler lineProcessor,
-            final String filePath,
-            final long delayMs,
-            final boolean readWhole,
-            final boolean reopen
-    )
+    @Override
+    public void setUpModule(final Map<String, Object> parameters)
     {
-        this.lineProcessor = lineProcessor;
-        this.filePath = filePath;
+        filePath = (String) parameters.get("file");
         this.dynamicFilename = WILDCARD_PATTERN.matcher(filePath).find();
-        this.delayMs = delayMs;
-        this.readWhole = readWhole;
-        this.reopen = reopen;
+        delayMs = ((Number) parameters.get("delayMs")).longValue();
+        readWhole = (Boolean) parameters.get("readWhole");
+        reopen = (Boolean) parameters.get("reopen");
+    }
+
+    @Override
+    public ConfigMap getModuleConfig()
+    {
+        ConfigMap config = new ConfigMap();
+        config.addConfigValue("file", String.class);
+        config.addConfigValue("delayMs", Number.class, false, 1000);
+        config.addConfigValue("readWhole", Boolean.class, false, false);
+        config.addConfigValue("reopen", Boolean.class, false, false);
+        return config;
+    }
+
+    @Override
+    public String getModuleDescription()
+    {
+        return "File tailer";
     }
 
     private File findFile()
@@ -109,7 +121,17 @@ public class FileHandler implements TailerListener
 
     public void stop()
     {
-        tailer.stop();
+        if (tailer != null)
+        {
+            tailer.stop();
+            tailer = null;
+        }
+    }
+
+    @Override
+    public void setReaderListener(final IReaderListener listener)
+    {
+        this.listener = listener;
     }
 
     private void restart()
@@ -164,7 +186,7 @@ public class FileHandler implements TailerListener
     {
         try
         {
-            lineProcessor.handle(line);
+            listener.handle(line);
         }
         catch (Exception e)
         {
