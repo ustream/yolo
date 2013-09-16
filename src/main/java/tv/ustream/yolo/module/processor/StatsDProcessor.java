@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import tv.ustream.yolo.config.ConfigMap;
 import tv.ustream.yolo.config.ConfigPattern;
 import tv.ustream.yolo.config.ConfigValue;
-import tv.ustream.yolo.util.NumberConverter;
+import tv.ustream.yolo.util.ByteSizeConverter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -113,7 +113,7 @@ public class StatsDProcessor implements IProcessor
 
     @SuppressWarnings("unchecked")
     @Override
-    public void process(final Map<String, Object> parserOutput, final Map<String, Object> processParams)
+    public void process(final Map<String, String> parserOutput, final Map<String, Object> processParams)
     {
         List<Map<String, Object>> keys = (List<Map<String, Object>>) processParams.get("keys");
 
@@ -123,7 +123,7 @@ public class StatsDProcessor implements IProcessor
         }
     }
 
-    private void sendKey(final Map<String, Object> parserOutput, final Map<String, Object> keyParams)
+    private void sendKey(final Map<String, String> parserOutput, final Map<String, Object> keyParams)
     {
         String type = (String) keyParams.get("type");
 
@@ -155,7 +155,7 @@ public class StatsDProcessor implements IProcessor
         }
         else if (valueObject instanceof ConfigPattern)
         {
-            value = NumberConverter.convertByteValue(((ConfigPattern) valueObject).applyValues(parserOutput));
+            value = ByteSizeConverter.convertByteValue(((ConfigPattern) valueObject).applyValues(parserOutput));
             if (value == null)
             {
                 return;

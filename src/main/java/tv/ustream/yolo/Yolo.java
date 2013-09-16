@@ -1,6 +1,11 @@
 package tv.ustream.yolo;
 
-import com.google.gson.Gson;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.concurrent.TimeUnit;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
@@ -8,10 +13,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.filefilter.FileFilterUtils;
-import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
-import org.apache.commons.io.monitor.FileAlterationMonitor;
-import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
@@ -21,17 +22,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tv.ustream.yolo.config.ConfigException;
 import tv.ustream.yolo.config.ConfigPattern;
+import tv.ustream.yolo.config.file.Reader;
+import tv.ustream.yolo.config.file.ReaderFactory;
 import tv.ustream.yolo.module.ModuleChain;
 import tv.ustream.yolo.module.ModuleFactory;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author bandesz
@@ -47,8 +41,6 @@ public class Yolo
 
     private final Options cliOptions = new Options();
 
-    private Map<String, Object> config;
-
     private boolean debug;
 
     private boolean verbose;
@@ -62,6 +54,8 @@ public class Yolo
     private ModuleChain moduleChain = new ModuleChain(new ModuleFactory());
 
     private String hostname;
+
+    private Reader configReader;
 
     public Yolo()
     {
@@ -86,7 +80,7 @@ public class Yolo
         fileOption.setArgName("path");
         cliOptions.addOption(fileOption);
 
-        Option configOption = new Option("config", true, "path to config file");
+        Option configOption = new Option("config", true, "path to config file or directory");
         configOption.setArgName("path");
         cliOptions.addOption(configOption);
 
@@ -206,60 +200,22 @@ public class Yolo
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private void readConfig(final boolean update) throws ConfigException
+    private void readConfig() throws ConfigException
     {
         try
         {
-            config = (Map<String, Object>) new Gson().fromJson(new FileReader(configPath), Map.class);
+            configReader = ReaderFactory.createReader(new File(configPath), watchConfigInterval, moduleChain);
+            configReader.start();
         }
-        catch (Exception e)
+        catch (IOException e)
         {
             exitWithError("Failed to open configuration file: " + e.getMessage(), false);
             return;
         }
-
-        moduleChain.updateConfig(config, !update);
-    }
-
-    private void observeConfigChanges() throws Exception
-    {
-        if (watchConfigInterval < 0)
+        catch (Exception e)
         {
-            return;
+            exitWithError("Error: " + e.getMessage(), false);
         }
-
-        FileAlterationListenerAdaptor listener = new FileAlterationListenerAdaptor()
-        {
-            @Override
-            public void onFileChange(File file)
-            {
-                LOG.info("Config file changed: {}", configPath);
-                try
-                {
-                    readConfig(true);
-                }
-                catch (ConfigException e)
-                {
-                    exitWithError("Failed to refresh config: " + e.getMessage(), false);
-                    return;
-                }
-            }
-        };
-
-        String filename = configPath.substring(configPath.lastIndexOf('/') + 1);
-        String directory = configPath.substring(0, configPath.lastIndexOf('/'));
-
-        FileAlterationObserver observer = new FileAlterationObserver(
-                new File(directory),
-                FileFilterUtils.nameFileFilter(filename)
-        );
-        observer.addListener(listener);
-
-        FileAlterationMonitor monitor = new FileAlterationMonitor(watchConfigInterval);
-        monitor.addObserver(observer);
-
-        monitor.start();
     }
 
     private void setGlobalParameters() throws Exception
@@ -280,14 +236,19 @@ public class Yolo
         return new BufferedReader(new InputStreamReader(process.getInputStream())).readLine();
     }
 
-    private void start()
-    {
-        moduleChain.start();
-    }
-
     public void stop()
     {
         moduleChain.stop();
+
+        try
+        {
+            configReader.stop();
+        }
+        catch (Exception e)
+        {
+            exitWithError("Error: " + e.getMessage(), false);
+        }
+
     }
 
     public void start(String[] args)
@@ -300,17 +261,13 @@ public class Yolo
 
             setGlobalParameters();
 
-            readConfig(false);
-
-            observeConfigChanges();
-
-            start();
+            readConfig();
 
             addShutdownHook();
         }
         catch (ConfigException e)
         {
-            System.out.println(e.getMessage());
+            exitWithError(e.getMessage(), false);
         }
         catch (Exception e)
         {
@@ -352,10 +309,8 @@ public class Yolo
 
     private void exitWithError(String message, Boolean printHelp)
     {
-        System.out.println(message);
-
         LOG.error(message);
-
+        System.console().printf("%s%n", message);
         if (printHelp)
         {
             printHelp();

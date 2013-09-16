@@ -1,10 +1,10 @@
-package tv.ustream.yolo.module.processor;
+package tv.ustream.yolo.module.processor.graphite;
 
-import tv.ustream.yolo.client.GraphiteClient;
 import tv.ustream.yolo.config.ConfigMap;
 import tv.ustream.yolo.config.ConfigPattern;
 import tv.ustream.yolo.config.ConfigValue;
-import tv.ustream.yolo.util.NumberConverter;
+import tv.ustream.yolo.module.processor.IProcessor;
+import tv.ustream.yolo.util.ByteSizeConverter;
 
 import java.util.Arrays;
 import java.util.List;
@@ -54,7 +54,7 @@ public class GraphiteProcessor implements IProcessor
     }
 
     @Override
-    public void process(final Map<String, Object> parserOutput, final Map<String, Object> processParams)
+    public void process(final Map<String, String> parserOutput, final Map<String, Object> processParams)
     {
         List<Map<String, Object>> keys = (List<Map<String, Object>>) processParams.get("keys");
 
@@ -64,7 +64,7 @@ public class GraphiteProcessor implements IProcessor
         }
     }
 
-    private void sendKey(final Map<String, Object> parserOutput, final Map<String, Object> keyParams)
+    private void sendKey(final Map<String, String> parserOutput, final Map<String, Object> keyParams)
     {
         Object keyObject = keyParams.get("key");
         String key;
@@ -94,7 +94,7 @@ public class GraphiteProcessor implements IProcessor
         }
         else if (valueObject instanceof ConfigPattern)
         {
-            value = NumberConverter.convertByteValue(((ConfigPattern) valueObject).applyValues(parserOutput));
+            value = ByteSizeConverter.convertByteValue(((ConfigPattern) valueObject).applyValues(parserOutput));
             if (value == null)
             {
                 return;

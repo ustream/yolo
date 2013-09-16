@@ -1,4 +1,4 @@
-package tv.ustream.yolo.client;
+package tv.ustream.yolo.module.processor.graphite;
 
 import junit.framework.Assert;
 import org.junit.Before;
@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+import tv.ustream.yolo.module.processor.graphite.GraphiteClient;
 
 import static com.jayway.awaitility.Awaitility.await;
 import static org.mockito.Mockito.mock;

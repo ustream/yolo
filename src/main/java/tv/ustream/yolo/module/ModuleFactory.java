@@ -9,7 +9,7 @@ import tv.ustream.yolo.module.parser.RegexpParser;
 import tv.ustream.yolo.module.parser.ScriptEngineParser;
 import tv.ustream.yolo.module.processor.CompositeProcessor;
 import tv.ustream.yolo.module.processor.ConsoleProcessor;
-import tv.ustream.yolo.module.processor.GraphiteProcessor;
+import tv.ustream.yolo.module.processor.graphite.GraphiteProcessor;
 import tv.ustream.yolo.module.processor.IProcessor;
 import tv.ustream.yolo.module.processor.StatsDProcessor;
 import tv.ustream.yolo.module.reader.IReader;

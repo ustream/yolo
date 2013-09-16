@@ -8,5 +8,5 @@ import java.util.Map;
 public interface IScriptParser
 {
 
-    Map<String, Object> parse(String line);
+    Map<String, String> parse(String line);
 }

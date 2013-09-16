@@ -1,4 +1,4 @@
-package tv.ustream.yolo.client;
+package tv.ustream.yolo.module.processor.graphite;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

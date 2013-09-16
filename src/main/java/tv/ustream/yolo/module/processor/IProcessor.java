@@ -13,7 +13,7 @@ public interface IProcessor extends IModule
 
     ConfigMap getProcessParamsConfig();
 
-    void process(final Map<String, Object> parserOutput, final Map<String, Object> processParams);
+    void process(final Map<String, String> parserOutput, final Map<String, Object> processParams);
 
     void stop();
 

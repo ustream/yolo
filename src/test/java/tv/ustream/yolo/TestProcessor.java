@@ -32,7 +32,7 @@ public class TestProcessor implements IProcessor
     }
 
     @Override
-    public void process(final Map<String, Object> parserOutput, final Map<String, Object> processParams)
+    public void process(final Map<String, String> parserOutput, final Map<String, Object> processParams)
     {
         getData().add(String.valueOf(parserOutput) + "|" + String.valueOf(processParams));
     }

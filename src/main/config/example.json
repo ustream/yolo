@@ -63,19 +63,19 @@
             "prefix": "prefix",
             "host": "127.0.0.1",
             "port": 8125
-          },
-          "graphite": {
-            "class": "tv.ustream.yolo.module.processor.GraphiteProcessor",
+        },
+        "graphite": {
+            "class": "tv.ustream.yolo.module.processor.graphite.GraphiteProcessor",
             "prefix": "prefix",
             "host": "127.0.0.1",
             "port": 2003
         },
-          "console": {
-              "class": "tv.ustream.yolo.module.processor.ConsoleProcessor"
-          },
-          "composite": {
-              "class": "tv.ustream.yolo.module.processor.CompositeProcessor",
-              "processors": ["statsd", "console"]
-          }
+        "console": {
+            "class": "tv.ustream.yolo.module.processor.ConsoleProcessor"
+        },
+        "composite": {
+            "class": "tv.ustream.yolo.module.processor.CompositeProcessor",
+            "processors": ["statsd", "console"]
+        }
     }
 }

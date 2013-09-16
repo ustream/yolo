@@ -33,7 +33,7 @@ public class ScriptEngineParser implements IParser
     private IScriptParser parserImpl;
 
     @Override
-    public Map<String, Object> parse(final String line)
+    public Map<String, String> parse(final String line)
     {
         try
         {

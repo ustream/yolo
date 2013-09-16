@@ -40,7 +40,6 @@ public class TailFileReader implements IReader, TailerListener
 
     private IReaderListener listener;
 
-    @Override
     public void setUpModule(final Map<String, Object> parameters)
     {
         filePath = (String) parameters.get("file");
@@ -50,7 +49,6 @@ public class TailFileReader implements IReader, TailerListener
         reopen = (Boolean) parameters.get("reopen");
     }
 
-    @Override
     public ConfigMap getModuleConfig()
     {
         ConfigMap config = new ConfigMap();
@@ -61,7 +59,6 @@ public class TailFileReader implements IReader, TailerListener
         return config;
     }
 
-    @Override
     public String getModuleDescription()
     {
         return "File tailer";
@@ -89,7 +86,7 @@ public class TailFileReader implements IReader, TailerListener
         }
     }
 
-    public void start()
+    private void createTailer()
     {
         File file;
         do
@@ -115,6 +112,10 @@ public class TailFileReader implements IReader, TailerListener
         tailer = new Tailer(TailerFile.create(file), this, delayMs, !readWhole, reopen);
     }
 
+    public void start()
+    {
+    }
+
     public void stop()
     {
         if (tailer != null)
@@ -124,29 +125,20 @@ public class TailFileReader implements IReader, TailerListener
         }
     }
 
-    @Override
     public void setReaderListener(final IReaderListener listener)
     {
         this.listener = listener;
     }
 
-    private void restart()
-    {
-        stop();
-        start();
-    }
-
-    @Override
     public void init(final Tailer tailer)
     {
     }
 
-    @Override
     public void fileNotFound()
     {
         if (dynamicFilename)
         {
-            restart();
+            stop();
             return;
         }
 
@@ -162,7 +154,6 @@ public class TailFileReader implements IReader, TailerListener
         }
     }
 
-    @Override
     public void fileRotated()
     {
         LOG.info("Tailer: file was rotated: {}", tailer.getFile().getAbsolutePath());
@@ -177,7 +168,6 @@ public class TailFileReader implements IReader, TailerListener
         }
     }
 
-    @Override
     public void handle(final String line)
     {
         try
@@ -190,12 +180,11 @@ public class TailFileReader implements IReader, TailerListener
         }
     }
 
-    @Override
     public void handle(final Exception ex)
     {
         if (ex instanceof FileNotFoundException && dynamicFilename)
         {
-            restart();
+            stop();
             return;
         }
 
@@ -211,9 +200,12 @@ public class TailFileReader implements IReader, TailerListener
         }
     }
 
-    @Override
     public void run()
     {
+        if (tailer == null)
+        {
+            createTailer();
+        }
         tailer.run();
     }
 }

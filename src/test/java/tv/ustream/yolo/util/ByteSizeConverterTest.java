@@ -6,7 +6,7 @@ import org.junit.Test;
 /**
  * @author bandesz
  */
-public class NumberConverterTest
+public class ByteSizeConverterTest
 {
 
     private static final long KB_FACTOR = 1024;
@@ -20,14 +20,14 @@ public class NumberConverterTest
     @Test
     public void shouldReturnNullForNull()
     {
-        Assert.assertNull(NumberConverter.convertByteValue(null));
+        Assert.assertNull(ByteSizeConverter.convertByteValue(null));
     }
 
     @Test
     public void shouldLeaveNumberAsIs()
     {
-        Assert.assertEquals(5D, NumberConverter.convertByteValue("5"));
-        Assert.assertEquals(5.1D, NumberConverter.convertByteValue("5.1"));
+        Assert.assertEquals(5D, ByteSizeConverter.convertByteValue("5"));
+        Assert.assertEquals(5.1D, ByteSizeConverter.convertByteValue("5.1"));
     }
 
     @Test
@@ -67,16 +67,16 @@ public class NumberConverterTest
 
     public void assertConvertByteValue(final Double expected, final String value, final String factor)
     {
-        Assert.assertEquals(expected, NumberConverter.convertByteValue(value + factor.toLowerCase()));
-        Assert.assertEquals(expected, NumberConverter.convertByteValue(value + factor.toUpperCase()));
-        Assert.assertEquals(expected, NumberConverter.convertByteValue(value + " " + factor.toLowerCase()));
-        Assert.assertEquals(expected, NumberConverter.convertByteValue(value + " " + factor.toUpperCase()));
+        Assert.assertEquals(expected, ByteSizeConverter.convertByteValue(value + factor.toLowerCase()));
+        Assert.assertEquals(expected, ByteSizeConverter.convertByteValue(value + factor.toUpperCase()));
+        Assert.assertEquals(expected, ByteSizeConverter.convertByteValue(value + " " + factor.toLowerCase()));
+        Assert.assertEquals(expected, ByteSizeConverter.convertByteValue(value + " " + factor.toUpperCase()));
     }
 
     @Test
     public void shouldReturNullWhenInvalidValue()
     {
-        Assert.assertNull(NumberConverter.convertByteValue("not a number"));
+        Assert.assertNull(ByteSizeConverter.convertByteValue("not a number"));
     }
 
 }

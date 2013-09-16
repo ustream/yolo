@@ -3,7 +3,7 @@ package tv.ustream.yolo.util;
 /**
  * @author bandesz
  */
-public final class NumberConverter
+public final class ByteSizeConverter
 {
 
     private static final long KB_FACTOR = 1024;
@@ -14,7 +14,7 @@ public final class NumberConverter
 
     private static final long TB_FACTOR = KB_FACTOR * GB_FACTOR;
 
-    private NumberConverter()
+    private ByteSizeConverter()
     {
     }
 

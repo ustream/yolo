@@ -11,7 +11,7 @@ import java.util.Map;
 public interface IParser extends IModule
 {
 
-    Map<String, Object> parse(final String line);
+    Map<String, String> parse(final String line);
 
     boolean runAlways();
 

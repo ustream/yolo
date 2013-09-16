@@ -37,7 +37,7 @@ public class ScriptEngineParserTest
         File scriptFile = createScriptFile(script);
         IParser parser = createParser(scriptFile.getAbsolutePath(), "JavaScript");
 
-        Map<String, Object> actual = parser.parse("line1");
+        Map<String, String> actual = parser.parse("line1");
 
         Assert.assertEquals("line1", actual.get("line"));
         Assert.assertEquals(1, actual.size());

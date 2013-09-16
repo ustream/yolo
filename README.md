@@ -113,7 +113,7 @@ Available processors
       class: String, required
     }
 
-* tv.ustream.yolo.module.processor.GraphiteProcessor - sends metrics to Graphite
+* tv.ustream.yolo.module.processor.graphite.GraphiteProcessor - sends metrics to Graphite
   - params: Map {
       port: Number, default: 2003
       host: String, required

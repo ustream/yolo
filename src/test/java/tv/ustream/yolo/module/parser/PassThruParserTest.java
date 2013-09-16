@@ -20,7 +20,7 @@ public class PassThruParserTest
         PassThruParser parser = new PassThruParser();
         parser.setUpModule(new HashMap<String, Object>());
 
-        Map<String, Object> actual = parser.parse("This is some line");
+        Map<String, String> actual = parser.parse("This is some line");
 
         Map<String, Object> expected = new HashMap<String, Object>();
         expected.put("line", "This is some line");
@@ -34,7 +34,7 @@ public class PassThruParserTest
         PassThruParser parser = new PassThruParser();
         parser.setUpModule(new HashMap<String, Object>());
 
-        Map<String, Object> actual = parser.parse("This is some line");
+        Map<String, String> actual = parser.parse("This is some line");
 
         Assert.assertEquals(new ArrayList(actual.keySet()), parser.getOutputKeys());
     }

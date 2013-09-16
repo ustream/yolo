@@ -1,18 +1,16 @@
-package tv.ustream.yolo.module.processor;
+package tv.ustream.yolo.module.processor.graphite;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import tv.ustream.yolo.client.GraphiteClient;
 import tv.ustream.yolo.config.ConfigException;
 import tv.ustream.yolo.config.ConfigPattern;
 import tv.ustream.yolo.module.ModuleFactory;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -55,7 +53,7 @@ public class GraphiteProcessorTest
     @Test
     public void processShouldSendMetrics()
     {
-        Map<String, Object> parserOutput = new HashMap<String, Object>();
+        Map<String, String> parserOutput = new HashMap<String, String>();
 
         processor.process(parserOutput, createProcessParams("key", 5D));
 
@@ -65,7 +63,7 @@ public class GraphiteProcessorTest
     @Test
     public void processShouldAddParamsToKey()
     {
-        Map<String, Object> parserOutput = new HashMap<String, Object>();
+        Map<String, String> parserOutput = new HashMap<String, String>();
         parserOutput.put("p1", "v1");
 
         ConfigPattern key = new ConfigPattern("some.#p1#.key");
@@ -78,7 +76,7 @@ public class GraphiteProcessorTest
     @Test
     public void processShouldUseValueFromParameters()
     {
-        Map<String, Object> parserOutput = new HashMap<String, Object>();
+        Map<String, String> parserOutput = new HashMap<String, String>();
         parserOutput.put("v1", "5");
 
         ConfigPattern value = new ConfigPattern("#v1#");
@@ -91,7 +89,7 @@ public class GraphiteProcessorTest
     @Test
     public void processShouldUseDynamicKeyAndValue()
     {
-        Map<String, Object> parserOutput = new HashMap<String, Object>();
+        Map<String, String> parserOutput = new HashMap<String, String>();
         parserOutput.put("p1", "v1");
         parserOutput.put("v1", "5");
 
@@ -122,7 +120,7 @@ public class GraphiteProcessorTest
 
         params.put("keys", Arrays.<Map>asList(key1, key2));
 
-        Map<String, Object> parserOutput = new HashMap<String, Object>();
+        Map<String, String> parserOutput = new HashMap<String, String>();
         parserOutput.put("p1", "v1");
 
         processor.process(parserOutput, params);
@@ -134,7 +132,7 @@ public class GraphiteProcessorTest
     @Test
     public void processShouldUseMultiplier()
     {
-        Map<String, Object> parserOutput = new HashMap<String, Object>();
+        Map<String, String> parserOutput = new HashMap<String, String>();
 
         processor.process(parserOutput, createProcessParams("key", 5D, 10D, null));
 
@@ -144,7 +142,7 @@ public class GraphiteProcessorTest
     @Test
     public void processShouldUseCustomTimestamp()
     {
-        Map<String, Object> parserOutput = new HashMap<String, Object>();
+        Map<String, String> parserOutput = new HashMap<String, String>();
         parserOutput.put("ts", "1234567890");
 
         processor.process(parserOutput, createProcessParams("key", 5D, 1D, new ConfigPattern("#ts#")));
@@ -155,7 +153,7 @@ public class GraphiteProcessorTest
     @Test
     public void processShouldHandleByteValues()
     {
-        Map<String, Object> parserOutput = new HashMap<String, Object>();
+        Map<String, String> parserOutput = new HashMap<String, String>();
         parserOutput.put("v1", "5M");
 
         ConfigPattern value = new ConfigPattern("#v1#");
@@ -168,7 +166,7 @@ public class GraphiteProcessorTest
     @Test
     public void processShouldNotSendWhenKeyParamIsMissing()
     {
-        Map<String, Object> parserOutput = new HashMap<String, Object>();
+        Map<String, String> parserOutput = new HashMap<String, String>();
         parserOutput.put("p2", "key");
 
         ConfigPattern key = new ConfigPattern("some.#p1#.key");
@@ -181,7 +179,7 @@ public class GraphiteProcessorTest
     @Test
     public void processShouldNotSendWhenValueParamIsMissing()
     {
-        Map<String, Object> parserOutput = new HashMap<String, Object>();
+        Map<String, String> parserOutput = new HashMap<String, String>();
         parserOutput.put("v2", "5M");
 
         ConfigPattern value = new ConfigPattern("#v1#");

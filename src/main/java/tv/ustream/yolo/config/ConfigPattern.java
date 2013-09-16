@@ -85,7 +85,7 @@ public class ConfigPattern
         }
     }
 
-    public String applyValues(final Map<String, Object> values)
+    public String applyValues(final Map<String, String> values)
     {
         if (simplePattern)
         {

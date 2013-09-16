@@ -19,11 +19,11 @@ public class JsonParser implements IParser
     private boolean flatten;
 
     @Override
-    public Map<String, Object> parse(final String line)
+    public Map<String, String> parse(final String line)
     {
         try
         {
-            Map<String, Object> data = gson.fromJson(line, Map.class);
+            Map<String, String> data = gson.fromJson(line, Map.class);
             if (data != null)
             {
                 if (!flatten)
@@ -32,7 +32,7 @@ public class JsonParser implements IParser
                 }
                 else
                 {
-                    return flattenMap("", data, new HashMap<String, Object>());
+                    return flattenMap("", data, new HashMap<String, String>());
                 }
             }
             else
@@ -46,11 +46,11 @@ public class JsonParser implements IParser
         }
     }
 
-    private Map<String, Object> flattenMap(final String path, final Object data, final Map<String, Object> result)
+    private Map<String, String> flattenMap(final String path, final Object data, final Map<String, String> result)
     {
         if (data instanceof Map)
         {
-            for (Map.Entry<String, Object> entry : ((Map<String, Object>) data).entrySet())
+            for (Map.Entry<String, String> entry : ((Map<String, String>) data).entrySet())
             {
                 flattenMap(path + "." + entry.getKey(), entry.getValue(), result);
             }

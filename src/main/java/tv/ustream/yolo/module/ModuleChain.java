@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import tv.ustream.yolo.config.ConfigException;
 import tv.ustream.yolo.config.ConfigMap;
 import tv.ustream.yolo.config.ConfigPattern;
+import tv.ustream.yolo.config.file.IConfigFileListener;
 import tv.ustream.yolo.module.parser.IParser;
 import tv.ustream.yolo.module.processor.ICompositeProcessor;
 import tv.ustream.yolo.module.processor.IProcessor;
@@ -14,27 +15,28 @@ import tv.ustream.yolo.module.reader.IReaderListener;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * @author bandesz
  */
-public class ModuleChain implements IReaderListener
+public class ModuleChain implements IReaderListener, IConfigFileListener
 {
 
     private static final Logger LOG = LoggerFactory.getLogger(ModuleChain.class);
 
     private final ModuleFactory moduleFactory;
 
-    private final Map<String, IReader> readers = new HashMap<String, IReader>();
+    private final ModuleStore<IReader> readers = new ModuleStore<IReader>();
 
-    private final Map<String, IParser> parsers = new HashMap<String, IParser>();
+    private final ModuleStore<IParser> parsers = new ModuleStore<IParser>();
 
-    private final Map<String, IProcessor> processors = new HashMap<String, IProcessor>();
+    private final ModuleStore<IProcessor> processors = new ModuleStore<IProcessor>();
 
-    private final Map<String, Map<String, Map<String, Object>>> transitions =
-            new HashMap<String, Map<String, Map<String, Object>>>();
+    private final Map<IParser, Map<IProcessor, Map<String, Object>>> transitions =
+            new HashMap<IParser, Map<IProcessor, Map<String, Object>>>();
 
-    private Map<String, Object> rawConfig = null;
+    private ReentrantReadWriteLock updateLock = new ReentrantReadWriteLock();
 
     public ModuleChain(final ModuleFactory moduleFactory)
     {
@@ -50,50 +52,41 @@ public class ModuleChain implements IReaderListener
         return mainConfig;
     }
 
-    public void updateConfig(final Map<String, Object> config, final boolean instant) throws ConfigException
+
+    @Override
+    public void configChanged(final String namespace, final Map<String, Object> config, final boolean update)
+            throws ConfigException
     {
-        rawConfig = config;
+        getMainConfig().parse("[root]", config);
 
-        getMainConfig().parse("[root]", rawConfig);
-
-        if (instant)
+        updateLock.writeLock().lock();
+        try
         {
-            update();
+            removeModules(namespace);
+
+            addReaders(namespace, (Map<String, Object>) config.get("readers"));
+
+            addProcessors(namespace, (Map<String, Object>) config.get("processors"));
+
+            addParsers(namespace, (Map<String, Object>) config.get("parsers"));
+        }
+        finally
+        {
+            updateLock.writeLock().unlock();
         }
     }
 
-    private void update() throws ConfigException
-    {
-        if (rawConfig == null)
-        {
-            return;
-        }
-
-        stop();
-
-        reset();
-
-        addReaders((Map<String, Object>) rawConfig.get("readers"));
-
-        addProcessors((Map<String, Object>) rawConfig.get("processors"));
-
-        addParsers((Map<String, Object>) rawConfig.get("parsers"));
-
-        rawConfig = null;
-    }
-
-    private void addReaders(Map<String, Object> readersConfig) throws ConfigException
+    private void addReaders(String namespace, Map<String, Object> readersConfig) throws ConfigException
     {
         for (Map.Entry<String, Object> reader : readersConfig.entrySet())
         {
-            addReader(reader.getKey(), (Map<String, Object>) reader.getValue());
+            addReader(namespace, reader.getKey(), (Map<String, Object>) reader.getValue());
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private void addReader(String name, Map<String, Object> config) throws ConfigException
+    private void addReader(String namespace, String name, Map<String, Object> config) throws ConfigException
     {
-        LOG.debug("Adding {} reader {}", name, config);
+        LOG.debug("Adding {}.{} reader {}", namespace, name, config);
 
         IReader reader = moduleFactory.createReader(name, config);
 
@@ -104,26 +97,31 @@ public class ModuleChain implements IReaderListener
 
         reader.setReaderListener(this);
 
-        readers.put(name, reader);
+        readers.add(namespace, name, reader);
+
+        reader.start();
+        Thread thread = new Thread(reader);
+        thread.setDaemon(true);
+        thread.start();
     }
 
-    private void addProcessors(Map<String, Object> processorsConfig) throws ConfigException
+    private void addProcessors(String namespace, Map<String, Object> processorsConfig) throws ConfigException
     {
         for (Map.Entry<String, Object> processor : processorsConfig.entrySet())
         {
-            addProcessor(processor.getKey(), (Map<String, Object>) processor.getValue());
+            addProcessor(namespace, processor.getKey(), (Map<String, Object>) processor.getValue());
         }
 
         for (Map.Entry<String, Object> processor : processorsConfig.entrySet())
         {
-            setupCompositeProcessor(processors.get(processor.getKey()), (Map<String, Object>) processor.getValue());
+            setupCompositeProcessor(namespace, processors.get(processor.getKey(), namespace),
+                    (Map<String, Object>) processor.getValue());
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private void addProcessor(String name, Map<String, Object> config) throws ConfigException
+    private void addProcessor(String namespace, String name, Map<String, Object> config) throws ConfigException
     {
-        LOG.info("Adding {} processor {}", name, config);
+        LOG.debug("Adding {}.{} processor {}", namespace, name, config);
 
         IProcessor processor = moduleFactory.createProcessor(name, config);
 
@@ -132,10 +130,11 @@ public class ModuleChain implements IReaderListener
             return;
         }
 
-        processors.put(name, processor);
+        processors.add(namespace, name, processor);
     }
 
-    private void setupCompositeProcessor(IProcessor processor, Map<String, Object> config) throws ConfigException
+    private void setupCompositeProcessor(String namespace, IProcessor processor, Map<String, Object> config)
+            throws ConfigException
     {
         if (!(processor instanceof ICompositeProcessor))
         {
@@ -144,9 +143,9 @@ public class ModuleChain implements IReaderListener
 
         for (String subProcessor : (List<String>) config.get("processors"))
         {
-            if (processors.containsKey(subProcessor))
+            if (processors.contains(subProcessor, namespace))
             {
-                ((ICompositeProcessor) processor).addProcessor(processors.get(subProcessor));
+                ((ICompositeProcessor) processor).addProcessor(processors.get(subProcessor, namespace));
             }
             else
             {
@@ -155,18 +154,18 @@ public class ModuleChain implements IReaderListener
         }
     }
 
-    private void addParsers(Map<String, Object> parsersConfig) throws ConfigException
+    private void addParsers(String namespace, Map<String, Object> parsersConfig) throws ConfigException
     {
         for (Map.Entry<String, Object> parser : parsersConfig.entrySet())
         {
-            addParser(parser.getKey(), (Map<String, Object>) parser.getValue());
+            addParser(namespace, parser.getKey(), (Map<String, Object>) parser.getValue());
         }
     }
 
     @SuppressWarnings("unchecked")
-    private void addParser(String name, Map<String, Object> config) throws ConfigException
+    private void addParser(String namespace, String name, Map<String, Object> config) throws ConfigException
     {
-        LOG.info("Adding {} parser {}", name, config);
+        LOG.debug("Adding {}.{} parser {}", namespace, name, config);
 
         IParser parser = moduleFactory.createParser(name, config);
 
@@ -175,76 +174,75 @@ public class ModuleChain implements IReaderListener
             return;
         }
 
-        parsers.put(name, parser);
+        parsers.add(namespace, name, parser);
 
         Map<String, Object> parserProcessors = (Map<String, Object>) config.get("processors");
 
-        transitions.put(name, new HashMap<String, Map<String, Object>>());
+        transitions.put(parser, new HashMap<IProcessor, Map<String, Object>>());
 
         for (Map.Entry<String, Object> parserProcessor : parserProcessors.entrySet())
         {
-            if (!processors.containsKey(parserProcessor.getKey()))
+            if (!processors.contains(parserProcessor.getKey(), namespace))
             {
                 throw new ConfigException(parserProcessor.getKey() + " processor does not exist");
             }
 
-            addTransition(name, parserProcessor.getKey(), parserProcessor.getValue());
+            addTransition(namespace, name, parserProcessor.getKey(), parserProcessor.getValue());
         }
     }
 
     @SuppressWarnings("unchecked")
-    private void addTransition(String parserName, String processorName, Object params) throws ConfigException
+    private void addTransition(String namespace, String parserName, String processorName, Object params)
+            throws ConfigException
     {
-        ConfigMap processParamsConfig = processors.get(processorName).getProcessParamsConfig();
+        ConfigMap processParamsConfig = processors.get(processorName, namespace).getProcessParamsConfig();
         if (processParamsConfig != null)
         {
             processParamsConfig.parse(parserName + ".processors." + processorName, params);
         }
 
-        transitions.get(parserName).put(
-                processorName,
-                (Map<String, Object>) ConfigPattern.replacePatterns(params, parsers.get(parserName).getOutputKeys())
+        IParser parser = parsers.get(parserName, namespace);
+
+        transitions.get(parser).put(
+                processors.get(processorName, namespace),
+                (Map<String, Object>) ConfigPattern.replacePatterns(params, parser.getOutputKeys())
         );
     }
 
-    public void handle(String line)
+    public synchronized void handle(String line)
     {
+        updateLock.readLock().lock();
+
         try
         {
-            update();
-        }
-        catch (ConfigException e)
-        {
-            throw new RuntimeException("Updating module chain failed: " + e.getMessage());
-        }
-
-        Boolean match = false;
-        for (String parserName : parsers.keySet())
-        {
-            if (!match || parsers.get(parserName).runAlways())
+            Boolean match = false;
+            for (Map.Entry<String, IParser> parserEntry : parsers.entrySet())
             {
-                Map<String, Object> parserOutput = parsers.get(parserName).parse(line);
-                if (parserOutput != null)
+                if (!match || parserEntry.getValue().runAlways())
                 {
-                    match = true;
-
-                    for (Map.Entry<String, Map<String, Object>> processor : transitions.get(parserName).entrySet())
+                    Map<String, String> parserOutput = parserEntry.getValue().parse(line);
+                    if (parserOutput != null)
                     {
-                        processors.get(processor.getKey()).process(parserOutput, processor.getValue());
+                        match = true;
+                        process(parserEntry.getValue(), parserOutput);
                     }
                 }
             }
         }
+        finally
+        {
+            updateLock.readLock().unlock();
+        }
     }
 
-    public void start()
+    private void process(IParser parser, Map<String, String> parserOutput)
     {
-        for (IReader reader : readers.values())
+        for (Map.Entry<IProcessor, Map<String, Object>> processorEntry : transitions.get(parser).entrySet())
         {
-            reader.start();
-            Thread thread = new Thread(reader);
-            thread.setDaemon(true);
-            thread.start();
+            synchronized (processorEntry.getKey())
+            {
+                processorEntry.getKey().process(parserOutput, processorEntry.getValue());
+            }
         }
     }
 
@@ -261,12 +259,24 @@ public class ModuleChain implements IReaderListener
         }
     }
 
-    private void reset()
+    private void removeModules(String namespace)
     {
-        readers.clear();
-        parsers.clear();
-        transitions.clear();
-        processors.clear();
+        for (Map.Entry<String, IReader> readerEntry : readers.namespaceEntrySet(namespace))
+        {
+            readerEntry.getValue().stop();
+            readers.remove(readerEntry.getKey());
+        }
+
+        for (Map.Entry<String, IParser> parserEntry : parsers.namespaceEntrySet(namespace))
+        {
+            parsers.remove(parserEntry.getKey());
+            transitions.remove(parserEntry.getValue());
+        }
+
+        for (Map.Entry<String, IProcessor> processorEntry : processors.namespaceEntrySet(namespace))
+        {
+            processors.remove(processorEntry.getKey());
+        }
     }
 
 }

@@ -25,11 +25,11 @@ public class JsonParserTest
     @Test
     public void parseShouldProcessJsonAndReturnMap() throws Exception
     {
-        Map<String, Object> expected = new HashMap<String, Object>();
+        Map<String, String> expected = new HashMap<String, String>();
         expected.put("key1", "value1");
         expected.put("key2", "value2");
 
-        Map<String, Object> actual = parser.parse("{\"key1\":\"value1\",\"key2\":\"value2\"}");
+        Map<String, String> actual = parser.parse("{\"key1\":\"value1\",\"key2\":\"value2\"}");
 
         Assert.assertEquals(expected, actual);
     }
@@ -37,11 +37,11 @@ public class JsonParserTest
     @Test
     public void parseShouldFlattenMap() throws Exception
     {
-        Map<String, Object> expected = new HashMap<String, Object>();
+        Map<String, String> expected = new HashMap<String, String>();
         expected.put("key1.key2", "value1");
         expected.put("key3.key4", "value2");
 
-        Map<String, Object> actual = parser.parse(
+        Map<String, String> actual = parser.parse(
                 "{\"key1\":{\"key2\":\"value1\"},\"key3\":{\"key4\":\"value2\"}}"
         );
 
@@ -51,11 +51,11 @@ public class JsonParserTest
     @Test
     public void parseShouldFlattenList() throws Exception
     {
-        Map<String, Object> expected = new HashMap<String, Object>();
+        Map<String, String> expected = new HashMap<String, String>();
         expected.put("key1.0.key2", "value1");
         expected.put("key1.1.key3", "value2");
 
-        Map<String, Object> actual = parser.parse("{\"key1\":[{\"key2\":\"value1\"},{\"key3\":\"value2\"}]}");
+        Map<String, String> actual = parser.parse("{\"key1\":[{\"key2\":\"value1\"},{\"key3\":\"value2\"}]}");
 
         Assert.assertEquals(expected, actual);
     }
@@ -63,13 +63,13 @@ public class JsonParserTest
     @Test
     public void parseShouldHandleMixedStructure() throws Exception
     {
-        Map<String, Object> expected = new HashMap<String, Object>();
+        Map<String, String> expected = new HashMap<String, String>();
         expected.put("key1.key2", "value1");
         expected.put("key3.0", "value2");
         expected.put("key3.1", "value3");
         expected.put("key4", "value4");
 
-        Map<String, Object> actual = parser.parse(
+        Map<String, String> actual = parser.parse(
                 "{\"key1\":{\"key2\":\"value1\"},\"key3\":[\"value2\",\"value3\"], \"key4\":\"value4\"}"
         );
 
@@ -88,14 +88,14 @@ public class JsonParserTest
     {
         parser = createParser(false);
 
-        Map<String, Object> entry = new HashMap<String, Object>();
+        Map<String, String> entry = new HashMap<String, String>();
         entry.put("key3", "value3");
 
         Map<String, Object> expected = new HashMap<String, Object>();
         expected.put("key1", "value1");
         expected.put("key2", entry);
 
-        Map<String, Object> actual = parser.parse("{\"key1\":\"value1\",\"key2\":{\"key3\":\"value3\"}}");
+        Map<String, String> actual = parser.parse("{\"key1\":\"value1\",\"key2\":{\"key3\":\"value3\"}}");
 
         Assert.assertEquals(expected, actual);
     }
