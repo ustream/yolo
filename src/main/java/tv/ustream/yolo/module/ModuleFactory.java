@@ -3,6 +3,7 @@ package tv.ustream.yolo.module;
 import tv.ustream.yolo.config.ConfigException;
 import tv.ustream.yolo.config.ConfigMap;
 import tv.ustream.yolo.module.parser.IParser;
+import tv.ustream.yolo.module.parser.JsonParser;
 import tv.ustream.yolo.module.parser.PassThruParser;
 import tv.ustream.yolo.module.parser.RegexpParser;
 import tv.ustream.yolo.module.processor.CompositeProcessor;
@@ -30,7 +31,8 @@ public class ModuleFactory
 
     private static final List<String> AVAILABLE_PARSERS = Arrays.asList(
             PassThruParser.class.getCanonicalName(),
-            RegexpParser.class.getCanonicalName()
+            RegexpParser.class.getCanonicalName(),
+            JsonParser.class.getCanonicalName()
     );
 
     private static final ConfigMap PROCESSOR_MODULE_CONFIG = getDefaultProcessorModuleConfig();

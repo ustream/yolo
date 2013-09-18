@@ -145,17 +145,24 @@ Available processors
 Available parsers
 -----------------
 
-* tv.ustream.yolo.module.parser.PassThruParser - forwards all lines to processor, runs always
+* tv.ustream.yolo.module.parser.PassThruParser - forwards all lines to processor (map: 'line' -> 'content'), runs always
   - params: Map {
       enabled: Boolean, default: true
       class: String, required
       processors: Map, required
     }
 
-* tv.ustream.yolo.module.parser.RegexpParser - parses line via regular expression and returns with matches
+* tv.ustream.yolo.module.parser.RegexpParser - parses lines via regular expression and returns with matches
   - params: Map {
       enabled: Boolean, default: true
       regex: String, required
+      class: String, required
+      processors: Map, required
+    }
+
+* tv.ustream.yolo.module.parser.JsonParser - parses JSON strings and returns with flatten map ('level1.level2' -> 'value')
+  - params: Map {
+      enabled: Boolean, default: true
       class: String, required
       processors: Map, required
     }

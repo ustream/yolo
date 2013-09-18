@@ -47,7 +47,7 @@ public class PassThruParser implements IParser
     @Override
     public String getModuleDescription()
     {
-        return "forwards all lines to processor, runs always";
+        return "forwards all lines to processor (map: 'line' -> 'content'), runs always";
     }
 
 }

@@ -20,22 +20,34 @@ public final class NumberConverter
 
     public static Double convertByteValue(final String value)
     {
+        if (value == null)
+        {
+            return null;
+        }
+
         String stripped = value.replace(" ", "").toUpperCase();
 
-        switch (stripped.charAt(stripped.length() - 1))
+        try
         {
-            case 'B':
-                return Double.parseDouble(stripped.substring(0, stripped.length() - 1));
-            case 'K':
-                return Double.parseDouble(stripped.substring(0, stripped.length() - 1)) * KB_FACTOR;
-            case 'M':
-                return Double.parseDouble(stripped.substring(0, stripped.length() - 1)) * MB_FACTOR;
-            case 'G':
-                return Double.parseDouble(stripped.substring(0, stripped.length() - 1)) * GB_FACTOR;
-            case 'T':
-                return Double.parseDouble(stripped.substring(0, stripped.length() - 1)) * TB_FACTOR;
-            default:
-                return Double.parseDouble(value);
+            switch (stripped.charAt(stripped.length() - 1))
+            {
+                case 'B':
+                    return Double.parseDouble(stripped.substring(0, stripped.length() - 1));
+                case 'K':
+                    return Double.parseDouble(stripped.substring(0, stripped.length() - 1)) * KB_FACTOR;
+                case 'M':
+                    return Double.parseDouble(stripped.substring(0, stripped.length() - 1)) * MB_FACTOR;
+                case 'G':
+                    return Double.parseDouble(stripped.substring(0, stripped.length() - 1)) * GB_FACTOR;
+                case 'T':
+                    return Double.parseDouble(stripped.substring(0, stripped.length() - 1)) * TB_FACTOR;
+                default:
+                    return Double.parseDouble(value);
+            }
+        }
+        catch (NumberFormatException e)
+        {
+            return null;
         }
     }
 

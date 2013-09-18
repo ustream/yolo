@@ -16,6 +16,7 @@ import java.util.Map;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
  * @author bandesz
@@ -162,6 +163,32 @@ public class GraphiteProcessorTest
         processor.process(parserOutput, createProcessParams("key", value));
 
         verify(graphiteClient).sendMetrics("key", 5D * 1024 * 1024);
+    }
+
+    @Test
+    public void processShouldNotSendWhenKeyParamIsMissing()
+    {
+        Map<String, String> parserOutput = new HashMap<String, String>();
+        parserOutput.put("p2", "key");
+
+        ConfigPattern key = new ConfigPattern("some.#p1#.key");
+
+        processor.process(parserOutput, createProcessParams(key, 1D));
+
+        verifyNoMoreInteractions(graphiteClient);
+    }
+
+    @Test
+    public void processShouldNotSendWhenValueParamIsMissing()
+    {
+        Map<String, String> parserOutput = new HashMap<String, String>();
+        parserOutput.put("v2", "5M");
+
+        ConfigPattern value = new ConfigPattern("#v1#");
+
+        processor.process(parserOutput, createProcessParams("key", value));
+
+        verifyNoMoreInteractions(graphiteClient);
     }
 
     @Test

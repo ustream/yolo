@@ -1,18 +1,13 @@
 package tv.ustream.yolo.util;
 
 import junit.framework.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 /**
  * @author bandesz
  */
 public class NumberConverterTest
 {
-
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
 
     private static final long KB_FACTOR = 1024;
 
@@ -21,6 +16,12 @@ public class NumberConverterTest
     private static final long GB_FACTOR = KB_FACTOR * MB_FACTOR;
 
     private static final long TB_FACTOR = KB_FACTOR * GB_FACTOR;
+
+    @Test
+    public void shouldReturnNullForNull()
+    {
+        Assert.assertNull(NumberConverter.convertByteValue(null));
+    }
 
     @Test
     public void shouldLeaveNumberAsIs()
@@ -73,11 +74,9 @@ public class NumberConverterTest
     }
 
     @Test
-    public void shouldThrowExceptionWhenInvalidValue()
+    public void shouldReturNullWhenInvalidValue()
     {
-        thrown.expect(NumberFormatException.class);
-
-        NumberConverter.convertByteValue("not a number");
+        Assert.assertNull(NumberConverter.convertByteValue("not a number"));
     }
 
 }

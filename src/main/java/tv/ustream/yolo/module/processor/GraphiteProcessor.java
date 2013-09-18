@@ -72,9 +72,17 @@ public class GraphiteProcessor implements IProcessor
         {
             key = (String) keyObject;
         }
-        else
+        else if (keyObject instanceof ConfigPattern)
         {
             key = ((ConfigPattern) keyObject).applyValues(parserOutput);
+            if (key == null)
+            {
+                return;
+            }
+        }
+        else
+        {
+            throw new IllegalArgumentException("Invalid key: " + keyObject.toString());
         }
 
         Object valueObject = keyParams.get("value");
@@ -84,9 +92,17 @@ public class GraphiteProcessor implements IProcessor
             value = ((Number) valueObject).doubleValue();
 
         }
-        else
+        else if (valueObject instanceof ConfigPattern)
         {
             value = NumberConverter.convertByteValue(((ConfigPattern) valueObject).applyValues(parserOutput));
+            if (value == null)
+            {
+                return;
+            }
+        }
+        else
+        {
+            throw new IllegalArgumentException("Invalid value: " + valueObject.toString());
         }
 
         value *= ((Number) keyParams.get("multiplier")).doubleValue();

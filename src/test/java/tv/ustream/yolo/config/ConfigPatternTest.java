@@ -91,7 +91,7 @@ public class ConfigPatternTest
     }
 
     @Test
-    public void applyValuesShouldLeaveMissingParamAsIs()
+    public void applyValuesShouldReturnNullWhenParamsMissing()
     {
         ConfigPattern pattern = new ConfigPattern("text #p1# text #p2# text #p3# text");
         Map<String, String> params = new HashMap<String, String>();
@@ -99,6 +99,28 @@ public class ConfigPatternTest
         params.put("p2", "v2");
         String actual = pattern.applyValues(params);
 
-        Assert.assertEquals("text v1 text v2 text #p3# text", actual);
+        Assert.assertNull(actual);
+    }
+
+    @Test
+    public void applyValuesShouldReturnValueForSimplePattern()
+    {
+        ConfigPattern pattern = new ConfigPattern("#p1#");
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("p1", "v1");
+        String actual = pattern.applyValues(params);
+
+        Assert.assertEquals("v1", actual);
+    }
+
+    @Test
+    public void applyValuesShouldReturnNullForSimplePatternWhenValueMissing()
+    {
+        ConfigPattern pattern = new ConfigPattern("#p1#");
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("p2", "v1");
+        String actual = pattern.applyValues(params);
+
+        Assert.assertNull(actual);
     }
 }

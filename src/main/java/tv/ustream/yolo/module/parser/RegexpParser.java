@@ -38,7 +38,7 @@ public class RegexpParser implements IParser
     @Override
     public String getModuleDescription()
     {
-        return "parses line via regular expression and returns with matches";
+        return "parses lines via regular expression and returns with matches";
     }
 
     @Override

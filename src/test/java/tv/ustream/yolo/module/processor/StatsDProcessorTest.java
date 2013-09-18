@@ -16,6 +16,7 @@ import java.util.Map;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
  * @author bandesz
@@ -171,6 +172,32 @@ public class StatsDProcessorTest
         processor.process(parserOutput, createprocessParams(StatsDProcessor.Types.COUNTER.getValue(), "key", value));
 
         verify(statsDClient).count("key", 5 * 1024 * 1024);
+    }
+
+    @Test
+    public void processShouldNotSendWhenKeyParamIsMissing()
+    {
+        Map<String, String> parserOutput = new HashMap<String, String>();
+        parserOutput.put("p2", "key");
+
+        ConfigPattern key = new ConfigPattern("some.#p1#.key");
+
+        processor.process(parserOutput, createprocessParams(StatsDProcessor.Types.COUNTER.getValue(), key, 1D));
+
+        verifyNoMoreInteractions(statsDClient);
+    }
+
+    @Test
+    public void processShouldNotSendWhenValueParamIsMissing()
+    {
+        Map<String, String> parserOutput = new HashMap<String, String>();
+        parserOutput.put("v2", "5M");
+
+        ConfigPattern value = new ConfigPattern("#v1#");
+
+        processor.process(parserOutput, createprocessParams(StatsDProcessor.Types.COUNTER.getValue(), "key", value));
+
+        verifyNoMoreInteractions(statsDClient);
     }
 
     private Map<String, Object> createprocessParams(String type, Object key, Object value)

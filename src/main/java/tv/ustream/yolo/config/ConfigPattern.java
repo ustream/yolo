@@ -13,13 +13,15 @@ import java.util.regex.Pattern;
 public class ConfigPattern
 {
 
-    private static final Pattern PARAMS_PATTERN = Pattern.compile("#([a-zA-Z0-9_-]+)#");
+    private static final Pattern PARAMS_PATTERN = Pattern.compile("#([a-zA-Z0-9_\\-\\.]+)#");
 
     private final String pattern;
 
     private final List<String> parameters = new ArrayList<String>();
 
     private static Map<String, String> globalParameters = new HashMap<String, String>();
+
+    private final boolean simplePattern;
 
     public ConfigPattern(final String pattern)
     {
@@ -29,6 +31,8 @@ public class ConfigPattern
         {
             parameters.add(matcher.group(1));
         }
+
+        simplePattern = parameters.size() == 1 && pattern.startsWith("#") && pattern.endsWith("#");
     }
 
     public static boolean applicable(final Object pattern)
@@ -81,36 +85,47 @@ public class ConfigPattern
         }
     }
 
-    public String applyValues(Map<String, String> values)
+    public String applyValues(final Map<String, String> values)
     {
-        String result = pattern;
-        for (String parameter : parameters)
+        if (simplePattern)
         {
-
-            if (globalParameters.containsKey(parameter))
-            {
-                result = result.replace("#" + parameter + "#", globalParameters.get(parameter));
-            }
-            else if (values.containsKey(parameter))
-            {
-                result = result.replace("#" + parameter + "#", values.get(parameter));
-            }
+            return values.get(parameters.get(0));
         }
-        return result;
+        else
+        {
+            String result = pattern;
+            for (String parameter : parameters)
+            {
+
+                if (globalParameters.containsKey(parameter))
+                {
+                    result = result.replace("#" + parameter + "#", globalParameters.get(parameter));
+                }
+                else if (values.containsKey(parameter))
+                {
+                    result = result.replace("#" + parameter + "#", values.get(parameter));
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            return result;
+        }
     }
 
-    private List<String> getParameters()
+    public List<String> getParameters()
     {
         return parameters;
     }
 
-    public static void addGlobalParameter(String key, String value)
+    public static void addGlobalParameter(final String key, final String value)
     {
         globalParameters.put(key, value);
     }
 
     @Override
-    public boolean equals(Object o)
+    public boolean equals(final Object o)
     {
         if (this == o)
         {
