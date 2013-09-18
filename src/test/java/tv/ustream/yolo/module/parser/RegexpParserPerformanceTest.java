@@ -15,7 +15,7 @@ import java.util.Random;
 public class RegexpParserPerformanceTest
 {
 
-    private int byteCount = 50000000;
+    private int byteCount = 5000000;
 
     private List<String> lines;
 
@@ -25,7 +25,7 @@ public class RegexpParserPerformanceTest
         lines = generateLines(byteCount);
     }
 
-    @Test(timeout = 1000)
+    @Test(timeout = 500)
     public void performanceTestWithLotsOfMatches()
     {
         RegexpParser parser = new RegexpParser();
@@ -37,7 +37,7 @@ public class RegexpParserPerformanceTest
         }
     }
 
-    @Test(timeout = 2000)
+    @Test(timeout = 500)
     public void performanceTestWithFewMatches()
     {
         RegexpParser parser = new RegexpParser();

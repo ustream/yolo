@@ -71,7 +71,7 @@ public class GraphiteClient
                 }
                 catch (IOException e)
                 {
-                    LOG.debug("Failed to send graphite data: {}", e.getMessage());
+                    LOG.warn("Failed to send graphite data: {}", e.getMessage());
                 }
             }
         };

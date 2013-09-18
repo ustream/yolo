@@ -92,7 +92,7 @@ public class ModuleChain implements ILineHandler
     @SuppressWarnings("unchecked")
     private void addProcessor(String name, Map<String, Object> config) throws ConfigException
     {
-        LOG.debug("Adding {} processor {}", name, config);
+        LOG.info("Adding {} processor {}", name, config);
 
         IProcessor processor = moduleFactory.createProcessor(name, config);
 
@@ -127,7 +127,7 @@ public class ModuleChain implements ILineHandler
     @SuppressWarnings("unchecked")
     private void addParser(String name, Map<String, Object> config) throws ConfigException
     {
-        LOG.debug("Adding {} parser {}", name, config);
+        LOG.info("Adding {} parser {}", name, config);
 
         IParser parser = moduleFactory.createParser(name, config);
 

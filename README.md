@@ -70,12 +70,17 @@ Simply run the jar with "-help" option.
 ```bash
 $ java -jar build/libs/yolo.jar -help
 usage: yolo
- -config <path>   path to config file
- -file <path>     path to logfile, , wildcards are accepted
- -help            print this message
- -listModules     list available modules
- -reopen          reopen file between reading the chunks
- -whole           tail file from the beginning
+ -config <path>                  path to config file
+ -debug                          turn on debug mode
+ -file <path>                    path to logfile, wildcards are accepted
+ -help                           print this message
+ -listModules                    list available modules
+ -log <path>                     log to file
+ -reopen                         reopen file between reading the chunks
+ -verbose                        print verbose messages to console
+ -watchConfigInterval <second>   check config file periodically and update
+                                 without stopping, default: 5 sec
+ -whole                          tail file from the beginning
 ```
 
 ## Example usage
@@ -303,13 +308,13 @@ If you check the [configuration example](src/main/config/example.json), you can 
 
 ## Logging
 
-The tool uses [SLF4J](http://www.slf4j.org/) for logging with the SimpleLogger implementation. The minimum log level is INFO and all the logs are written to the standard error output.
+The tool uses [SLF4J](http://www.slf4j.org/) AND [log4j 1.2](http://logging.apache.org/log4j/1.2/) for logging.
 
-To display debug messages use the -Dorg.slf4j.simpleLogger.defaultLogLevel=debug option.
+To log debug messages use the -debug option.
 
-```bash
-$ java -Dorg.slf4j.simpleLogger.defaultLogLevel=debug -jar build/libs/yolo.jar -config /YOURPATH/src/main/config/example.json -file /YOURPATH/foo.log
-```
+To log messages to a file, use the -log <path> option.
+
+To show messages on the console, use the -verbose option.
 
 ## Dependencies
 
@@ -322,6 +327,7 @@ For a detailed dependency list please check the "dependencies" block in [build.g
 * [Gson](http://code.google.com/p/google-gson/)
 * [java-statsd-client](https://github.com/youdevise/java-statsd-client)
 * [SLF4j](http://www.slf4j.org/)
+* [Apache log4j 1.2](http://logging.apache.org/log4j/1.2/)
 
 **Testing dependencies**:
 

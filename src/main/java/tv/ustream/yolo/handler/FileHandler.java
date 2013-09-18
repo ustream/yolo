@@ -97,11 +97,12 @@ public class FileHandler implements TailerListener
         }
         while (file == null);
 
-        LOG.debug("Tailing file {}", file.getAbsolutePath());
+        LOG.info("Tailing file {}", file.getAbsolutePath());
 
         tailer = new Tailer(file, this, delayMs, !readWhole, reopen);
 
         Thread thread = new Thread(tailer);
+        thread.setName("Tailer");
         thread.start();
     }
 
@@ -145,7 +146,7 @@ public class FileHandler implements TailerListener
     @Override
     public void fileRotated()
     {
-        LOG.debug("Tailer: file was rotated: {}", tailer.getFile().getAbsolutePath());
+        LOG.info("Tailer: file was rotated: {}", tailer.getFile().getAbsolutePath());
 
         try
         {

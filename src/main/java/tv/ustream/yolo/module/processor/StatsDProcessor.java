@@ -70,8 +70,6 @@ public class StatsDProcessor implements IProcessor
         String host = (String) parameters.get("host");
         Integer port = ((Number) parameters.get("port")).intValue();
 
-        LOG.debug("Initializing StatsD connection: {}:{}", host, port);
-
         statsDClient = createClient(prefix, host, port);
     }
 

@@ -11,6 +11,11 @@ import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.PatternLayout;
+import org.apache.log4j.varia.NullAppender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tv.ustream.yolo.config.ConfigException;
@@ -35,9 +40,19 @@ public class Yolo
 
     private static final Logger LOG = LoggerFactory.getLogger(Yolo.class);
 
+    private static final PatternLayout CONSOLE_LOG_PATTERN = new PatternLayout("%-6r [%15.15t] %-5p %30.30c - %m%n");
+
+    private static final PatternLayout FILE_LOG_PATTERN = new PatternLayout("%d [%t] %p %c - %m%n");
+
     private final Options cliOptions = new Options();
 
     private Map<String, Object> config;
+
+    private boolean debug;
+
+    private boolean verbose;
+
+    private String logPath;
 
     private String configPath;
 
@@ -56,11 +71,21 @@ public class Yolo
     public Yolo()
     {
         buildCliOptions();
+
+        setLoggerDefaultOptions();
     }
 
     private void buildCliOptions()
     {
         cliOptions.addOption("help", false, "print this message");
+
+        cliOptions.addOption("debug", false, "turn on debug mode");
+
+        cliOptions.addOption("verbose", false, "print verbose messages to console");
+
+        Option logOption = new Option("log", true, "log to file");
+        logOption.setArgName("path");
+        cliOptions.addOption(logOption);
 
         Option fileOption = new Option("file", true, "path to logfile, wildcards are accepted");
         fileOption.setArgName("path");
@@ -83,6 +108,13 @@ public class Yolo
         );
         watchConfigIntervalOption.setArgName("second");
         cliOptions.addOption(watchConfigIntervalOption);
+    }
+
+    private void setLoggerDefaultOptions()
+    {
+        org.apache.log4j.Logger root = org.apache.log4j.Logger.getRootLogger();
+        root.addAppender(new NullAppender());
+        root.setLevel(Level.INFO);
     }
 
     private void parseCliOptions(final String[] args) throws Exception
@@ -110,17 +142,25 @@ public class Yolo
             System.exit(0);
         }
 
+        debug = cli.hasOption("debug");
+
+        verbose = cli.hasOption("verbose");
+
+        logPath = cli.getOptionValue("log");
+
         configPath = cli.getOptionValue("config");
 
         if (null == configPath || configPath.isEmpty())
         {
             exitWithError("config parameter is missing!", true);
+            return;
         }
 
         filePath = cli.getOptionValue("file");
         if (null == filePath || filePath.isEmpty())
         {
             exitWithError("file parameter is missing!", true);
+            return;
         }
 
         readWholeFile = cli.hasOption("whole");
@@ -130,6 +170,33 @@ public class Yolo
         watchConfigInterval = TimeUnit.SECONDS.toMillis(
                 Integer.parseInt(cli.getOptionValue("watchConfigInterval", "5"))
         );
+    }
+
+    private void setupLogging()
+    {
+        org.apache.log4j.Logger root = org.apache.log4j.Logger.getRootLogger();
+
+        if (debug)
+        {
+            root.setLevel(Level.DEBUG);
+        }
+
+        if (verbose)
+        {
+            root.addAppender(new ConsoleAppender(CONSOLE_LOG_PATTERN));
+        }
+
+        if (logPath != null)
+        {
+            try
+            {
+                root.addAppender(new FileAppender(FILE_LOG_PATTERN, logPath));
+            }
+            catch (IOException e)
+            {
+                exitWithError(e.getMessage(), false);
+            }
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -142,6 +209,7 @@ public class Yolo
         catch (Exception e)
         {
             exitWithError("Failed to open configuration file: " + e.getMessage(), false);
+            return;
         }
 
         moduleChain.updateConfig(config, !update);
@@ -159,7 +227,7 @@ public class Yolo
             @Override
             public void onFileChange(File file)
             {
-                LOG.debug("Config file changed: {}", configPath);
+                LOG.info("Config file changed: {}", configPath);
                 try
                 {
                     readConfig(true);
@@ -167,6 +235,7 @@ public class Yolo
                 catch (ConfigException e)
                 {
                     exitWithError("Failed to refresh config: " + e.getMessage(), false);
+                    return;
                 }
             }
         };
@@ -208,9 +277,11 @@ public class Yolo
     {
         try
         {
-            setGlobalParameters();
-
             parseCliOptions(args);
+
+            setupLogging();
+
+            setGlobalParameters();
 
             readConfig(false);
 
@@ -244,7 +315,7 @@ public class Yolo
             @Override
             public void run()
             {
-                LOG.debug("Shutting down..");
+                LOG.info("Shutting down..");
                 Yolo.this.stop();
             }
         });
@@ -268,6 +339,9 @@ public class Yolo
     private void exitWithError(String message, Boolean printHelp)
     {
         System.out.println(message);
+
+        LOG.error(message);
+
         if (printHelp)
         {
             printHelp();
