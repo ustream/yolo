@@ -148,6 +148,12 @@ public class Yolo
 
         logPath = cli.getOptionValue("log");
 
+        if (logPath != null && !new File(logPath).isAbsolute())
+        {
+            exitWithError("log path must be absolute!", false);
+            return;
+        }
+
         configPath = cli.getOptionValue("config");
 
         if (null == configPath || configPath.isEmpty())
@@ -156,10 +162,22 @@ public class Yolo
             return;
         }
 
+        if (!new File(configPath).isAbsolute())
+        {
+            exitWithError("config path must be absolute!", false);
+            return;
+        }
+
         filePath = cli.getOptionValue("file");
         if (null == filePath || filePath.isEmpty())
         {
             exitWithError("file parameter is missing!", true);
+            return;
+        }
+
+        if (!new File(filePath).isAbsolute())
+        {
+            exitWithError("file path must be absolute!", false);
             return;
         }
 
