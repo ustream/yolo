@@ -1,0 +1,17 @@
+{
+    "parsers": {
+        "script": {
+            "class": "tv.ustream.yolo.module.parser.ScriptEngineParser",
+            "file": "[PROJECTDIR]/examples/scriptengine/example.js",
+            "engine": "JavaScript",
+            "processors": {
+                "console": {}
+            }
+        }
+    },
+    "processors": {
+        "console": {
+            "class": "tv.ustream.yolo.module.processor.ConsoleProcessor"
+        }
+    }
+}

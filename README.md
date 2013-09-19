@@ -10,6 +10,7 @@ A general log tailer and parser tool written in Java, inspired by [Parsible](htt
 
 * **Flexible configuration**: the configuration is in JSON format for easier management. You can define your parsers and processors and bind them as you want.
 * **Real time**: the tool tails the log file realtime
+* **Scriptable**: you can write parsers in other languages (currently only JavaScript is tested and allowed)
 * **Whole file reading**: with a cli parameter you can read your logfile from the beginning
 * **Handle dynamic filenames**: you can use wildcards in filename (but only the first match will be used)
 * **Logrotate friendly**: works easily with logrotate or other log rotating tools
@@ -172,7 +173,22 @@ Available parsers
       processors: Map, required
     }
 
+* tv.ustream.yolo.module.parser.ScriptEngineParser - parses data with an external script file
+  - params: Map {
+      enabled: Boolean, default: true
+      engine: String, required
+      file: String, required
+      class: String, required
+      processors: Map, required
+    }
+
 ```
+
+## Write your parser in other languages.
+
+We use the built-in ScriptEngine to run script files in other languages. Currently only JavaScript is supported, but we plan to test other engines as well.
+
+Check [examples/scriptengine](example/scriptengine) directory for example.
 
 ## Create your own parser
 

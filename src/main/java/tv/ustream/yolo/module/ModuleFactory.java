@@ -6,6 +6,7 @@ import tv.ustream.yolo.module.parser.IParser;
 import tv.ustream.yolo.module.parser.JsonParser;
 import tv.ustream.yolo.module.parser.PassThruParser;
 import tv.ustream.yolo.module.parser.RegexpParser;
+import tv.ustream.yolo.module.parser.ScriptEngineParser;
 import tv.ustream.yolo.module.processor.CompositeProcessor;
 import tv.ustream.yolo.module.processor.ConsoleProcessor;
 import tv.ustream.yolo.module.processor.GraphiteProcessor;
@@ -32,7 +33,8 @@ public class ModuleFactory
     private static final List<String> AVAILABLE_PARSERS = Arrays.asList(
             PassThruParser.class.getCanonicalName(),
             RegexpParser.class.getCanonicalName(),
-            JsonParser.class.getCanonicalName()
+            JsonParser.class.getCanonicalName(),
+            ScriptEngineParser.class.getCanonicalName()
     );
 
     private static final ConfigMap PROCESSOR_MODULE_CONFIG = getDefaultProcessorModuleConfig();
