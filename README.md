@@ -75,6 +75,7 @@ usage: yolo
  -debug                          turn on debug mode
  -file <path>                    path to logfile, wildcards are accepted
  -help                           print this message
+ -hostname <short hostname>      overwrite hostname
  -listModules                    list available modules
  -log <path>                     log to file
  -reopen                         reopen file between reading the chunks

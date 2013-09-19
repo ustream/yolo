@@ -68,6 +68,8 @@ public class Yolo
 
     private FileHandler fileHandler;
 
+    private String hostname;
+
     public Yolo()
     {
         buildCliOptions();
@@ -108,6 +110,11 @@ public class Yolo
         );
         watchConfigIntervalOption.setArgName("second");
         cliOptions.addOption(watchConfigIntervalOption);
+
+        Option hostnameOption = new Option("hostname", true, "overwrite hostname");
+        hostnameOption.setArgName("short hostname");
+
+        cliOptions.addOption(hostnameOption);
     }
 
     private void setLoggerDefaultOptions()
@@ -188,6 +195,8 @@ public class Yolo
         watchConfigInterval = TimeUnit.SECONDS.toMillis(
                 Integer.parseInt(cli.getOptionValue("watchConfigInterval", "5"))
         );
+
+        hostname = cli.getOptionValue("hostname");
     }
 
     private void setupLogging()
@@ -275,7 +284,14 @@ public class Yolo
 
     private void setGlobalParameters() throws Exception
     {
-        ConfigPattern.addGlobalParameter("HOSTNAME", getHostname());
+        if (hostname != null)
+        {
+            ConfigPattern.addGlobalParameter("HOSTNAME", hostname);
+        }
+        else
+        {
+            ConfigPattern.addGlobalParameter("HOSTNAME", getHostname());
+        }
     }
 
     private String getHostname() throws IOException

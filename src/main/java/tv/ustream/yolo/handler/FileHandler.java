@@ -167,7 +167,7 @@ public class FileHandler implements TailerListener
         }
         catch (Exception e)
         {
-            LOG.error("Line processing error: " + e.getMessage());
+            LOG.error("Line processing error: {} - {} ", e.getClass().getName(), e.getMessage());
         }
     }
 

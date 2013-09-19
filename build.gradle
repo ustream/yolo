@@ -1,5 +1,5 @@
 group = 'tv.ustream.yolo'
-version = '1.0.12'
+version = '1.0.13'
 
 buildscript {
     repositories {
