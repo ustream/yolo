@@ -26,13 +26,14 @@ public class FileHandlerTest implements ILineHandler
 
     private File testFile;
 
-    private String handledLines;
+    private String handledLines = "";
 
     @Before
     public void setUp() throws Exception
     {
         handledLines = "";
         testFile = tmpFolder.newFile();
+        testFile.setLastModified(System.currentTimeMillis() - 10000);
         FileWriter out = new FileWriter(testFile);
         out.write("l1\nl2\nl3\n");
         out.close();
@@ -109,6 +110,19 @@ public class FileHandlerTest implements ILineHandler
         out.close();
 
         await().atMost(5000, TimeUnit.MILLISECONDS).until(equalsHandledLines("l1\nl2\nl3\nl4\nl5\n"));
+    }
+
+    @Test
+    public void newerLastModifiedButSameLengthShouldNotResetTailer() throws Exception
+    {
+        handler = new FileHandler(this, testFile.getAbsolutePath(), 100, true, false);
+        handler.start();
+
+        Thread.sleep(200);
+
+        testFile.setLastModified(System.currentTimeMillis());
+
+        await().atMost(5000, TimeUnit.MILLISECONDS).until(equalsHandledLines("l1\nl2\nl3\n"));
     }
 
     @Override

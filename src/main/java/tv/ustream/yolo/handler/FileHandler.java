@@ -7,6 +7,7 @@ import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tv.ustream.yolo.io.TailerFile;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -99,7 +100,7 @@ public class FileHandler implements TailerListener
 
         LOG.info("Tailing file {}", file.getAbsolutePath());
 
-        tailer = new Tailer(file, this, delayMs, !readWhole, reopen);
+        tailer = new Tailer(TailerFile.create(file), this, delayMs, !readWhole, reopen);
 
         Thread thread = new Thread(tailer);
         thread.setName("Tailer");
