@@ -17,10 +17,6 @@ public class TailerFileTest
     @Rule
     public TemporaryFolder tmpFolder = new TemporaryFolder();
 
-    private FileReader reader;
-
-    private FileReaderListener listener;
-
     private File testFile;
 
     private long originalLastModified;
