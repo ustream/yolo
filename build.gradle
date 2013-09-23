@@ -38,8 +38,14 @@ task wrapper(type: Wrapper) {
     gradleVersion = '1.6'
 }
 
+classes << {
+    ext.versionfile = new File("${project.buildDir}/VERSION")
+    versionfile.text = version
+}
+
 jar {
     archiveName = "${baseName}.${extension}"
+
     from files(project.sourceSets.main.output.classesDir)
     from project.configurations.runtime.collect {
         zipTree(it)
@@ -47,6 +53,10 @@ jar {
     manifest {
         from "manifest.mf"
     }
+
+    from "LICENCE.md"
+
+    from "${project.buildDir}/VERSION"
 }
 
 ext.distDir = "${buildDir}/dist"

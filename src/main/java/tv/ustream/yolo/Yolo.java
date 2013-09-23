@@ -7,6 +7,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
@@ -28,6 +29,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -103,6 +105,8 @@ public class Yolo
 
         cliOptions.addOption("listModules", false, "list available modules");
 
+        cliOptions.addOption("version", false, "show version");
+
         Option watchConfigIntervalOption = new Option(
                 "watchConfigInterval",
                 true,
@@ -146,6 +150,12 @@ public class Yolo
         if (cli.hasOption("listModules"))
         {
             ModuleFactory.printAvailableModules();
+            System.exit(0);
+        }
+
+        if (cli.hasOption("version"))
+        {
+            printVersion();
             System.exit(0);
         }
 
@@ -368,6 +378,12 @@ public class Yolo
     {
         HelpFormatter formatter = new HelpFormatter();
         formatter.printHelp("yolo", cliOptions);
+    }
+
+    private void printVersion() throws IOException
+    {
+        InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream("VERSION");
+        System.out.println(IOUtils.toString(is, "UTF-8"));
     }
 
     private void exitWithError(String message, Boolean printHelp)

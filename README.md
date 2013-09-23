@@ -80,6 +80,7 @@ usage: yolo
  -log <path>                     log to file
  -reopen                         reopen file between reading the chunks
  -verbose                        print verbose messages to console
+ -version                        show version
  -watchConfigInterval <second>   check config file periodically and update
                                  without stopping, default: 5 sec
  -whole                          tail file from the beginning
