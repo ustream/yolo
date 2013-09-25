@@ -104,9 +104,7 @@ signing {
 }
 
 gradle.taskGraph.whenReady {taskGraph ->
-    if (!taskGraph.hasTask(uploadArchives)) {
-        signArchives.onlyIf { false }
-    }
+    signArchives.onlyIf { taskGraph.hasTask(uploadArchives) }
 }
 
 uploadArchives {
