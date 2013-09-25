@@ -6,7 +6,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.kenshoo:gradle-fpm:0.3'
+        classpath 'com.kenshoo:gradle-fpm:0.4'
     }
 }
 
@@ -39,25 +39,18 @@ task wrapper(type: Wrapper) {
     gradleVersion = '1.6'
 }
 
-classes << {
-    ext.versionfile = new File("${project.buildDir}/VERSION")
-    versionfile.text = version
-}
-
-jar {
-    archiveName = "${baseName}.${extension}"
-
-    from files(project.sourceSets.main.output.classesDir)
-    from project.configurations.runtime.collect {
-        zipTree(it)
-    }
+tasks.withType(Jar) {
     manifest {
         from "manifest.mf"
     }
 
     from "LICENCE.md"
 
-    from "${project.buildDir}/VERSION"
+    file("${buildDir}/VERSION").with {
+        parentFile.mkdirs()
+        write(version)
+        from it
+    }
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
@@ -70,6 +63,14 @@ task sourcesJar(type: Jar) {
     classifier = 'sources'
 }
 
+task applicationJar(type: Jar) {
+    archiveName = "${baseName}.${extension}"
+    from files(project.sourceSets.main.output.classesDir)
+    from project.configurations.runtime.collect {
+        zipTree(it)
+    }
+}
+
 artifacts {
     archives sourcesJar
     archives javadocJar
@@ -78,8 +79,8 @@ artifacts {
 
 ext.distDir = "${buildDir}/dist"
 
-task buildDist(dependsOn: jar) << {
-    ant.copy(file: "${jar.archivePath}", todir: "${distDir}/usr/lib/yolo")
+task buildDist(dependsOn: applicationJar) << {
+    ant.copy(file: "${applicationJar.archivePath}", todir: "${distDir}/usr/lib/yolo")
     ant.copy(file: "yolo", todir: "${distDir}/usr/bin/")
     ant.chmod(file: "${distDir}/usr/bin/yolo", perm: "755")
 }
@@ -95,6 +96,7 @@ packaging {
             '--url': 'https://github.com/ustream/yolo',
             '--description': 'Yolo - Log tailing and parsing framework in Java',
     ]
+    force = true
 }
 
 signing {

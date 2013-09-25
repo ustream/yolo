@@ -3,5 +3,4 @@
 /out
 /build
 /*.iml
-/gradle.properties
 /src/main/config/test*.json
