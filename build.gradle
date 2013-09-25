@@ -1,5 +1,5 @@
 group = 'tv.ustream.yolo'
-version = '1.0.14'
+version = '1.0.15'
 
 buildscript {
     repositories {
@@ -12,6 +12,7 @@ buildscript {
 
 apply plugin: 'java'
 apply plugin: 'maven'
+apply plugin: 'signing'
 apply plugin: 'idea'
 apply plugin: 'fpm-packaging'
 
@@ -59,6 +60,22 @@ jar {
     from "${project.buildDir}/VERSION"
 }
 
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from 'build/docs/javadoc'
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+    archives jar
+}
+
 ext.distDir = "${buildDir}/dist"
 
 task buildDist(dependsOn: jar) << {
@@ -78,4 +95,49 @@ packaging {
             '--url': 'https://github.com/ustream/yolo',
             '--description': 'Yolo - Log tailing and parsing framework in Java',
     ]
+}
+
+signing {
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: sonatypeUsername, password: sonatypePassword)
+            }
+
+            pom.project {
+                name 'Yolo'
+                packaging 'jar'
+                description 'Log tailing and parsing framework in Java'
+                url 'https://github.com/ustream/yolo'
+
+                scm {
+                    url 'scm:git@github.com:ustream/yolo.git'
+                    connection 'scm:git@github.com:ustream/yolo.git'
+                    developerConnection 'scm:git@github.com:ustream/yolo.git'
+                }
+
+                licenses {
+                    license {
+                        name 'MIT License (MIT)'
+                        url 'http://opensource.org/licenses/MIT'
+                        distribution 'repo'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'bandesz'
+                        name 'Andras Szabo'
+                    }
+               }
+            }
+        }
+    }
 }
