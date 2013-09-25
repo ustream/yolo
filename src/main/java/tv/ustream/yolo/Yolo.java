@@ -382,7 +382,7 @@ public class Yolo
 
     private void printVersion() throws IOException
     {
-        InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream("VERSION");
+        InputStream is = this.getClass().getClassLoader().getResourceAsStream("VERSION");
         System.out.println(IOUtils.toString(is, "UTF-8"));
     }
 
