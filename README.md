@@ -168,9 +168,10 @@ Available parsers
       processors: Map, required
     }
 
-* tv.ustream.yolo.module.parser.JsonParser - parses JSON strings and returns with flatten map ('level1.level2' -> 'value')
+* tv.ustream.yolo.module.parser.JsonParser - parses JSON strings
   - params: Map {
       enabled: Boolean, default: true
+      flatten: Boolean, default: true
       class: String, required
       processors: Map, required
     }

@@ -16,6 +16,8 @@ public class JsonParser implements IParser
 
     private final Gson gson = new Gson();
 
+    private boolean flatten;
+
     @Override
     public Map<String, Object> parse(final String line)
     {
@@ -24,7 +26,14 @@ public class JsonParser implements IParser
             Map<String, Object> data = gson.fromJson(line, Map.class);
             if (data != null)
             {
-                return flattenMap("", data, new HashMap<String, Object>());
+                if (!flatten)
+                {
+                    return data;
+                }
+                else
+                {
+                    return flattenMap("", data, new HashMap<String, Object>());
+                }
             }
             else
             {
@@ -78,17 +87,20 @@ public class JsonParser implements IParser
     @Override
     public void setUpModule(final Map<String, Object> parameters)
     {
+        flatten = (Boolean) parameters.get("flatten");
     }
 
     @Override
     public ConfigMap getModuleConfig()
     {
-        return null;
+        ConfigMap config = new ConfigMap();
+        config.addConfigValue("flatten", Boolean.class, false, true);
+        return config;
     }
 
     @Override
     public String getModuleDescription()
     {
-        return "parses JSON strings and returns with flatten map ('level1.level2' -> 'value')";
+        return "parses JSON strings";
     }
 }
