@@ -113,7 +113,7 @@ public class StatsDProcessor implements IProcessor
 
     @SuppressWarnings("unchecked")
     @Override
-    public void process(final Map<String, String> parserOutput, final Map<String, Object> processParams)
+    public void process(final Map<String, Object> parserOutput, final Map<String, Object> processParams)
     {
         List<Map<String, Object>> keys = (List<Map<String, Object>>) processParams.get("keys");
 
@@ -123,7 +123,7 @@ public class StatsDProcessor implements IProcessor
         }
     }
 
-    private void sendKey(final Map<String, String> parserOutput, final Map<String, Object> keyParams)
+    private void sendKey(final Map<String, Object> parserOutput, final Map<String, Object> keyParams)
     {
         String type = (String) keyParams.get("type");
 

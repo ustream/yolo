@@ -17,14 +17,14 @@ public class JsonParser implements IParser
     private final Gson gson = new Gson();
 
     @Override
-    public Map<String, String> parse(final String line)
+    public Map<String, Object> parse(final String line)
     {
         try
         {
             Map<String, Object> data = gson.fromJson(line, Map.class);
             if (data != null)
             {
-                return flattenMap("", data, new HashMap<String, String>());
+                return flattenMap("", data, new HashMap<String, Object>());
             }
             else
             {
@@ -37,7 +37,7 @@ public class JsonParser implements IParser
         }
     }
 
-    private Map<String, String> flattenMap(final String path, final Object data, final Map<String, String> result)
+    private Map<String, Object> flattenMap(final String path, final Object data, final Map<String, Object> result)
     {
         if (data instanceof Map)
         {

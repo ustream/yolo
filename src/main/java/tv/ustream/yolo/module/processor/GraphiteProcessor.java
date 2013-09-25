@@ -54,7 +54,7 @@ public class GraphiteProcessor implements IProcessor
     }
 
     @Override
-    public void process(final Map<String, String> parserOutput, final Map<String, Object> processParams)
+    public void process(final Map<String, Object> parserOutput, final Map<String, Object> processParams)
     {
         List<Map<String, Object>> keys = (List<Map<String, Object>>) processParams.get("keys");
 
@@ -64,7 +64,7 @@ public class GraphiteProcessor implements IProcessor
         }
     }
 
-    private void sendKey(final Map<String, String> parserOutput, final Map<String, Object> keyParams)
+    private void sendKey(final Map<String, Object> parserOutput, final Map<String, Object> keyParams)
     {
         Object keyObject = keyParams.get("key");
         String key;

@@ -15,7 +15,7 @@ public class CompositeProcessor implements ICompositeProcessor
     private final List<IProcessor> processors = new ArrayList<IProcessor>();
 
     @Override
-    public void process(final Map<String, String> parserOutput, final Map<String, Object> processParams)
+    public void process(final Map<String, Object> parserOutput, final Map<String, Object> processParams)
     {
         for (IProcessor processor : processors)
         {

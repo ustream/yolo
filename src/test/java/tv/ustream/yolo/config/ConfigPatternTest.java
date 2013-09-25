@@ -82,7 +82,7 @@ public class ConfigPatternTest
     public void applyValuesShouldReplaceParameters()
     {
         ConfigPattern pattern = new ConfigPattern("text #p1# text #p2# text");
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, Object> params = new HashMap<String, Object>();
         params.put("p1", "v1");
         params.put("p2", "v2");
         String actual = pattern.applyValues(params);
@@ -94,7 +94,7 @@ public class ConfigPatternTest
     public void applyValuesShouldReturnNullWhenParamsMissing()
     {
         ConfigPattern pattern = new ConfigPattern("text #p1# text #p2# text #p3# text");
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, Object> params = new HashMap<String, Object>();
         params.put("p1", "v1");
         params.put("p2", "v2");
         String actual = pattern.applyValues(params);
@@ -106,7 +106,7 @@ public class ConfigPatternTest
     public void applyValuesShouldReturnValueForSimplePattern()
     {
         ConfigPattern pattern = new ConfigPattern("#p1#");
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, Object> params = new HashMap<String, Object>();
         params.put("p1", "v1");
         String actual = pattern.applyValues(params);
 
@@ -117,7 +117,7 @@ public class ConfigPatternTest
     public void applyValuesShouldReturnNullForSimplePatternWhenValueMissing()
     {
         ConfigPattern pattern = new ConfigPattern("#p1#");
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, Object> params = new HashMap<String, Object>();
         params.put("p2", "v1");
         String actual = pattern.applyValues(params);
 

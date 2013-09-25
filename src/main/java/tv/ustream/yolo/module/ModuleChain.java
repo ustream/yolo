@@ -184,7 +184,7 @@ public class ModuleChain implements ILineHandler
         {
             if (!match || parsers.get(parserName).runAlways())
             {
-                Map<String, String> parserOutput = parsers.get(parserName).parse(line);
+                Map<String, Object> parserOutput = parsers.get(parserName).parse(line);
                 if (parserOutput != null)
                 {
                     match = true;

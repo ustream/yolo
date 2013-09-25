@@ -55,7 +55,7 @@ public class GraphiteProcessorTest
     @Test
     public void processShouldSendMetrics()
     {
-        Map<String, String> parserOutput = new HashMap<String, String>();
+        Map<String, Object> parserOutput = new HashMap<String, Object>();
 
         processor.process(parserOutput, createProcessParams("key", 5D));
 
@@ -65,7 +65,7 @@ public class GraphiteProcessorTest
     @Test
     public void processShouldAddParamsToKey()
     {
-        Map<String, String> parserOutput = new HashMap<String, String>();
+        Map<String, Object> parserOutput = new HashMap<String, Object>();
         parserOutput.put("p1", "v1");
 
         ConfigPattern key = new ConfigPattern("some.#p1#.key");
@@ -78,7 +78,7 @@ public class GraphiteProcessorTest
     @Test
     public void processShouldUseValueFromParameters()
     {
-        Map<String, String> parserOutput = new HashMap<String, String>();
+        Map<String, Object> parserOutput = new HashMap<String, Object>();
         parserOutput.put("v1", "5");
 
         ConfigPattern value = new ConfigPattern("#v1#");
@@ -91,7 +91,7 @@ public class GraphiteProcessorTest
     @Test
     public void processShouldUseDynamicKeyAndValue()
     {
-        Map<String, String> parserOutput = new HashMap<String, String>();
+        Map<String, Object> parserOutput = new HashMap<String, Object>();
         parserOutput.put("p1", "v1");
         parserOutput.put("v1", "5");
 
@@ -122,7 +122,7 @@ public class GraphiteProcessorTest
 
         params.put("keys", Arrays.<Map>asList(key1, key2));
 
-        Map<String, String> parserOutput = new HashMap<String, String>();
+        Map<String, Object> parserOutput = new HashMap<String, Object>();
         parserOutput.put("p1", "v1");
 
         processor.process(parserOutput, params);
@@ -134,7 +134,7 @@ public class GraphiteProcessorTest
     @Test
     public void processShouldUseMultiplier()
     {
-        Map<String, String> parserOutput = new HashMap<String, String>();
+        Map<String, Object> parserOutput = new HashMap<String, Object>();
 
         processor.process(parserOutput, createProcessParams("key", 5D, 10D, null));
 
@@ -144,7 +144,7 @@ public class GraphiteProcessorTest
     @Test
     public void processShouldUseCustomTimestamp()
     {
-        Map<String, String> parserOutput = new HashMap<String, String>();
+        Map<String, Object> parserOutput = new HashMap<String, Object>();
         parserOutput.put("ts", "1234567890");
 
         processor.process(parserOutput, createProcessParams("key", 5D, 1D, new ConfigPattern("#ts#")));
@@ -155,7 +155,7 @@ public class GraphiteProcessorTest
     @Test
     public void processShouldHandleByteValues()
     {
-        Map<String, String> parserOutput = new HashMap<String, String>();
+        Map<String, Object> parserOutput = new HashMap<String, Object>();
         parserOutput.put("v1", "5M");
 
         ConfigPattern value = new ConfigPattern("#v1#");
@@ -168,7 +168,7 @@ public class GraphiteProcessorTest
     @Test
     public void processShouldNotSendWhenKeyParamIsMissing()
     {
-        Map<String, String> parserOutput = new HashMap<String, String>();
+        Map<String, Object> parserOutput = new HashMap<String, Object>();
         parserOutput.put("p2", "key");
 
         ConfigPattern key = new ConfigPattern("some.#p1#.key");
@@ -181,7 +181,7 @@ public class GraphiteProcessorTest
     @Test
     public void processShouldNotSendWhenValueParamIsMissing()
     {
-        Map<String, String> parserOutput = new HashMap<String, String>();
+        Map<String, Object> parserOutput = new HashMap<String, Object>();
         parserOutput.put("v2", "5M");
 
         ConfigPattern value = new ConfigPattern("#v1#");

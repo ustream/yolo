@@ -31,7 +31,7 @@ public class CompositeProcessorTest
     @Test
     public void processShouldClassSubProcessors() throws Exception
     {
-        Map<String, String> parserOutput = new HashMap<String, String>();
+        Map<String, Object> parserOutput = new HashMap<String, Object>();
         parserOutput.put("key1", "value1");
 
         Map<String, Object> processParams = new HashMap<String, Object>();

@@ -77,7 +77,7 @@ public class ModuleChainTest
 
         moduleChain.updateConfig(config, true);
 
-        when(parser1.parse(anyString())).thenReturn(new HashMap<String, String>());
+        when(parser1.parse(anyString())).thenReturn(new HashMap<String, Object>());
 
         moduleChain.handle("some text");
 
@@ -94,7 +94,7 @@ public class ModuleChainTest
 
         moduleChain.updateConfig(config, true);
 
-        when(parser1.parse(anyString())).thenReturn(new HashMap<String, String>());
+        when(parser1.parse(anyString())).thenReturn(new HashMap<String, Object>());
 
         moduleChain.handle("some text");
 
@@ -114,7 +114,7 @@ public class ModuleChainTest
         moduleChain.updateConfig(config, true);
 
         when(parser1.parse(anyString())).thenReturn(null);
-        when(parser2.parse(anyString())).thenReturn(new HashMap<String, String>());
+        when(parser2.parse(anyString())).thenReturn(new HashMap<String, Object>());
 
         moduleChain.handle("some text");
 
@@ -136,8 +136,8 @@ public class ModuleChainTest
         moduleChain.updateConfig(config, true);
 
         when(parser1.parse("t1")).thenReturn(null);
-        when(parser2.parse("t1")).thenReturn(new HashMap<String, String>());
-        when(parser1.parse("t2")).thenReturn(new HashMap<String, String>());
+        when(parser2.parse("t1")).thenReturn(new HashMap<String, Object>());
+        when(parser1.parse("t2")).thenReturn(new HashMap<String, Object>());
 
         moduleChain.handle("t1");
         moduleChain.handle("t2");
@@ -161,8 +161,8 @@ public class ModuleChainTest
 
         moduleChain.updateConfig(config, true);
 
-        when(parser1.parse(anyString())).thenReturn(new HashMap<String, String>());
-        when(parser2.parse(anyString())).thenReturn(new HashMap<String, String>());
+        when(parser1.parse(anyString())).thenReturn(new HashMap<String, Object>());
+        when(parser2.parse(anyString())).thenReturn(new HashMap<String, Object>());
 
         moduleChain.handle("some text");
 
@@ -184,7 +184,7 @@ public class ModuleChainTest
 
         moduleChain.updateConfig(config, true);
 
-        Map<String, String> parserOut = new HashMap<String, String>();
+        Map<String, Object> parserOut = new HashMap<String, Object>();
         parserOut.put("key2", "value2");
 
         when(parser1.parse(anyString())).thenReturn(parserOut);
@@ -222,7 +222,7 @@ public class ModuleChainTest
 
         moduleChain.updateConfig(config, true);
 
-        when(parser1.parse(anyString())).thenReturn(new HashMap<String, String>());
+        when(parser1.parse(anyString())).thenReturn(new HashMap<String, Object>());
 
         moduleChain.handle("some text");
 
@@ -253,7 +253,7 @@ public class ModuleChainTest
 
         moduleChain.updateConfig(config, true);
 
-        when(parser1.parse(anyString())).thenReturn(new HashMap<String, String>());
+        when(parser1.parse(anyString())).thenReturn(new HashMap<String, Object>());
 
         moduleChain.handle("some text");
 
@@ -272,7 +272,7 @@ public class ModuleChainTest
 
         moduleChain.updateConfig(config, true);
 
-        when(parser1.parse("some text")).thenReturn(new HashMap<String, String>());
+        when(parser1.parse("some text")).thenReturn(new HashMap<String, Object>());
 
         moduleChain.handle("some text");
 
@@ -287,7 +287,7 @@ public class ModuleChainTest
 
         verify(processor1).stop();
 
-        when(parser2.parse("some text")).thenReturn(new HashMap<String, String>());
+        when(parser2.parse("some text")).thenReturn(new HashMap<String, Object>());
 
         moduleChain.handle("some text");
 

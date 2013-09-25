@@ -85,11 +85,11 @@ public class ConfigPattern
         }
     }
 
-    public String applyValues(final Map<String, String> values)
+    public String applyValues(final Map<String, Object> values)
     {
         if (simplePattern)
         {
-            return values.get(parameters.get(0));
+            return (String) values.get(parameters.get(0));
         }
         else
         {
@@ -103,7 +103,7 @@ public class ConfigPattern
                 }
                 else if (values.containsKey(parameter))
                 {
-                    result = result.replace("#" + parameter + "#", values.get(parameter));
+                    result = result.replace("#" + parameter + "#", (String) values.get(parameter));
                 }
                 else
                 {

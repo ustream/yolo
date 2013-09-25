@@ -14,9 +14,9 @@ public class PassThruParser implements IParser
 {
 
     @Override
-    public Map<String, String> parse(final String line)
+    public Map<String, Object> parse(final String line)
     {
-        Map<String, String> result = new HashMap<String, String>();
+        Map<String, Object> result = new HashMap<String, Object>();
         result.put("line", line);
         return result;
     }

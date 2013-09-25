@@ -41,9 +41,9 @@ public class RegexpParserTest
     {
         IParser parser = createParser("[a-z]+[0-9]+");
 
-        Map<String, String> actual = parser.parse("___abcd0123____");
+        Map<String, Object> actual = parser.parse("___abcd0123____");
 
-        Assert.assertEquals(new HashMap<String, String>(), actual);
+        Assert.assertEquals(new HashMap<String, Object>(), actual);
     }
 
     @Test
@@ -51,9 +51,9 @@ public class RegexpParserTest
     {
         IParser parser = createParser("(?<first>[a-z]+)(?<second>[0-9]+)");
 
-        Map<String, String> actual = parser.parse("___abcd0123___");
+        Map<String, Object> actual = parser.parse("___abcd0123___");
 
-        Map<String, String> expected = new HashMap<String, String>();
+        Map<String, Object> expected = new HashMap<String, Object>();
         expected.put("first", "abcd");
         expected.put("second", "0123");
 
@@ -65,9 +65,9 @@ public class RegexpParserTest
     {
         IParser parser = createParser("(?<first>[a-z]+)(?<second>[0-9]+)");
 
-        Map<String, String> actual = parser.parse("___abcd0123___efgh4567___");
+        Map<String, Object> actual = parser.parse("___abcd0123___efgh4567___");
 
-        Map<String, String> expected = new HashMap<String, String>();
+        Map<String, Object> expected = new HashMap<String, Object>();
         expected.put("first", "abcd");
         expected.put("second", "0123");
 
@@ -79,15 +79,15 @@ public class RegexpParserTest
     {
         IParser parser = createParser("(?<first>[a-z]+)(?<second>[0-9]+)");
 
-        Map<String, String> actual = parser.parse("___abcd0123___");
+        Map<String, Object> actual = parser.parse("___abcd0123___");
 
-        Map<String, String> expected = new HashMap<String, String>();
+        Map<String, Object> expected = new HashMap<String, Object>();
         expected.put("first", "abcd");
         expected.put("second", "0123");
 
         Assert.assertEquals(expected, actual);
 
-        Map<String, String> actual2 = parser.parse("___xxxx___");
+        Map<String, Object> actual2 = parser.parse("___xxxx___");
 
         Assert.assertNull(actual2);
     }
@@ -97,7 +97,7 @@ public class RegexpParserTest
     {
         IParser parser = createParser("(?<first>[a-z]+)(?<second>[0-9]+)");
 
-        Map<String, String> actual = parser.parse("___abcd____");
+        Map<String, Object> actual = parser.parse("___abcd____");
 
         Assert.assertNull(actual);
     }
@@ -115,7 +115,7 @@ public class RegexpParserTest
     {
         IParser parser = createParser("(?<first>[a-z]+)(?<second>[0-9]+)");
 
-        Map<String, String> actual = parser.parse("___abcd0123___");
+        Map<String, Object> actual = parser.parse("___abcd0123___");
 
         Assert.assertTrue(actual.keySet().containsAll(parser.getOutputKeys()));
         Assert.assertTrue(parser.getOutputKeys().containsAll(actual.keySet()));

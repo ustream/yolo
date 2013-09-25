@@ -203,7 +203,7 @@ public class TestParser implements IParser
 {
 
     @Override
-    public Map<String, String> parse(String line)
+    public Map<String, Object> parse(String line)
     {
         // parse a line here and return with null if no match happened or with a Map if you want to process it
     }
@@ -257,7 +257,7 @@ public class TestProcessor implements IProcessor
     }
 
     @Override
-    public void process(Map<String, String> parserOutput, Map<String, Object> processParams)
+    public void process(Map<String, Object> parserOutput, Map<String, Object> processParams)
     {
         // process the parser's output. The processParams map can contain ConfigPattern objects where you can subtitute your own values
     }
