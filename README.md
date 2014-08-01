@@ -12,13 +12,25 @@ A general log tailer and parser tool written in Java, inspired by [Parsible](htt
 * **Real time**: the tool tails the log file realtime
 * **Scriptable**: you can write parsers in other languages (currently only JavaScript is tested and allowed)
 * **Whole file reading**: with a cli parameter you can read your logfile from the beginning
-* **Handle dynamic filenames**: you can use wildcards in filename (but only the first match will be used)
+* **Handle dynamic filenames**: you can use wildcards in filename, all matching files will be tailed
 * **Logrotate friendly**: works easily with logrotate or other log rotating tools
 * **Easily debuggable**: debug mode writes verbose logs, and you can use built-in parsers and processors for debugging purposes
 
 ## Notice
 
 Because we tail the log file and the application can stop anytime therefore it is not guaranteed that the tool will parse all the lines. In the near future we plan to implement a secure reader which stores the read offset and handles even log rotate events.
+
+## Dynamic filename handling
+
+The file handler watches the given path's root directory for every file matching the given filename pattern (like 'gc*.log'). If a new file created it will be read from the beginning. Deleted files will be no more tailed and released.
+
+In parsers you don't have to worry about concurrency, the file handler sends only one line at a time.
+
+If you have trouble passing * or ? in shell to the file parameter, just use \\* or \?.
+
+## Holding deleted file references
+
+If your application recreates log files by deleting and creating them, the application can hold wrong file references. In this case always use the reopen cli flag.
 
 ## Modules
 
@@ -357,6 +369,10 @@ For a detailed dependency list please check the "dependencies" block in [build.g
 ## Contributing
 
 Feel free to fork this project and send pull requests if you want to help us improve the tool or add new parsers/processors. But before sending us new modules, please think through if the module serves a general purpose and whether it will be useful for others, not just for you.
+
+## Changelog
+
+Please see [CHANGELOG.md](CHANGELOG.md).
 
 ## Licence
 

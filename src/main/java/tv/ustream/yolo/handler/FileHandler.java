@@ -1,33 +1,31 @@
 package tv.ustream.yolo.handler;
 
+import java.io.File;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FalseFileFilter;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.commons.io.input.Tailer;
-import org.apache.commons.io.input.TailerListener;
+import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
+import org.apache.commons.io.monitor.FileAlterationMonitor;
+import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tv.ustream.yolo.io.TailerFile;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.Collection;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
-
 /**
  * @author bandesz
  */
-public class FileHandler implements TailerListener
+public class FileHandler implements Runnable
 {
 
     private static final Logger LOG = LoggerFactory.getLogger(FileHandler.class);
 
-    private static final Pattern WILDCARD_PATTERN = Pattern.compile("[\\?\\*]+");
-
     private final String filePath;
-
-    private boolean dynamicFilename;
 
     private final long delayMs;
 
@@ -35,161 +33,286 @@ public class FileHandler implements TailerListener
 
     private final boolean reopen;
 
-    private Tailer tailer;
+    private final Map<File, Tailer> tailers = new HashMap<>();
 
     private final ILineHandler lineProcessor;
 
+    private FileAlterationMonitor monitor;
+
+    private final ArrayBlockingQueue<String> readQueue = new ArrayBlockingQueue<>(100);
+
+    private boolean running = false;
+
     public FileHandler(
-            final ILineHandler lineProcessor,
-            final String filePath,
-            final long delayMs,
-            final boolean readWhole,
-            final boolean reopen
+        final ILineHandler lineProcessor,
+        final String filePath,
+        final long delayMs,
+        final boolean readWhole,
+        final boolean reopen
     )
     {
         this.lineProcessor = lineProcessor;
         this.filePath = filePath;
-        this.dynamicFilename = WILDCARD_PATTERN.matcher(filePath).find();
         this.delayMs = delayMs;
         this.readWhole = readWhole;
         this.reopen = reopen;
     }
 
-    private File findFile()
+    private void setUpMonitor()
     {
-        String filename = filePath.substring(filePath.lastIndexOf('/') + 1);
-
-        File directory = new File(filePath.substring(0, filePath.lastIndexOf('/')));
-
-        Collection<File> files = FileUtils.listFiles(
-                directory,
-                new WildcardFileFilter(filename),
-                FalseFileFilter.INSTANCE
-        );
-
-        if (!files.isEmpty())
+        FileAlterationListenerAdaptor fileAlterationListener = new FileAlterationListenerAdaptor()
         {
-            return files.iterator().next();
-        }
-        else
-        {
-            return null;
-        }
-    }
-
-    public void start()
-    {
-        File file;
-        do
-        {
-            file = findFile();
-            if (file == null)
+            @Override
+            public void onFileCreate(final File file)
             {
-                try
-                {
-                    TimeUnit.SECONDS.sleep(1);
-                }
-                catch (InterruptedException ignored)
-                {
-                    Thread.currentThread().interrupt();
-                    return;
-                }
+                LOG.info("File created: {}", file.getAbsolutePath());
+
+                startTailer(file, true);
             }
-        }
-        while (file == null);
 
-        LOG.info("Tailing file {}", file.getAbsolutePath());
+            @Override
+            public void onFileChange(final File file)
+            {
+                startTailer(file, false);
+            }
 
-        tailer = new Tailer(TailerFile.create(file), this, delayMs, !readWhole, reopen);
+            @Override
+            public void onFileDelete(final File file)
+            {
+                LOG.info("File deleted: {}", file.getAbsolutePath());
 
-        Thread thread = new Thread(tailer);
-        thread.setName("Tailer");
-        thread.start();
-    }
+                stopTailer(file);
+            }
+        };
 
-    public void stop()
-    {
-        tailer.stop();
-    }
+        String filename = filePath.substring(filePath.lastIndexOf('/') + 1);
+        String directory = filePath.substring(0, filePath.lastIndexOf('/'));
 
-    private void restart()
-    {
-        stop();
-        start();
-    }
+        FileAlterationObserver observer = new FileAlterationObserver(
+            new File(directory),
+            new WildcardFileFilter(filename)
+        );
+        observer.addListener(fileAlterationListener);
 
-    @Override
-    public void init(final Tailer tailer)
-    {
-    }
-
-    @Override
-    public void fileNotFound()
-    {
-        if (dynamicFilename)
-        {
-            restart();
-            return;
-        }
-
-        LOG.error("Tailer error: file not found: {}", tailer.getFile().getAbsolutePath());
+        monitor = new FileAlterationMonitor(delayMs);
+        monitor.addObserver(observer);
 
         try
         {
-            TimeUnit.SECONDS.sleep(1);
-        }
-        catch (InterruptedException ignored)
-        {
-            Thread.currentThread().interrupt();
-        }
-    }
-
-    @Override
-    public void fileRotated()
-    {
-        LOG.info("Tailer: file was rotated: {}", tailer.getFile().getAbsolutePath());
-
-        try
-        {
-            TimeUnit.SECONDS.sleep(1);
-        }
-        catch (InterruptedException ignored)
-        {
-            Thread.currentThread().interrupt();
-        }
-    }
-
-    @Override
-    public void handle(final String line)
-    {
-        try
-        {
-            lineProcessor.handle(line);
+            monitor.start();
         }
         catch (Exception e)
         {
-            LOG.error("Line processing error: {} - {} ", e.getClass().getName(), e.getMessage());
+            throw new RuntimeException(e);
         }
     }
 
-    @Override
-    public void handle(final Exception ex)
+    public synchronized void start()
     {
-        if (ex instanceof FileNotFoundException && dynamicFilename)
+        if (running)
         {
-            restart();
             return;
         }
 
-        LOG.error("Tailer error: {}", ex.getMessage());
+        LOG.info("File handler starting with pattern {}", filePath);
+
+        running = true;
+
+        setUpMonitor();
+
+        String filename = filePath.substring(filePath.lastIndexOf('/') + 1);
+        File directory = new File(filePath.substring(0, filePath.lastIndexOf('/')));
+
+        Collection<File> files = FileUtils.listFiles(
+            directory,
+            new WildcardFileFilter(filename),
+            FalseFileFilter.INSTANCE
+        );
+
+        for (File file : files)
+        {
+            startTailer(file, false);
+        }
+
+        Thread thread = new Thread(this);
+        thread.setName(getClass().getName());
+        thread.start();
+
+        LOG.info("File handler started");
+    }
+
+    public void startTailer(final File file, final boolean newFile)
+    {
+        synchronized (tailers)
+        {
+            if (tailers.containsKey(file))
+            {
+                return;
+            }
+
+            LOG.info("Starting tailer: {}", file.getAbsolutePath());
+
+            Tailer tailer =
+                new Tailer(TailerFile.create(file), new TailerListener(file), delayMs, !newFile && !readWhole, reopen);
+            tailers.put(file, tailer);
+
+            Thread thread = new Thread(tailer);
+            thread.setName("Tailer-" + file.getName());
+            thread.start();
+        }
+    }
+
+    private void stopTailer(final File file)
+    {
+        synchronized (tailers)
+        {
+            try
+            {
+                tailers.get(file).stop();
+                tailers.remove(file);
+
+                LOG.info("Tailer stopped: {}", file.getAbsolutePath());
+            }
+            catch (NullPointerException e)
+            {
+                // ignore
+            }
+        }
+    }
+
+    public synchronized void stop()
+    {
+        if (!running)
+        {
+            return;
+        }
+
+        LOG.info("File handler stopping");
 
         try
         {
-            TimeUnit.SECONDS.sleep(1);
+            monitor.stop();
         }
-        catch (InterruptedException ignored)
+        catch (Exception e)
         {
-            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        }
+
+        synchronized (tailers)
+        {
+            for (File file : tailers.keySet())
+            {
+                tailers.get(file).stop();
+                LOG.info("Tailer stopped: {}", file.getAbsolutePath());
+            }
+            tailers.clear();
+        }
+
+        running = false;
+
+        LOG.info("File handler stopped");
+    }
+
+    @Override
+    public void run()
+    {
+        while (running)
+        {
+            try
+            {
+                String line = readQueue.poll(1, TimeUnit.SECONDS);
+                if (line != null)
+                {
+                    try
+                    {
+                        lineProcessor.handle(line);
+                    }
+                    catch (Exception e)
+                    {
+                        LOG.error("Line processing error: {} - {} ", e.getClass().getName(), e.getMessage());
+                    }
+                }
+
+            }
+            catch (InterruptedException e)
+            {
+                // ignore
+            }
+        }
+    }
+
+    private class TailerListener implements org.apache.commons.io.input.TailerListener
+    {
+
+        private final File file;
+
+        private TailerListener(final File file)
+        {
+            this.file = file;
+        }
+
+        @Override
+        public void init(final Tailer tailer)
+        {
+            LOG.info("Tailing file {}", file.getAbsolutePath());
+        }
+
+        @Override
+        public void fileNotFound()
+        {
+            LOG.error("Tailer error: file not found: {}", file.getAbsolutePath());
+
+            try
+            {
+                TimeUnit.SECONDS.sleep(1);
+            }
+            catch (InterruptedException ignored)
+            {
+                Thread.currentThread().interrupt();
+            }
+        }
+
+        @Override
+        public void fileRotated()
+        {
+            LOG.info("Tailer: file was rotated: {}", file.getAbsolutePath());
+
+            try
+            {
+                TimeUnit.SECONDS.sleep(1);
+            }
+            catch (InterruptedException ignored)
+            {
+                Thread.currentThread().interrupt();
+            }
+        }
+
+        @Override
+        public void handle(final String line)
+        {
+            try
+            {
+                readQueue.put(line);
+            }
+            catch (InterruptedException e)
+            {
+                Thread.currentThread().interrupt();
+            }
+        }
+
+        @Override
+        public void handle(final Exception ex)
+        {
+            LOG.error("Tailer error: {}", ex.getMessage());
+
+            try
+            {
+                TimeUnit.SECONDS.sleep(1);
+            }
+            catch (InterruptedException ignored)
+            {
+                Thread.currentThread().interrupt();
+            }
         }
     }
 }

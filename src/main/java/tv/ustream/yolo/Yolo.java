@@ -192,6 +192,8 @@ public class Yolo
             return;
         }
 
+        filePath = filePath.replace("\\*", "*").replace("\\?", "?");
+
         if (!new File(filePath).isAbsolute())
         {
             exitWithError("file path must be absolute!", false);

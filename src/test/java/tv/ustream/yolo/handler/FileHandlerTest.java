@@ -1,22 +1,26 @@
 package tv.ustream.yolo.handler;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
-
 import static com.jayway.awaitility.Awaitility.await;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.spy;
 
 /**
  * @author bandesz
  */
-public class FileHandlerTest implements ILineHandler
+public class FileHandlerTest
 {
 
     @Rule
@@ -24,19 +28,14 @@ public class FileHandlerTest implements ILineHandler
 
     private FileHandler handler;
 
-    private File testFile;
+    private TestLineHandler testLineHandler;
 
-    private String handledLines = "";
+    private File testFile;
 
     @Before
     public void setUp() throws Exception
     {
-        handledLines = "";
-        testFile = tmpFolder.newFile();
-        testFile.setLastModified(System.currentTimeMillis() - 10000);
-        FileWriter out = new FileWriter(testFile);
-        out.write("l1\nl2\nl3\n");
-        out.close();
+        testLineHandler = new TestLineHandler();
     }
 
     @After
@@ -46,10 +45,11 @@ public class FileHandlerTest implements ILineHandler
     }
 
     @Test
-    public void shouldTailFile() throws Exception
+    public void shouldTailExistingFile() throws Exception
     {
-        handler = new FileHandler(this, testFile.getAbsolutePath(), 100, false, false);
-        handler.start();
+        testFile = setUpTestFile(null, "l1\nl2\nl3\n", 0);
+
+        setupFileHandler(testFile.getName(), false);
 
         Thread.sleep(100);
 
@@ -57,18 +57,57 @@ public class FileHandlerTest implements ILineHandler
         out.write("l4\nl5\n");
         out.close();
 
-        Thread.sleep(200);
-
         await().atMost(5000, TimeUnit.MILLISECONDS).until(equalsHandledLines("l4\nl5\n"));
+    }
+
+    @Test
+    public void shouldTailNewFile() throws Exception
+    {
+        String filename = "shouldTailNewFile.test";
+
+        setupFileHandler(filename, false);
+
+        Thread.sleep(100);
+
+        setUpTestFile(filename, "l1\nl2\nl3\n", 0);
+
+        await().atMost(5000, TimeUnit.MILLISECONDS).until(equalsHandledLines("l1\nl2\nl3\n"));
+    }
+
+    @Test
+    public void shouldTailMultipleFiles() throws Exception
+    {
+        String filename1 = "shouldTailMultipleFiles1.test";
+        String filename2 = "shouldTailMultipleFiles2.test";
+
+        setupFileHandler("*", false);
+
+        Thread.sleep(100);
+
+        File testFile1 = setUpTestFile(filename1, "l1\nl2\n", 0);
+        File testFile2 = setUpTestFile(filename2, "l3\nl4\n", 0);
+
+        Thread.sleep(100);
+
+        FileWriter out = new FileWriter(testFile1, true);
+        out.write("l5\n");
+        out.close();
+
+        out = new FileWriter(testFile2, true);
+        out.write("l6\n");
+        out.close();
+
+        await().atMost(5000, TimeUnit.MILLISECONDS).until(containsHandledLines("l1\n", "l2\n", "l3\n", "l4\n", "l5\n", "l6\n"));
     }
 
     @Test
     public void shouldTailFileFromTheBeginning() throws Exception
     {
-        handler = new FileHandler(this, testFile.getAbsolutePath(), 100, true, false);
-        handler.start();
+        testFile = setUpTestFile(null, "l1\nl2\nl3\n", 0);
 
-        Thread.sleep(100);
+        setupFileHandler(testFile.getName(), true);
+
+        await().atMost(5000, TimeUnit.MILLISECONDS).until(equalsHandledLines("l1\nl2\nl3\n"));
 
         FileWriter out = new FileWriter(testFile, true);
         out.write("l4\nl5\n");
@@ -80,10 +119,11 @@ public class FileHandlerTest implements ILineHandler
     @Test
     public void shouldHandleRotate() throws Exception
     {
-        handler = new FileHandler(this, testFile.getAbsolutePath(), 100, true, false);
-        handler.start();
+        testFile = setUpTestFile(null, "l1\nl2\nl3\n", 0);
 
-        Thread.sleep(200);
+        setupFileHandler(testFile.getName(), true);
+
+        await().atMost(5000, TimeUnit.MILLISECONDS).until(equalsHandledLines("l1\nl2\nl3\n"));
 
         testFile.delete();
 
@@ -97,17 +137,15 @@ public class FileHandlerTest implements ILineHandler
     @Test
     public void shouldHandleFileNameChange() throws Exception
     {
-        handler = new FileHandler(this, testFile.getAbsolutePath() + "*", 100, true, false);
-        handler.start();
+        testFile = setUpTestFile(null, "l1\nl2\nl3\n", 0);
 
-        Thread.sleep(200);
+        setupFileHandler("*", true);
+
+        await().atMost(5000, TimeUnit.MILLISECONDS).until(equalsHandledLines("l1\nl2\nl3\n"));
 
         testFile.delete();
 
-        File testFile2 = tmpFolder.newFile(testFile.getName() + "X");
-        FileWriter out = new FileWriter(testFile2);
-        out.write("l4\nl5\n");
-        out.close();
+        setUpTestFile(null, "l4\nl5\n", 0);
 
         await().atMost(5000, TimeUnit.MILLISECONDS).until(equalsHandledLines("l1\nl2\nl3\nl4\nl5\n"));
     }
@@ -115,20 +153,32 @@ public class FileHandlerTest implements ILineHandler
     @Test
     public void newerLastModifiedButSameLengthShouldNotResetTailer() throws Exception
     {
-        handler = new FileHandler(this, testFile.getAbsolutePath(), 100, true, false);
-        handler.start();
+        testFile = setUpTestFile(null, "l1\nl2\nl3\n", -10);
 
-        Thread.sleep(200);
+        setupFileHandler(testFile.getName(), true);
+
+        await().atMost(5000, TimeUnit.MILLISECONDS).until(equalsHandledLines("l1\nl2\nl3\n"));
+
+        Thread.sleep(1000);
 
         testFile.setLastModified(System.currentTimeMillis());
 
-        await().atMost(5000, TimeUnit.MILLISECONDS).until(equalsHandledLines("l1\nl2\nl3\n"));
+        Thread.sleep(1000);
+
+        Assert.assertEquals("l1\nl2\nl3\n", testLineHandler.handledLines);
     }
 
-    @Override
-    public void handle(final String line)
+    @Test
+    public void shouldHandleProcessingError() throws Exception
     {
-        handledLines += line + "\n";
+        testFile = setUpTestFile(null, "l1\nl2\nl3\n", -10);
+
+        testLineHandler = spy(testLineHandler);
+        doCallRealMethod().doThrow(new RuntimeException("x")).doCallRealMethod().when(testLineHandler).handle(anyString());
+
+        setupFileHandler(testFile.getName(), true);
+
+        await().atMost(5000, TimeUnit.MILLISECONDS).until(equalsHandledLines("l1\nl3\n"));
     }
 
     public Callable<Boolean> equalsHandledLines(final String lines)
@@ -138,9 +188,56 @@ public class FileHandlerTest implements ILineHandler
             @Override
             public Boolean call() throws Exception
             {
-                return lines.equals(handledLines);
+                return lines.equals(testLineHandler.handledLines);
             }
         };
+    }
+
+    public Callable<Boolean> containsHandledLines(final String... lines)
+    {
+        return new Callable<Boolean>()
+        {
+            @Override
+            public Boolean call() throws Exception
+            {
+                for (String line : lines) {
+                    if (!testLineHandler.handledLines.contains(line)) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        };
+    }
+
+    private File setUpTestFile(String name, String content, long lastModifiedDiffSec) throws IOException
+    {
+        File file = name != null ? tmpFolder.newFile(name) : tmpFolder.newFile();
+        try (FileWriter out = new FileWriter(file))
+        {
+            out.write(content);
+        }
+        Assert.assertTrue(file.setLastModified(System.currentTimeMillis() + lastModifiedDiffSec * 1000));
+        return file;
+    }
+
+    private void setupFileHandler(final String filename, final boolean readWhole)
+    {
+        handler = new FileHandler(
+            testLineHandler, tmpFolder.getRoot().getAbsolutePath() + "/" + filename, 100, readWhole, false
+        );
+        handler.start();
+    }
+
+    private class TestLineHandler implements ILineHandler
+    {
+        public String handledLines = "";
+
+        @Override
+        public void handle(final String line)
+        {
+            handledLines += line + "\n";
+        }
     }
 
 }
