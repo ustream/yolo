@@ -1,6 +1,8 @@
 package tv.ustream.yolo.module;
 
-import junit.framework.Assert;
+import java.util.HashMap;
+import java.util.Map;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -9,9 +11,6 @@ import tv.ustream.yolo.module.parser.IParser;
 import tv.ustream.yolo.module.parser.PassThruParser;
 import tv.ustream.yolo.module.processor.ConsoleProcessor;
 import tv.ustream.yolo.module.processor.IProcessor;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author bandesz

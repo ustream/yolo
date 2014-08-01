@@ -1,14 +1,13 @@
 package tv.ustream.yolo.client;
 
-import junit.framework.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 import static com.jayway.awaitility.Awaitility.await;
 import static org.mockito.Mockito.mock;

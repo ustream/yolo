@@ -1,12 +1,11 @@
 package tv.ustream.yolo.module.parser;
 
-import junit.framework.Assert;
+import java.util.HashMap;
+import java.util.Map;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import tv.ustream.yolo.module.ModuleFactory;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author bandesz

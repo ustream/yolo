@@ -1,13 +1,12 @@
 package tv.ustream.yolo.config;
 
-import junit.framework.Assert;
+import java.util.HashMap;
+import java.util.Map;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;

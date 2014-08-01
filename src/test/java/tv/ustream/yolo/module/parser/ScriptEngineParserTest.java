@@ -1,16 +1,15 @@
 package tv.ustream.yolo.module.parser;
 
-import junit.framework.Assert;
+import java.io.File;
+import java.io.FileWriter;
+import java.util.HashMap;
+import java.util.Map;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import tv.ustream.yolo.module.ModuleFactory;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author bandesz

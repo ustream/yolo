@@ -1,6 +1,6 @@
 package tv.ustream.yolo.util;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -26,8 +26,8 @@ public class NumberConverterTest
     @Test
     public void shouldLeaveNumberAsIs()
     {
-        Assert.assertEquals(5D, NumberConverter.convertByteValue("5"));
-        Assert.assertEquals(5.1D, NumberConverter.convertByteValue("5.1"));
+        Assert.assertEquals((Double)5D, NumberConverter.convertByteValue("5"));
+        Assert.assertEquals((Double)5.1D, NumberConverter.convertByteValue("5.1"));
     }
 
     @Test
