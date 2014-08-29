@@ -1,10 +1,12 @@
 package tv.ustream.yolo.handler;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+import java.util.zip.GZIPOutputStream;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -181,6 +183,20 @@ public class FileHandlerTest
         await().atMost(5000, TimeUnit.MILLISECONDS).until(equalsHandledLines("l1\nl3\n"));
     }
 
+    @Test
+    public void shouldReadGzipFile() throws Exception
+    {
+        String filename = "shouldTailNewFile.test";
+
+        setupGzipFileHandler(filename, false);
+
+        Thread.sleep(100);
+
+        setUpGzipTestFile(filename, "l1\nl2\nl3\n", 0);
+
+        await().atMost(5000, TimeUnit.MILLISECONDS).until(equalsHandledLines("l1\nl2\nl3\n"));
+    }
+
     public Callable<Boolean> equalsHandledLines(final String lines)
     {
         return new Callable<Boolean>()
@@ -224,9 +240,30 @@ public class FileHandlerTest
     private void setupFileHandler(final String filename, final boolean readWhole)
     {
         handler = new FileHandler(
-            testLineHandler, tmpFolder.getRoot().getAbsolutePath() + "/" + filename, 100, readWhole, false
+            testLineHandler, tmpFolder.getRoot().getAbsolutePath() + "/" + filename, 100, readWhole, false, false
         );
         handler.start();
+    }
+
+    private void setupGzipFileHandler(final String filename, final boolean readWhole)
+    {
+        handler = new FileHandler(
+            testLineHandler, tmpFolder.getRoot().getAbsolutePath() + "/" + filename, 100, readWhole, false, true
+        );
+        handler.start();
+    }
+
+    private File setUpGzipTestFile(String name, String content, long lastModifiedDiffSec) throws IOException
+    {
+        File file = name != null ? tmpFolder.newFile(name) : tmpFolder.newFile();
+
+        GZIPOutputStream gzipOutputStream = new GZIPOutputStream(new FileOutputStream(file), true);
+        gzipOutputStream.write(content.getBytes());
+        gzipOutputStream.flush();
+
+        Assert.assertTrue(file.setLastModified(System.currentTimeMillis() + lastModifiedDiffSec * 1000));
+
+        return file;
     }
 
     private class TestLineHandler implements ILineHandler

@@ -50,6 +50,8 @@ public class Yolo
 
     private Map<String, Object> config;
 
+    private static boolean gzip;
+
     private boolean debug;
 
     private boolean verbose;
@@ -82,6 +84,8 @@ public class Yolo
     private void buildCliOptions()
     {
         cliOptions.addOption("help", false, "print this message");
+
+        cliOptions.addOption("gzip" , false , "read file as gzip compressed");
 
         cliOptions.addOption("debug", false, "turn on debug mode");
 
@@ -159,6 +163,8 @@ public class Yolo
             System.exit(0);
         }
 
+        gzip = cli.hasOption("gzip");
+
         debug = cli.hasOption("debug");
 
         verbose = cli.hasOption("verbose");
@@ -203,6 +209,11 @@ public class Yolo
         readWholeFile = cli.hasOption("whole");
 
         reopenFile = cli.hasOption("reopen");
+        if (reopenFile && gzip)
+        {
+            exitWithError("reopen is not supported when gzip reader is enabled", false);
+            return;
+        }
 
         watchConfigInterval = TimeUnit.SECONDS.toMillis(
                 Integer.parseInt(cli.getOptionValue("watchConfigInterval", "5"))
@@ -314,8 +325,7 @@ public class Yolo
 
     private void startFileHandler()
     {
-        fileHandler = new FileHandler(moduleChain, filePath, 1000, readWholeFile, reopenFile);
-
+        fileHandler = new FileHandler(moduleChain, filePath, 1000, readWholeFile, reopenFile, gzip);
         fileHandler.start();
     }
 
@@ -343,14 +353,7 @@ public class Yolo
         }
         catch (Exception e)
         {
-            if (!e.getMessage().isEmpty())
-            {
-                LOG.error(e.getMessage());
-            }
-            else
-            {
-                e.printStackTrace();
-            }
+            LOG.error(e.toString());
         }
     }
 

@@ -1,5 +1,9 @@
 # Changelog
 
+1.2.0
+-----
+ - Gzip support
+
 1.1.0
 -----
  - Adding changelog :)

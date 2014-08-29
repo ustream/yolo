@@ -15,6 +15,7 @@ A general log tailer and parser tool written in Java, inspired by [Parsible](htt
 * **Handle dynamic filenames**: you can use wildcards in filename, all matching files will be tailed
 * **Logrotate friendly**: works easily with logrotate or other log rotating tools
 * **Easily debuggable**: debug mode writes verbose logs, and you can use built-in parsers and processors for debugging purposes
+* **Tailing gzip files**: handles continuously written gzip output streams
 
 ## Notice
 
@@ -86,6 +87,7 @@ usage: yolo
  -config <path>                  path to config file
  -debug                          turn on debug mode
  -file <path>                    path to logfile, wildcards are accepted
+ -gzip                           read tailed file as GZIP formatted.
  -help                           print this message
  -hostname <short hostname>      overwrite hostname
  -listModules                    list available modules

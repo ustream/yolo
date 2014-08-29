@@ -15,6 +15,7 @@ import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tv.ustream.yolo.io.GzipTailer;
 import tv.ustream.yolo.io.TailerFile;
 
 /**
@@ -33,6 +34,8 @@ public class FileHandler implements Runnable
 
     private final boolean reopen;
 
+    private boolean gzip;
+
     private final Map<File, Tailer> tailers = new HashMap<>();
 
     private final ILineHandler lineProcessor;
@@ -48,7 +51,8 @@ public class FileHandler implements Runnable
         final String filePath,
         final long delayMs,
         final boolean readWhole,
-        final boolean reopen
+        final boolean reopen,
+        final boolean gzip
     )
     {
         this.lineProcessor = lineProcessor;
@@ -56,6 +60,7 @@ public class FileHandler implements Runnable
         this.delayMs = delayMs;
         this.readWhole = readWhole;
         this.reopen = reopen;
+        this.gzip = gzip;
     }
 
     private void setUpMonitor()
@@ -152,8 +157,19 @@ public class FileHandler implements Runnable
 
             LOG.info("Starting tailer: {}", file.getAbsolutePath());
 
-            Tailer tailer =
-                new Tailer(TailerFile.create(file), new TailerListener(file), delayMs, !newFile && !readWhole, reopen);
+            Tailer tailer;
+            if (gzip)
+            {
+                tailer = new GzipTailer(
+                    TailerFile.create(file), new TailerListener(file), delayMs, !newFile && !readWhole
+                );
+            }
+            else
+            {
+                tailer = new Tailer(
+                    TailerFile.create(file), new TailerListener(file), delayMs, !newFile && !readWhole, reopen
+                );
+            }
             tailers.put(file, tailer);
 
             Thread thread = new Thread(tailer);
