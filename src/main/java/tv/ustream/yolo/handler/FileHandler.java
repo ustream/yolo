@@ -245,7 +245,7 @@ public class FileHandler implements Runnable
                     }
                     catch (Exception e)
                     {
-                        LOG.error("Line processing error: {} - {} ", e.getClass().getName(), e.getMessage());
+                        LOG.error("Line processing error", e);
                     }
                 }
 
@@ -319,7 +319,7 @@ public class FileHandler implements Runnable
         @Override
         public void handle(final Exception ex)
         {
-            LOG.error("Tailer error: {}", ex.getMessage());
+            LOG.error("Tailer error", ex);
 
             try
             {

@@ -353,7 +353,7 @@ public class Yolo
         }
         catch (Exception e)
         {
-            LOG.error(e.toString());
+            LOG.error("Exception occured", e);
         }
     }
 

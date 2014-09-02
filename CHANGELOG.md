@@ -1,5 +1,9 @@
 # Changelog
 
+1.3.1
+-----
+ - Better exception logging
+
 1.3.0
 -----
  - Add filter support to JSON parser
