@@ -1,5 +1,11 @@
 # Changelog
 
+1.3.0
+-----
+ - Add filter support to JSON parser
+ - Allow optional list type in config
+ - Bugfix: handle null value properly when flattening JSON
+
 1.2.0
 -----
  - Gzip support

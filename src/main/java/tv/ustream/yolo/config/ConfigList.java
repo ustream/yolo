@@ -8,16 +8,32 @@ import java.util.List;
 public class ConfigList implements IConfigEntry<List>
 {
 
+    private final boolean required;
+
+    private final List defaultValue;
+
     private final IConfigEntry configEntry;
 
     public ConfigList(final IConfigEntry configEntry)
     {
+        this(configEntry, true, null);
+    }
+
+    public ConfigList(final IConfigEntry configEntry, final boolean required, final List defaultValue)
+    {
         this.configEntry = configEntry;
+        this.required = required;
+        this.defaultValue = defaultValue;
     }
 
     @SuppressWarnings("unchecked")
     public List parse(final String name, final Object data) throws ConfigException
     {
+        if (data == null && !required)
+        {
+            return defaultValue;
+        }
+
         if (!(data instanceof List))
         {
             throw new ConfigException(name + " should be a list");

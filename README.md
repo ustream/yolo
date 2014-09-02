@@ -184,10 +184,16 @@ Available parsers
 
 * tv.ustream.yolo.module.parser.JsonParser - parses JSON strings
   - params: Map {
-      enabled: Boolean, default: true
       flatten: Boolean, default: true
-      class: String, required
       processors: Map, required
+      filters: List [
+        Map {
+          value: Object, default: java.lang.Object@6f2b958e
+          key: String, required
+        }
+      ]
+      class: String, required
+      enabled: Boolean, default: true
     }
 
 * tv.ustream.yolo.module.parser.ScriptEngineParser - parses data with an external script file
