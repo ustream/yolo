@@ -1,6 +1,7 @@
 package tv.ustream.yolo.handler;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,6 +46,10 @@ public class FileHandler implements Runnable
     private final ArrayBlockingQueue<String> readQueue = new ArrayBlockingQueue<>(100);
 
     private boolean running = false;
+
+    private boolean tailersStarted = false;
+
+    private boolean directoryNotFound = false;
 
     public FileHandler(
         final ILineHandler lineProcessor,
@@ -125,8 +130,30 @@ public class FileHandler implements Runnable
 
         setUpMonitor();
 
+        Thread thread = new Thread(this);
+        thread.setName(getClass().getName());
+        thread.start();
+    }
+
+    private void startTailers() throws FileNotFoundException
+    {
         String filename = filePath.substring(filePath.lastIndexOf('/') + 1);
         File directory = new File(filePath.substring(0, filePath.lastIndexOf('/')));
+        if (!directory.exists())
+        {
+            if (!directoryNotFound)
+            {
+                LOG.warn("Directory {} does not exist, waiting for it to be created", directory.getAbsolutePath());
+                directoryNotFound = true;
+            }
+            throw new FileNotFoundException("Directory " + directory.getAbsolutePath() + " does not exist");
+        }
+
+        if (directoryNotFound)
+        {
+            LOG.warn("Directory {} created", directory.getAbsolutePath());
+            directoryNotFound = false;
+        }
 
         Collection<File> files = FileUtils.listFiles(
             directory,
@@ -138,12 +165,6 @@ public class FileHandler implements Runnable
         {
             startTailer(file, false);
         }
-
-        Thread thread = new Thread(this);
-        thread.setName(getClass().getName());
-        thread.start();
-
-        LOG.info("File handler started");
     }
 
     public void startTailer(final File file, final boolean newFile)
@@ -232,8 +253,30 @@ public class FileHandler implements Runnable
     @Override
     public void run()
     {
+        LOG.info("File handler started");
+
         while (running)
         {
+            if (!tailersStarted)
+            {
+                try
+                {
+                    startTailers();
+                    tailersStarted = true;
+                }
+                catch (FileNotFoundException e)
+                {
+                    try
+                    {
+                        Thread.sleep(1000);
+                    }
+                    catch (InterruptedException ie)
+                    {
+                        // ignore
+                    }
+                }
+            }
+
             try
             {
                 String line = readQueue.poll(1, TimeUnit.SECONDS);
@@ -267,6 +310,12 @@ public class FileHandler implements Runnable
             this.file = file;
         }
 
+        private boolean fileRotated = false;
+
+        private boolean fileNotFound = false;
+
+        private boolean errorFound = false;
+
         @Override
         public void init(final Tailer tailer)
         {
@@ -276,7 +325,11 @@ public class FileHandler implements Runnable
         @Override
         public void fileNotFound()
         {
-            LOG.error("Tailer error: file not found: {}", file.getAbsolutePath());
+            if (!fileNotFound)
+            {
+                LOG.error("Tailer error: file not found: {}", file.getAbsolutePath());
+                fileNotFound = true;
+            }
 
             try
             {
@@ -291,7 +344,11 @@ public class FileHandler implements Runnable
         @Override
         public void fileRotated()
         {
-            LOG.info("Tailer: file was rotated: {}", file.getAbsolutePath());
+            if (!fileRotated)
+            {
+                LOG.info("Tailer: file was rotated: {}", file.getAbsolutePath());
+                fileRotated = true;
+            }
 
             try
             {
@@ -306,6 +363,10 @@ public class FileHandler implements Runnable
         @Override
         public void handle(final String line)
         {
+            fileNotFound = false;
+            fileRotated = false;
+            errorFound = false;
+
             try
             {
                 readQueue.put(line);
@@ -319,7 +380,11 @@ public class FileHandler implements Runnable
         @Override
         public void handle(final Exception ex)
         {
-            LOG.error("Tailer error", ex);
+            if (!errorFound)
+            {
+                LOG.error("Tailer error", ex);
+                errorFound = true;
+            }
 
             try
             {

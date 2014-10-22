@@ -197,6 +197,23 @@ public class FileHandlerTest
         await().atMost(5000, TimeUnit.MILLISECONDS).until(equalsHandledLines("l1\nl2\nl3\n"));
     }
 
+    @Test
+    public void shouldWaitForWatchedDirectoryToBeCreated() throws Exception
+    {
+        setupFileHandler("/nonexisting/*", false);
+
+        Thread.sleep(100);
+
+        File subfolder = tmpFolder.newFolder("nonexisting");
+        File file = new File(subfolder.getAbsolutePath()+"/a.test");
+
+        FileWriter out = new FileWriter(file, true);
+        out.write("l1\nl2\nl3\n");
+        out.close();
+
+        await().atMost(5000, TimeUnit.MILLISECONDS).until(equalsHandledLines("l1\nl2\nl3\n"));
+    }
+
     public Callable<Boolean> equalsHandledLines(final String lines)
     {
         return new Callable<Boolean>()
