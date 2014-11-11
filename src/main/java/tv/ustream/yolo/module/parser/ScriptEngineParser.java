@@ -84,14 +84,7 @@ public class ScriptEngineParser implements IParser
             throw new RuntimeException("Script file not found: " + scriptFile);
         }
 
-        Object obj = scriptEngine.get("parser");
-
-        if (obj == null)
-        {
-            throw new RuntimeException("Script does not have an object named parser!");
-        }
-
-        parserImpl = ((Invocable) scriptEngine).getInterface(obj, IScriptParser.class);
+        parserImpl = ((Invocable) scriptEngine).getInterface(IScriptParser.class);
         if (parserImpl == null)
         {
             throw new RuntimeException("Parser object does not implement the IScriptParser interface!");

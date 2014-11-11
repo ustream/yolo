@@ -27,14 +27,12 @@ public class ScriptEngineParserTest
     public void shouldParseLineAndReturnMap() throws Exception
     {
         String script =
-                "var parser = new Packages.tv.ustream.yolo.module.parser.scriptengine.IScriptParser {\n" +
-                        "    parse: function(line) {\n" +
-                        "        return {\"line\": line};\n" +
-                        "    }\n" +
-                        "}\n";
+            "function parse(line) {\n" +
+            "    return {\"line\": line};\n" +
+            "};\n";
 
         File scriptFile = createScriptFile(script);
-        IParser parser = createParser(scriptFile.getAbsolutePath(), "JavaScript");
+        IParser parser = createParser(scriptFile.getAbsolutePath(), "nashorn");
 
         Map<String, Object> actual = parser.parse("line1");
 
@@ -45,11 +43,10 @@ public class ScriptEngineParserTest
     @Test
     public void shouldReturnNullWhenReturnValueIsInvalid() throws Exception
     {
-        String script = "var parser = new Packages.tv.ustream.yolo.module.parser.scriptengine.IScriptParser {\n" +
-                "    parse: function(line) {\n" +
-                "        return \"not map\";\n" +
-                "    }\n" +
-                "}\n";
+        String script =
+            "function parse(line) {\n" +
+            "    return \"not map\";\n" +
+            "};\n";
 
         File scriptFile = createScriptFile(script);
         IParser parser = createParser(scriptFile.getAbsolutePath(), "JavaScript");

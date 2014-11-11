@@ -1,5 +1,8 @@
 package tv.ustream.yolo.module;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -8,10 +11,6 @@ import tv.ustream.yolo.config.ConfigException;
 import tv.ustream.yolo.module.parser.IParser;
 import tv.ustream.yolo.module.processor.CompositeProcessor;
 import tv.ustream.yolo.module.processor.IProcessor;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.mockito.Mockito.anyMap;
 import static org.mockito.Mockito.anyString;
@@ -138,6 +137,7 @@ public class ModuleChainTest
         when(parser1.parse("t1")).thenReturn(null);
         when(parser2.parse("t1")).thenReturn(new HashMap<String, Object>());
         when(parser1.parse("t2")).thenReturn(new HashMap<String, Object>());
+        when(parser2.parse("t2")).thenReturn(null);
 
         moduleChain.handle("t1");
         moduleChain.handle("t2");
@@ -150,6 +150,7 @@ public class ModuleChainTest
     @Test
     public void runAlwaysParsersShouldRunAlways() throws Exception
     {
+        when(parser1.runAlways()).thenReturn(true);
         when(parser2.runAlways()).thenReturn(true);
 
         Map<String, Object> config = new HashMap<String, Object>();

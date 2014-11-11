@@ -1,5 +1,11 @@
 # Changelog
 
+2.0.0
+-----
+ - Java 8 compatibility (fix some tests)
+ - Test nashorn as JavaScript engine (in the script file simply create a function called parse, check examples)
+ - use Gradle 2.2
+
 1.3.1
 -----
  - Better exception logging
