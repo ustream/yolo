@@ -1,5 +1,5 @@
 group = 'tv.ustream.yolo'
-version = '2.0.0'
+version = '2.0.1'
 
 buildscript {
     repositories {
@@ -17,8 +17,8 @@ apply plugin: 'idea'
 apply plugin: 'fpm-packaging'
 apply plugin: 'application'
 
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
+sourceCompatibility = '1.7'
+targetCompatibility = '1.7'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 repositories {

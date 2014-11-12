@@ -3,7 +3,7 @@
         "script": {
             "class": "tv.ustream.yolo.module.parser.ScriptEngineParser",
             "file": "[PROJECTDIR]/examples/scriptengine/example.js",
-            "engine": "nashorn",
+            "engine": "JavaScript",
             "processors": {
                 "console": {}
             }

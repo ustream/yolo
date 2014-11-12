@@ -1,5 +1,9 @@
 # Changelog
 
+2.0.1
+-----
+ - Keep Java 1.7 compatibility (just build changes)
+
 2.0.0
 -----
  - Java 8 compatibility (fix some tests)

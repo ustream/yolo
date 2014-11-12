@@ -32,7 +32,7 @@ public class ScriptEngineParserTest
             "};\n";
 
         File scriptFile = createScriptFile(script);
-        IParser parser = createParser(scriptFile.getAbsolutePath(), "nashorn");
+        IParser parser = createParser(scriptFile.getAbsolutePath(), "JavaScript");
 
         Map<String, Object> actual = parser.parse("line1");
 
