@@ -1,5 +1,10 @@
 # Changelog
 
+2.0.2
+-----
+ - Use ospackage-plugin for building debian package
+ - configure uploadDebianArchive task for uploading the debian package to a maven repository
+
 2.0.1
 -----
  - Keep Java 1.7 compatibility (just build changes)

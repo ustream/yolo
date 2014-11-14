@@ -1,12 +1,12 @@
 group = 'tv.ustream.yolo'
-version = '2.0.1'
+version = '2.0.2'
 
 buildscript {
     repositories {
-        mavenCentral()
+        jcenter()
     }
     dependencies {
-        classpath 'com.kenshoo:gradle-fpm:0.4'
+        classpath 'com.netflix.nebula:gradle-ospackage-plugin:2.0.2'
     }
 }
 
@@ -14,7 +14,7 @@ apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'signing'
 apply plugin: 'idea'
-apply plugin: 'fpm-packaging'
+apply plugin: 'deb'
 apply plugin: 'application'
 
 sourceCompatibility = '1.7'
@@ -78,26 +78,40 @@ artifacts {
     archives jar
 }
 
-ext.distDir = "${buildDir}/dist"
-
-task buildDist(dependsOn: applicationJar) << {
-    ant.copy(file: "${applicationJar.archivePath}", todir: "${distDir}/usr/lib/yolo")
-    ant.copy(file: "yolo", todir: "${distDir}/usr/bin/")
-    ant.chmod(file: "${distDir}/usr/bin/yolo", perm: "755")
+task debian(type: Deb, dependsOn: applicationJar) {
+    vendor = 'Ustream, Inc.'
+    url = 'https://github.com/ustream/yolo'
+    packageDescription = 'Yolo - Log tailing and parsing framework in Java'
+    license = 'The MIT License (MIT)'
+    user 'root'
+    permissionGroup 'root'
+    from(applicationJar.archivePath) {
+        into '/usr/lib/yolo'
+    }
+    from('yolo') {
+        into '/usr/bin/'
+        fileMode 0755
+    }
 }
 
-debian.dependsOn buildDist
+configurations {
+    debianArchives
+}
 
-packaging {
-    baseDir = distDir
-    extraOptions = [
-            '-a': 'all',
-            '--vendor': 'Ustream, Inc.',
-            '--maintainer': 'Andras Szabo <bandesz@ustream.tv>',
-            '--url': 'https://github.com/ustream/yolo',
-            '--description': 'Yolo - Log tailing and parsing framework in Java',
-    ]
-    force = true
+artifacts {
+    debianArchives debian
+}
+
+uploadDebianArchives {
+    repositories {
+        maven {
+            url yoloMavenRepoUrl
+            credentials {
+                username yoloMavenRepoUsername
+                password yoloMavenRepoPassword
+            }
+        }
+    }
 }
 
 signing {
@@ -124,7 +138,7 @@ uploadArchives {
             beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
             repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: sonatypeUsername, password: sonatypePassword)
+                authentication(userName: yoloSonatypeUsername, password: yoloSonatypePassword)
             }
 
             pom.project {

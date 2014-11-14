@@ -73,6 +73,12 @@ The .deb file will be placed in the build/linux-package directory.
 
 The package contains the runnable jar file, which will be copied to /usr/lib/yolo when installed.
 
+### Upload Debian package to a Maven repository
+
+```bash
+./gradlew uploadDebianArchives -PyoloMavenRepoUrl=... -PyoloMavenRepoUsername=... -PyoloMavenRepoPassword=...
+```
+
 ## Sample configuration
 
 An example config file can be found in [example.json](src/main/config/example.json).
